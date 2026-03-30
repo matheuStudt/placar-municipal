@@ -1,0 +1,4 @@
+﻿=== USUARIOS ===
+ID: 1, Email: admin@admin.com, Senha: admin, PrefId: 1
+=== PREFEITURAS ===
+ID: 1, Nome: Prefeitura Principal, Slug: principal

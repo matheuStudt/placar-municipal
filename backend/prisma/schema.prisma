@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Prefeitura {
+  id             Int          @id @default(autoincrement())
+  nome           String
+  slug           String       @unique
+  logoUrl        String?
+  corPrimaria    String       @default("#0d6efd")
+  corSecundaria  String       @default("#6c757d")
+  usuarios       Usuario[]
+  campeonatos    Campeonato[]
+  equipes        Equipe[]
+}
+
+model Usuario {
+  id           Int         @id @default(autoincrement())
+  email        String      @unique
+  senha        String
+  prefeitura   Prefeitura? @relation(fields: [prefeituraId], references: [id])
+  prefeituraId Int?
+}
+
+model Equipe {
+  id            Int            @id @default(autoincrement())
+  nome          String
+  responsavel   String
+  telefone      String
+  local         String?
+  participacoes Participacao[]
+  vinculos      Vinculo[]
+  prefeitura    Prefeitura?    @relation(fields: [prefeituraId], references: [id])
+  prefeituraId  Int?
+  jogosMandante Jogo[]         @relation("Mandante")
+  jogosVisitante Jogo[]        @relation("Visitante")
+}
+
+model Campeonato {
+  id            Int            @id @default(autoincrement())
+  nome          String
+  descricao     String?
+  ano           Int?
+  formato       String?
+  dataInicio    String
+  dataFim       String
+  status        String         @default("Inscrições Abertas")
+  participacoes Participacao[]
+  rodadas       Rodada[]
+  classificadosPorChave Int        @default(4)
+  prefeitura    Prefeitura?    @relation(fields: [prefeituraId], references: [id])
+  prefeituraId  Int?
+}
+
+model Participacao {
+  id           Int        @id @default(autoincrement())
+  campeonato   Campeonato @relation(fields: [campeonatoId], references: [id])
+  campeonatoId Int
+  equipe       Equipe     @relation(fields: [equipeId], references: [id])
+  equipeId     Int
+  chave        String?
+}
+
+model Atleta {
+  id       Int       @id @default(autoincrement())
+  nome     String
+  cpf      String    @unique
+  dataNasc String
+  vinculos Vinculo[]
+  eventos  Evento[]
+}
+
+model Vinculo {
+  id           Int     @id @default(autoincrement())
+  atleta       Atleta  @relation(fields: [atletaId], references: [id])
+  atletaId     Int
+  equipe       Equipe  @relation(fields: [equipeId], references: [id])
+  equipeId     Int
+  tipo         String?
+  dataFim      String?
+}
+
+model Rodada {
+  id           Int        @id @default(autoincrement())
+  numero       Int
+  nome         String?
+  tipo         String     @default("GRUPO") // GRUPO ou MATA_MATA
+  campeonato   Campeonato @relation(fields: [campeonatoId], references: [id])
+  campeonatoId Int
+  jogos        Jogo[]
+}
+
+model Jogo {
+  id            Int      @id @default(autoincrement())
+  rodada        Rodada   @relation(fields: [rodadaId], references: [id])
+  rodadaId      Int
+  numero        Int
+  mandante      Equipe?  @relation("Mandante", fields: [mandanteId], references: [id])
+  mandanteId    Int?
+  visitante     Equipe?  @relation("Visitante", fields: [visitanteId], references: [id])
+  visitanteId   Int?
+  mandantePlaceholder String?
+  visitantePlaceholder String?
+  mandanteNome  String
+  visitanteNome String
+  golsMandante  Int      @default(0)
+  golsVisitante Int      @default(0)
+  data          String
+  horario       String?
+  local         String?
+  status        String   @default("Agendado")
+  chave         String?
+  eventos       Evento[]
+}
+
+model Evento {
+  id       Int    @id @default(autoincrement())
+  jogo     Jogo   @relation(fields: [jogoId], references: [id])
+  jogoId   Int
+  atleta   Atleta @relation(fields: [atletaId], references: [id])
+  atletaId Int
+  gols     Int    @default(0)
+  gc       Int    @default(0)
+  am       Int    @default(0)
+  vm       Int    @default(0)
+}

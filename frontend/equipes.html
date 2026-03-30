@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipes - Placar Municipal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body data-bs-theme="light">
+
+<div class="main-content-overlay" onclick="toggleSidebar()"></div>
+
+<nav class="sidebar p-3 shadow">
+    <div class="d-flex align-items-center mb-4 px-2">
+        <i class="bi bi-trophy-fill me-2 fs-4 text-warning"></i>
+        <span class="prefeitura-nome fs-5 fw-bold text-white">Placar Municipal</span>
+    </div>
+    <ul class="nav flex-column">
+        <li class="nav-item mb-2"><a href="index.html" class="nav-link p-2"><i class="bi bi-house-door me-2"></i> Início</a></li>
+        <li class="nav-item mb-2"><a href="campeonatos.html" class="nav-link p-2"><i class="bi bi-award me-2"></i> Campeonatos</a></li>
+        <li class="nav-item mb-2"><a href="equipes.html" class="nav-link active p-2"><i class="bi bi-shield-shaded me-2"></i> Equipes</a></li>
+        <li class="nav-item mb-2"><a href="atletas.html" class="nav-link p-2"><i class="bi bi-people me-2"></i> Atletas</a></li>
+        <li class="nav-item mb-2"><a href="jogos.html" class="nav-link p-2"><i class="bi bi-calendar3 me-2"></i> Tabela de Jogos</a></li>
+        <li class="nav-item mb-2"><a href="sumula.html" class="nav-link p-2"><i class="bi bi-file-earmark-text me-2"></i> Súmula</a></li>
+        <hr class="text-white-50">
+        <li class="nav-item"><a href="login.html" class="nav-link p-2 text-danger-emphasis text-white"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
+    </ul>
+</nav>
+
+<main class="main-content">
+    <header class="top-navbar shadow-sm rounded-4">
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+            <h5 class="mb-0 fw-bold" id="titulo-painel-header">Gerenciar Equipes</h5>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <!-- Botão de tema removido -->
+        </div>
+    </header>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Gerenciar Equipes</h2>
+        <button class="btn btn-primary fw-bold shadow-sm" onclick="novaEquipe()">
+            <i class="bi bi-plus-circle me-2"></i> Nova Equipe
+        </button>
+    </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-muted small text-uppercase">
+                            <tr>
+                                <th class="px-3">ID</th>
+                                <th>Equipe</th>
+                                <th>Responsável</th>
+                                <th>Contato</th>
+                                <th>Local de Mando/Sede</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-equipes">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEquipe" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="modalTitulo">Cadastrar Equipe</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="form-equipe">
+                    <input type="hidden" id="equipe-id">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">NOME DA EQUIPE</label>
+                        <input type="text" id="nome" class="form-control form-control-lg" placeholder="Ex: Vila Nova F.C." required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">RESPONSÁVEL / TÉCNICO</label>
+                        <input type="text" id="responsavel" class="form-control form-control-lg" placeholder="Nome do responsável" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">WHATSAPP</label>
+                        <input type="text" id="telefone" class="form-control form-control-lg" placeholder="(00) 00000-0000" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">LOCAL DE MANDO / SEDE</label>
+                        <input type="text" id="local" class="form-control form-control-lg" placeholder="Ex: Estádio Municipal ou Ginásio da Vila">
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 py-3 fw-bold mt-2">SALVAR EQUIPE</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalElenco" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">Elenco: <span id="nome-equipe-modal" class="text-warning">--</span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="bg-light p-3 rounded mb-4 border shadow-sm">
+                    <h6 class="fw-bold mb-3 small">VINCULAR ATLETA</h6>
+                    <form id="form-vinculo" class="row g-2">
+                        <input type="hidden" id="equipe-id-vinculo">
+                        <div class="col-md-6">
+                            <select id="select-atletas" class="form-select" required></select>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="tipo-vinculo" class="form-select">
+                                <option value="Jogador de Linha">Jogador de Linha</option>
+                                <option value="Goleiro">Goleiro</option>                                
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Incluir</button>
+                        </div>
+                    </form>
+                </div>
+                <h6 class="fw-bold px-1 mb-3">Atletas Inscritos</h6>
+                <div class="list-group list-group-flush border rounded shadow-sm" id="lista-elenco">
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+        let prefeituraId = null;
+        let modalEquipeBS = null;
+
+        async function init() {
+            const user = checkSession();
+            if (!user) return;
+            prefeituraId = user.prefeituraId;
+            modalEquipeBS = new bootstrap.Modal(document.getElementById('modalEquipe'));
+            carregarEquipes();
+        }
+
+    async function carregarEquipes() {
+        try {
+            const res = await fetch(`${API_BASE}/equipes?prefeituraId=${prefeituraId}`);
+            const equipes = await res.json();
+            const tabela = document.getElementById('tabela-equipes');
+            tabela.innerHTML = '';
+            
+            equipes.forEach(eq => {
+                const foneLimpo = eq.telefone ? eq.telefone.replace(/\D/g, '') : '';
+                tabela.innerHTML += `
+                    <tr>
+                        <td class="px-3 text-muted">#${eq.id}</td>
+                        <td class="fw-bold text-primary">${eq.nome}</td>
+                        <td>${eq.responsavel}</td>
+                        <td>
+                            <a href="https://wa.me/55${foneLimpo}" target="_blank" class="whatsapp-link">
+                                <i class="bi bi-whatsapp me-1"></i>${eq.telefone}
+                            </a>
+                        </td>
+                        <td class="text-muted small">${eq.local || 'Não informado'}</td>
+                        <td class="text-center">
+                            <div class="btn-group shadow-sm">
+                                <button class="btn btn-sm btn-outline-secondary" title="Editar" onclick='editarEquipe(${JSON.stringify(eq)})'>
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-dark" title="Gerenciar Elenco" onclick="abrirModalElenco(${eq.id}, '${eq.nome}')">
+                                    <i class="bi bi-people-fill"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" title="Excluir" onclick="excluirEquipe(${eq.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+        } catch (e) { console.error("Erro ao carregar:", e); }
+    }
+
+    function novaEquipe() {
+        document.getElementById('form-equipe').reset();
+        document.getElementById('equipe-id').value = '';
+        document.getElementById('modalTitulo').innerText = "Cadastrar Nova Equipe";
+        modalEquipeBS.show();
+    }
+
+    function editarEquipe(eq) {
+        document.getElementById('equipe-id').value = eq.id;
+        document.getElementById('nome').value = eq.nome;
+        document.getElementById('responsavel').value = eq.responsavel;
+        document.getElementById('telefone').value = eq.telefone;
+        document.getElementById('local').value = eq.local || '';
+        document.getElementById('modalTitulo').innerText = "Alterar Equipe";
+        modalEquipeBS.show();
+    }
+
+    async function excluirEquipe(id) {
+        if (confirm("Deseja realmente excluir esta equipe? Isso removerá todos os vínculos com atletas.")) {
+            const res = await fetch(`${API_BASE}/equipes/${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const data = await res.json().catch(()=>({}));
+                alert(data.error || "Erro ao excluir equipe.");
+            } else {
+                carregarEquipes();
+            }
+        }
+    }
+
+    document.getElementById('form-equipe').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('equipe-id').value;
+        const dados = {
+            nome: document.getElementById('nome').value,
+            responsavel: document.getElementById('responsavel').value,
+            telefone: document.getElementById('telefone').value,
+            local: document.getElementById('local').value,
+            prefeituraId: prefeituraId
+        };
+        
+        const url = id ? `${API_BASE}/equipes/${id}` : `${API_BASE}/equipes`;
+        const method = id ? 'PUT' : 'POST';
+
+        await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+        });
+
+        modalEquipeBS.hide();
+        carregarEquipes();
+    });
+
+    // --- FUNÇÕES DE ELENCO ---
+    async function abrirModalElenco(id, nome) {
+        document.getElementById('nome-equipe-modal').innerText = nome;
+        document.getElementById('equipe-id-vinculo').value = id;
+        
+        const resAtletas = await fetch(`${API_BASE}/atletas?prefeituraId=${prefeituraId}`);
+        const atletas = await resAtletas.json();
+        const select = document.getElementById('select-atletas');
+        select.innerHTML = '<option value="">Selecione um Atleta...</option>';
+        atletas.forEach(a => select.innerHTML += `<option value="${a.id}">${a.nome}</option>`);
+        
+        atualizarListaElenco(id);
+        new bootstrap.Modal(document.getElementById('modalElenco')).show();
+    }
+
+    async function atualizarListaElenco(equipeId) {
+        const res = await fetch(`${API_BASE}/equipes/${equipeId}/elenco`);
+        const elenco = await res.json();
+        const lista = document.getElementById('lista-elenco');
+        lista.innerHTML = elenco.length ? '' : '<div class="p-3 text-center text-muted">Nenhum atleta vinculado ainda.</div>';
+        elenco.forEach(at => {
+            lista.innerHTML += `
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div><i class="bi bi-person me-2 text-secondary"></i><span class="fw-bold">${at.nome}</span></div>
+                    <span class="badge rounded-pill bg-info-subtle text-info border border-info-subtle">${at.tipo}</span>
+                </div>`;
+        });
+    }
+
+    document.getElementById('form-vinculo').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const equipeId = document.getElementById('equipe-id-vinculo').value;
+        await fetch(`${API_BASE}/vinculos`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                atletaId: document.getElementById('select-atletas').value,
+                equipeId: equipeId,
+                tipo: document.getElementById('tipo-vinculo').value
+            })
+        });
+        atualizarListaElenco(equipeId);
+    });
+
+    window.onload = init;
+</script>
+</body>
+</html>

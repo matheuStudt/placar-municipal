@@ -1,0 +1,1 @@
+src/server.ts(629,29): error TS2538: Type 'null' cannot be used as an index type.

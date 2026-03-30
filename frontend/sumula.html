@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placar Municipal - Súmula Eletrônica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        /* Fixar largura dos dropdowns na súmula */
+        #select-campeonato, #select-jogo, #select-rodada {
+            min-width: 200px;
+        }
+
+        .placar-card {
+            background: var(--bs-card-bg);
+            border-radius: 15px;
+            border: none;
+        }
+
+        .score-number {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        [data-bs-theme="dark"] .score-number {
+            color: #60a5fa;
+        }
+
+        .btn-counter {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .val-display { min-width: 25px; text-align: center; font-weight: bold; }
+
+        .card-atleta {
+            border-bottom: 1px solid var(--bs-border-color);
+            transition: 0.2s;
+        }
+        .card-atleta:hover { background-color: var(--bs-secondary-bg); }
+    </style>
+</head>
+<body data-bs-theme="light">
+
+<div class="main-content-overlay" onclick="toggleSidebar()"></div>
+
+<nav class="sidebar p-3 shadow">
+    <div class="d-flex align-items-center mb-4 px-2">
+        <i class="bi bi-trophy-fill me-2 fs-4 text-warning"></i>
+        <span class="prefeitura-nome fs-5 fw-bold text-white">Placar Municipal</span>
+    </div>
+    <ul class="nav flex-column">
+        <li class="nav-item mb-2"><a href="index.html" class="nav-link p-2"><i class="bi bi-house-door me-2"></i> Início</a></li>
+        <li class="nav-item mb-2"><a href="campeonatos.html" class="nav-link p-2"><i class="bi bi-award me-2"></i> Campeonatos</a></li>
+        <li class="nav-item mb-2"><a href="equipes.html" class="nav-link p-2"><i class="bi bi-shield-shaded me-2"></i> Equipes</a></li>
+        <li class="nav-item mb-2"><a href="atletas.html" class="nav-link p-2"><i class="bi bi-people me-2"></i> Atletas</a></li>
+        <li class="nav-item mb-2"><a href="jogos.html" class="nav-link p-2"><i class="bi bi-calendar3 me-2"></i> Tabela de Jogos</a></li>
+        <li class="nav-item mb-2"><a href="sumula.html" class="nav-link active p-2"><i class="bi bi-file-earmark-text me-2"></i> Súmula</a></li>
+        <hr class="text-white-50">
+        <li class="nav-item"><a href="login.html" class="nav-link p-2 text-danger-emphasis text-white"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
+    </ul>
+</nav>
+
+<main class="main-content">
+    <header class="top-navbar shadow-sm rounded-4">
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+            <h5 class="mb-0 fw-bold" id="titulo-painel-header">Súmula de Jogo</h5>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <!-- Botão de tema removido -->
+        </div>
+    </header>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+                    <h2 class="fw-bold mb-0">Súmula de Jogo</h2>
+                    <div class="d-flex gap-2 flex-grow-1 justify-content-end">
+                        <div style="min-width: 200px;">
+                            <select class="form-select border-info fw-bold" id="select-campeonato" onchange="carregarRodadas()">
+                                <option value="">Selecione o Campeonato...</option>
+                            </select>
+                        </div>
+                        <div style="min-width: 200px;">
+                            <select class="form-select border-warning fw-bold" id="select-rodada" onchange="carregarJogos()" disabled>
+                                <option value="">Selecione a Rodada...</option>
+                            </select>
+                        </div>
+                        <div style="min-width: 250px;">
+                            <select class="form-select border-primary fw-bold" id="select-jogo" onchange="carregarDadosDoJogo()" disabled>
+                                <option value="">Selecione o Jogo...</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card placar-card shadow-sm mb-4">
+                    <div class="card-body py-5">
+                        <div class="row align-items-center text-center">
+                            <div class="col">
+                                <h3 class="fw-bold mb-3 text-uppercase" id="nome-mandante-display">MANDANTE</h3>
+                                <div class="score-number" id="placar-m">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <span class="fs-1 fw-light text-muted">VS</span>
+                            </div>
+                            <div class="col">
+                                <h3 class="fw-bold mb-3 text-uppercase" id="nome-visitante-display">VISITANTE</h3>
+                                <div class="score-number" id="placar-v">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-primary text-white fw-bold">Atletas: <span
+                                    id="label-mandante">Time A</span></div>
+                            <div class="card-body p-0" id="lista-mandante">
+                                <p class="p-3 text-muted">Selecione um jogo...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-danger text-white fw-bold">Atletas: <span
+                                    id="label-visitante">Time B</span></div>
+                            <div class="card-body p-0" id="lista-visitante">
+                                <p class="p-3 text-muted">Selecione um jogo...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-success w-100 py-3 fw-bold fs-5 shadow" onclick="finalizarPartida()">
+                    <i class="bi bi-check2-circle me-2"></i> FINALIZAR E SALVAR RESULTADO
+                </button>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+    const API = 'http://localhost:3001/api';
+    let prefeituraId = null;
+
+    let jogoAtivo = null;
+    let golsM = 0;
+    let golsV = 0;
+
+    async function init() {
+        const user = checkSession();
+        if (!user) return;
+        prefeituraId = user.prefeituraId;
+        // Carregar campeonatos
+        const resCamp = await fetch(`${API}/campeonatos?prefeituraId=${prefeituraId}`);
+        const campeonatos = await resCamp.json();
+        const selectCamp = document.getElementById('select-campeonato');
+        campeonatos.forEach(c => {
+            selectCamp.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
+        });
+
+            // Se vier um ID de jogo na URL, carrega automaticamente
+            const urlParams = new URLSearchParams(window.location.search);
+            const jogoId = urlParams.get('jogoId');
+            if (jogoId) {
+                const resDetalhes = await fetch(`${API}/jogos/${jogoId}/detalhes`);
+                if (resDetalhes.ok) {
+                    const dados = await resDetalhes.json();
+                    selectCamp.value = dados.jogo.campeonatoId;
+                    await carregarRodadas();
+                    document.getElementById('select-rodada').value = dados.jogo.rodadaId || "";
+                    await carregarJogos();
+                    document.getElementById('select-jogo').value = jogoId;
+                    carregarDadosDoJogo();
+                }
+            }
+        }
+
+        async function carregarRodadas() {
+            const campId = document.getElementById('select-campeonato').value;
+            const selectRodada = document.getElementById('select-rodada');
+            const selectJogo = document.getElementById('select-jogo');
+            
+            selectRodada.innerHTML = '<option value="">Selecione a Rodada...</option>';
+            selectRodada.disabled = true;
+            selectJogo.innerHTML = '<option value="">Selecione o Jogo...</option>';
+            selectJogo.disabled = true;
+            limparDadosDoJogo();
+
+            if (!campId) return;
+
+            const res = await fetch(`${API}/campeonatos/${campId}/rodadas`);
+            const rodadas = await res.json();
+            rodadas.forEach(r => {
+                selectRodada.innerHTML += `<option value="${r.id}">${r.nome}</option>`;
+            });
+            selectRodada.disabled = false;
+        }
+
+        async function carregarJogos() {
+            const campId = document.getElementById('select-campeonato').value;
+            const rodadaId = document.getElementById('select-rodada').value;
+            const selectJogo = document.getElementById('select-jogo');
+            
+            selectJogo.innerHTML = '<option value="">Selecione o Jogo...</option>';
+            selectJogo.disabled = true;
+            limparDadosDoJogo();
+
+            if (!campId) return;
+
+            let url = `${API}/jogos?campeonatoId=${campId}`;
+            if (rodadaId) url += `&rodadaId=${rodadaId}`;
+
+            const res = await fetch(url);
+            const jogos = await res.json();
+            
+            jogos.forEach(j => {
+                selectJogo.innerHTML += `<option value="${j.id}">Jogo ${j.numero}: ${j.mandanteNome} x ${j.visitanteNome}</option>`;
+            });
+            
+            if (jogos.length > 0) {
+                selectJogo.disabled = false;
+            } else {
+                selectJogo.innerHTML = '<option value="">Nenhum jogo encontrado...</option>';
+            }
+        }
+
+        function limparDadosDoJogo() {
+            jogoAtivo = null;
+            document.getElementById('nome-mandante-display').innerText = 'MANDANTE';
+            document.getElementById('nome-visitante-display').innerText = 'VISITANTE';
+            document.getElementById('label-mandante').innerText = 'Time A';
+            document.getElementById('label-visitante').innerText = 'Time B';
+            document.getElementById('placar-m').innerText = '0';
+            document.getElementById('placar-v').innerText = '0';
+            document.getElementById('lista-mandante').innerHTML = '<p class="p-3 text-muted">Selecione um jogo...</p>';
+            document.getElementById('lista-visitante').innerHTML = '<p class="p-3 text-muted">Selecione um jogo...</p>';
+            
+            const btnFinalizar = document.querySelector('button[onclick="finalizarPartida()"]');
+            btnFinalizar.disabled = false;
+            btnFinalizar.innerHTML = '<i class="bi bi-check2-circle me-2"></i> FINALIZAR E SALVAR RESULTADO';
+            btnFinalizar.classList.replace('btn-secondary', 'btn-success');
+        }
+
+        async function carregarDadosDoJogo() {
+            const id = document.getElementById('select-jogo').value;
+            if (!id) return;
+
+            const res = await fetch(`${API}/jogos/${id}/detalhes`);
+            const dados = await res.json();
+            jogoAtivo = dados.jogo;
+
+            // Atualiza UI
+            document.getElementById('nome-mandante-display').innerText = jogoAtivo.mandanteNome;
+            document.getElementById('nome-visitante-display').innerText = jogoAtivo.visitanteNome;
+            document.getElementById('label-mandante').innerText = jogoAtivo.mandanteNome;
+            document.getElementById('label-visitante').innerText = jogoAtivo.visitanteNome;
+
+            golsM = jogoAtivo.golsMandante || 0;
+            golsV = jogoAtivo.golsVisitante || 0;
+            document.getElementById('placar-m').innerText = golsM;
+            document.getElementById('placar-v').innerText = golsV;
+
+            const isFinalizado = jogoAtivo.status === 'Finalizado';
+            renderizarLado(dados.elencoMandante, 'mandante', isFinalizado);
+            renderizarLado(dados.elencoVisitante, 'visitante', isFinalizado);
+
+            const btnFinalizar = document.querySelector('button[onclick="finalizarPartida()"]');
+            if (isFinalizado) {
+                btnFinalizar.disabled = true;
+                btnFinalizar.innerHTML = '<i class="bi bi-lock-fill me-2"></i> JOGO FINALIZADO (SOMENTE LEITURA)';
+                btnFinalizar.classList.replace('btn-success', 'btn-secondary');
+            } else {
+                btnFinalizar.disabled = false;
+                btnFinalizar.innerHTML = '<i class="bi bi-check2-circle me-2"></i> FINALIZAR E SALVAR RESULTADO';
+                btnFinalizar.classList.replace('btn-secondary', 'btn-success');
+            }
+        }
+
+        function renderizarLado(atletas, lado, bloqueado) {
+            const container = document.getElementById(`lista-${lado}`);
+            container.innerHTML = '';
+            if (atletas.length === 0) container.innerHTML = '<p class="p-3 text-muted small">Nenhum atleta vinculado.</p>';
+
+            const attr = bloqueado ? 'disabled' : '';
+
+            atletas.forEach(a => {
+                container.innerHTML += `
+                <div class="card-atleta p-3 d-flex justify-content-between align-items-center" data-atleta-id="${a.id}">
+                    <div>
+                        <span class="fw-bold">${a.nome}</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <div class="text-center">
+                            <small class="d-block text-muted" style="font-size:0.6rem">GOLS</small>
+                            <div class="d-flex align-items-center bg-light rounded border">
+                                <button class="btn btn-counter" onclick="atualizar(this, -1, '${lado}', 'gol')" ${attr}>-</button>
+                                <span class="val-display gol-count">${a.gols || 0}</span>
+                                <button class="btn btn-counter" onclick="atualizar(this, 1, '${lado}', 'gol')" ${attr}>+</button>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <small class="d-block text-muted" style="font-size:0.6rem">GC</small>
+                            <div class="d-flex align-items-center bg-light rounded border border-info">
+                                <button class="btn btn-counter text-info" onclick="atualizar(this, -1, '${lado}', 'gc')" ${attr}>-</button>
+                                <span class="val-display gc-count">${a.gc || 0}</span>
+                                <button class="btn btn-counter text-info" onclick="atualizar(this, 1, '${lado}', 'gc')" ${attr}>+</button>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <small class="d-block text-muted" style="font-size:0.6rem">AM</small>
+                            <div class="d-flex align-items-center bg-light rounded border border-warning">
+                                <button class="btn btn-counter text-warning" onclick="atualizar(this, -1, '${lado}', 'am')" ${attr}>-</button>
+                                <span class="val-display am-count">${a.am || 0}</span>
+                                <button class="btn btn-counter text-warning" onclick="atualizar(this, 1, '${lado}', 'am')" ${attr}>+</button>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <small class="d-block text-muted" style="font-size:0.6rem">VM</small>
+                            <div class="d-flex align-items-center bg-light rounded border border-danger">
+                                <button class="btn btn-counter text-danger" onclick="atualizar(this, -1, '${lado}', 'vm')" ${attr}>-</button>
+                                <span class="val-display vm-count">${a.vm || 0}</span>
+                                <button class="btn btn-counter text-danger" onclick="atualizar(this, 1, '${lado}', 'vm')" ${attr}>+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function atualizar(btn, valor, lado, tipo) {
+            if (jogoAtivo && jogoAtivo.status === 'Finalizado') return;
+
+            const display = btn.parentElement.querySelector('.val-display');
+            let atual = parseInt(display.innerText);
+            if (atual + valor < 0) return;
+            display.innerText = atual + valor;
+
+            if (tipo === 'gol') {
+                if (lado === 'mandante') { golsM += valor; document.getElementById('placar-m').innerText = golsM; }
+                else { golsV += valor; document.getElementById('placar-v').innerText = golsV; }
+            }
+
+            if (tipo === 'gc') {
+                // Gol contra soma para o ADVERSÁRIO
+                if (lado === 'mandante') { golsV += valor; document.getElementById('placar-v').innerText = golsV; }
+                else { golsM += valor; document.getElementById('placar-m').innerText = golsM; }
+            }
+        }
+
+        async function finalizarPartida() {
+            if (!jogoAtivo || jogoAtivo.status === 'Finalizado') return;
+
+            const estatisticas = [];
+            document.querySelectorAll('.card-atleta').forEach(card => {
+                estatisticas.push({
+                    atletaId: parseInt(card.dataset.atletaId),
+                    gols: parseInt(card.querySelector('.gol-count').innerText),
+                    gc: parseInt(card.querySelector('.gc-count').innerText),
+                    am: parseInt(card.querySelector('.am-count').innerText),
+                    vm: parseInt(card.querySelector('.vm-count').innerText)
+                });
+            });
+
+            console.log("[FRONTEND] Enviando estatísticas:", estatisticas);
+
+            const res = await fetch(`${API}/jogos/finalizar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ jogoId: jogoAtivo.id, golsM, golsV, estatisticas })
+            });
+            if (res.ok) { 
+                alert("Resultado Salvo!"); 
+                window.location.href = 'jogos.html';
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

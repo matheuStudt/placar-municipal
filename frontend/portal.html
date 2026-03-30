@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Placar Municipal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #3b82f6;
+            --gold: #fbbf24;
+            --surface: #ffffff;
+            --bg: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            padding: 0.85rem 0;
+        }
+        .navbar-brand { font-weight: 800; font-size: 1.4rem; letter-spacing: -0.5px; }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            color: white;
+            padding: 70px 0 90px;
+            border-radius: 0 0 48px 48px;
+            margin-bottom: -48px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: -10%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(59,130,246,0.22) 0%, transparent 70%);
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            right: -5%;
+            width: 50%;
+            height: 180%;
+            background: radial-gradient(circle, rgba(251,191,36,0.08) 0%, transparent 70%);
+        }
+        .hero .container { position: relative; z-index: 1; }
+
+        /* ── CHAMPIONSHIP CARDS ── */
+        .section-cards {
+            padding-top: 80px;
+            padding-bottom: 60px;
+        }
+
+        .camp-card {
+            background: white;
+            border: none;
+            border-radius: 24px;
+            padding: 32px 28px;
+            cursor: pointer;
+            transition: all 0.28s cubic-bezier(0.4,0,0.2,1);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+        }
+        .camp-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 24px 40px rgba(0,0,0,0.13);
+            color: inherit;
+        }
+        .camp-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 5px;
+            background: linear-gradient(90deg, var(--accent), var(--gold));
+            border-radius: 24px 24px 0 0;
+            opacity: 0;
+            transition: opacity 0.28s;
+        }
+        .camp-card:hover::before { opacity: 1; }
+
+        .camp-card-icon {
+            width: 64px; height: 64px;
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+        .camp-card-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+        .camp-card-meta {
+            font-size: 0.82rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+        .camp-card-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 4px 12px;
+            border-radius: 100px;
+        }
+        .camp-card-arrow {
+            position: absolute;
+            bottom: 24px; right: 24px;
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            color: #94a3b8;
+            transition: all 0.25s;
+        }
+        .camp-card:hover .camp-card-arrow {
+            background: var(--accent);
+            color: white;
+            transform: translateX(3px);
+        }
+
+        /* ── DETAIL VIEW ── */
+        #view-detalhe { display: none; }
+
+        .btn-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 10px 22px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.22s;
+            text-decoration: none;
+        }
+        .btn-voltar:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 4px 14px rgba(59,130,246,0.15);
+        }
+
+        .detalhe-header {
+            background: white;
+            border-radius: 24px;
+            padding: 28px 32px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .detalhe-header-icon {
+            width: 60px; height: 60px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+        .detalhe-header-title { font-size: 1.5rem; font-weight: 800; margin: 0; }
+        .detalhe-header-sub { font-size: 0.9rem; color: #64748b; margin: 0; }
+
+        /* Tabs */
+        .nav-pills .nav-link {
+            border-radius: 12px;
+            font-weight: 600;
+            color: #64748b;
+            padding: 10px 22px;
+            transition: all 0.2s;
+        }
+        .nav-pills .nav-link.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+        }
+
+        /* Cards de jogo */
+        .card-jogo {
+            background: white;
+            border: none;
+            border-radius: 20px;
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+        }
+        .card-jogo:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.1);
+        }
+        .card-jogo::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 4px;
+            background: var(--accent);
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .card-jogo:hover::after { opacity: 1; }
+
+        .status-badge {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 5px 12px;
+            border-radius: 100px;
+            font-weight: 700;
+        }
+        .status-finalizado { background: #dcfce7; color: #15803d; }
+        .status-agendado { background: #fef9c3; color: #854d0e; }
+
+        .placar-grande {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            width: 60px;
+            text-align: center;
+        }
+        .team-name { font-weight: 600; font-size: 1rem; }
+
+        .section-title {
+            font-weight: 700;
+            font-size: 1.6rem;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+        }
+        .section-title::after {
+            content: '';
+            height: 4px;
+            width: 50px;
+            background: var(--accent);
+            display: inline-block;
+            margin-left: 14px;
+            border-radius: 2px;
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: skeleton-shimmer 1.4s infinite;
+            border-radius: 16px;
+        }
+        @keyframes skeleton-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+        .empty-state i { font-size: 3.5rem; opacity: 0.4; display: block; margin-bottom: 16px; }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 50px 0;
+            margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand text-primary fw-bold" href="#" id="nav-brand" onclick="voltarParaLista()">
+            <i class="bi bi-trophy-fill text-warning me-2"></i>PLACAR MUNICIPAL
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav gap-2">
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#" onclick="voltarParaLista(); return false;">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="login.html">Painel Administrativo</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container text-center">
+        <div id="hero-logo-container" class="mb-3">
+            <i class="bi bi-trophy-fill display-1 text-white opacity-75"></i>
+        </div>
+        <h1 class="display-4 fw-bold mb-3" id="hero-title">Placar Municipal</h1>
+        <p class="lead text-white-50 mb-0" id="hero-subtitle">Todos os campeonatos, resultados e estatísticas em um só lugar.</p>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- VIEW: LISTA DE CAMPEONATOS              -->
+<!-- ════════════════════════════════════════ -->
+<div id="view-lista">
+    <div class="container section-cards">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h2 class="fw-bold fs-4 mb-0">
+                <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Campeonatos
+            </h2>
+            <span class="text-muted small" id="total-camps"></span>
+        </div>
+
+        <!-- Skeletons enquanto carrega -->
+        <div class="row g-4" id="lista-camps-loading">
+            <div class="col-md-6 col-lg-4"><div class="skeleton" style="height:180px;"></div></div>
+            <div class="col-md-6 col-lg-4"><div class="skeleton" style="height:180px;"></div></div>
+            <div class="col-md-6 col-lg-4"><div class="skeleton" style="height:180px;"></div></div>
+        </div>
+
+        <div class="row g-4" id="lista-camps" style="display:none!important;"></div>
+
+        <div id="camps-empty-state" class="empty-state" style="display:none;">
+            <i class="bi bi-trophy"></i>
+            <p class="fw-semibold fs-5 mb-1">Nenhum campeonato cadastrado</p>
+            <p class="small">Quando houver campeonatos, eles aparecerão aqui.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- VIEW: DETALHE DO CAMPEONATO            -->
+<!-- ════════════════════════════════════════ -->
+<div id="view-detalhe">
+    <div class="container" style="padding-top: 80px; padding-bottom: 60px;">
+
+        <!-- Botão Voltar + Header do campeonato -->
+        <div class="mb-4">
+            <button class="btn-voltar mb-4" onclick="voltarParaLista()">
+                <i class="bi bi-arrow-left"></i> Todos os Campeonatos
+            </button>
+
+            <div class="detalhe-header">
+                <div class="detalhe-header-icon">
+                    <i class="bi bi-trophy-fill"></i>
+                </div>
+                <div>
+                    <h2 class="detalhe-header-title" id="detalhe-nome">—</h2>
+                    <p class="detalhe-header-sub" id="detalhe-meta">—</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav nav-pills mb-4 justify-content-center gap-2" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active px-4 fw-bold" id="pills-jogos-tab" data-bs-toggle="pill" data-bs-target="#pills-jogos" type="button">
+                    <i class="bi bi-calendar2-week me-1"></i>Jogos
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-4 fw-bold" id="pills-class-tab" data-bs-toggle="pill" data-bs-target="#pills-class" type="button" onclick="loadClassificacao()">
+                    <i class="bi bi-bar-chart-line me-1"></i>Classificação
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-4 fw-bold" id="pills-stats-tab" data-bs-toggle="pill" data-bs-target="#pills-stats" type="button" onclick="loadEstatisticas()">
+                    <i class="bi bi-stars me-1"></i>Estatísticas
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="pills-tabContent">
+            <!-- JOGOS -->
+            <div class="tab-pane fade show active" id="pills-jogos">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="section-title mb-0">Jogos e Resultados</h3>
+                    <select id="select-rodada-portal" class="form-select w-auto fw-bold" style="border-radius:12px;" onchange="mudouRodadaPortal()">
+                        <option value="">Todas as Rodadas</option>
+                    </select>
+                </div>
+                <div id="lista-jogos" class="row g-4"></div>
+            </div>
+
+            <!-- CLASSIFICAÇÃO -->
+            <div class="tab-pane fade" id="pills-class">
+                <h3 class="section-title">Classificação Geral</h3>
+                <ul class="nav nav-pills mb-4 bg-white p-2 rounded-pill shadow-sm d-inline-flex border" id="pills-class-sub" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-pill px-4" id="class-grupos-tab" data-bs-toggle="pill" data-bs-target="#class-grupos" type="button">Fase de Grupos</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill px-4" id="class-matamata-tab" data-bs-toggle="pill" data-bs-target="#class-matamata" type="button">Mata-Mata</button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="class-grupos" role="tabpanel">
+                        <div id="container-classificacao-grupos"></div>
+                    </div>
+                    <div class="tab-pane fade" id="class-matamata" role="tabpanel">
+                        <div id="container-classificacao-matamata"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ESTATÍSTICAS -->
+            <div class="tab-pane fade" id="pills-stats">
+                <h3 class="section-title">Desempenho e Estatísticas</h3>
+                <ul class="nav nav-pills mb-4 bg-white p-2 rounded-pill shadow-sm d-inline-flex border" id="pills-stats-sub" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-pill px-4" id="stats-art-tab" data-bs-toggle="pill" data-bs-target="#stats-art" type="button">Artilharia</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill px-4" id="stats-def-tab" data-bs-toggle="pill" data-bs-target="#stats-def" type="button">Melhor Defesa</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill px-4" id="stats-dis-tab" data-bs-toggle="pill" data-bs-target="#stats-dis" type="button">Disciplina</button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="stats-art" role="tabpanel">
+                        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-primary text-white text-uppercase small">
+                                        <tr>
+                                            <th class="ps-4">Pos</th>
+                                            <th>Atleta</th>
+                                            <th>Equipe</th>
+                                            <th class="text-center">Gols</th>
+                                        </tr>
+                                    </thead>
+                                     <tbody id="corpo-artilharia"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button id="btn-mais-art" class="btn btn-outline-primary rounded-pill px-4 fw-semibold" style="display:none" onclick="mostrarMaisEstat('artilharia','corpo-artilharia','btn-mais-art',renderLinhaArt)">
+                                <i class="bi bi-chevron-down me-1"></i>Mostrar Mais
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="stats-def" role="tabpanel">
+                        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-success text-white text-uppercase small">
+                                        <tr>
+                                            <th class="ps-4">Pos</th>
+                                            <th>Equipe</th>
+                                            <th class="text-center">Gols Sofridos</th>
+                                            <th class="text-center">Jogos</th>
+                                            <th class="text-center">Média</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="corpo-defesa"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button id="btn-mais-def" class="btn btn-outline-success rounded-pill px-4 fw-semibold" style="display:none" onclick="mostrarMaisEstat('defesa','corpo-defesa','btn-mais-def',renderLinhaDef)">
+                                <i class="bi bi-chevron-down me-1"></i>Mostrar Mais
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="stats-dis" role="tabpanel">
+                        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-warning text-dark text-uppercase small">
+                                        <tr>
+                                            <th class="ps-4">Pos</th>
+                                            <th>Equipe</th>
+                                            <th class="text-center">Amarelos</th>
+                                            <th class="text-center">Vermelhos</th>
+                                        </tr>
+                                    </thead>
+                                     <tbody id="corpo-disciplina"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button id="btn-mais-dis" class="btn btn-outline-warning rounded-pill px-4 fw-semibold" style="display:none" onclick="mostrarMaisEstat('disciplina','corpo-disciplina','btn-mais-dis',renderLinhaDis)">
+                                <i class="bi bi-chevron-down me-1"></i>Mostrar Mais
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="mt-5">
+    <div class="container text-center">
+        <div id="footer-logo-container" class="mb-3"></div>
+        <h5 class="fw-bold mb-2" id="footer-nome">Placar Municipal</h5>
+        <p class="text-white-50 small mb-0">Portal Oficial de Esportes e Resultados em tempo real.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const API = 'http://localhost:3001/api';
+    let currentPrefeituraId = 1;
+    let campsCache = [];
+    let campeonatoAtual = null;
+
+    // ── INICIALIZAÇÃO ───────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadConfig();
+        await carregarCamps();
+        roteador(); // define qual view mostrar baseado no hash
+    });
+
+    // Navega entre views pelo hash da URL (#camp-ID)
+    window.addEventListener('hashchange', roteador);
+
+    function roteador() {
+        const hash = window.location.hash;
+        if (hash.startsWith('#camp-')) {
+            const id = hash.replace('#camp-', '');
+            abrirCampeonato(id);
+        } else {
+            mostrarLista();
+        }
+    }
+
+    // ── CONFIG / TEMA ────────────────────────────────────────
+    async function loadConfig() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get('p') || 'principal';
+        try {
+            const res = await fetch(`${API}/configuracao?slug=${slug}`);
+            if (!res.ok) throw new Error('Prefeitura não encontrada');
+            const config = await res.json();
+            currentPrefeituraId = config.id;
+
+            document.title = config.nome + ' - Portal de Esportes';
+            const navBrand = document.getElementById('nav-brand');
+            if (navBrand) navBrand.innerHTML = `<i class="bi bi-trophy-fill text-warning me-2"></i>${config.nome.toUpperCase()}`;
+            document.getElementById('hero-title').textContent = config.nome;
+            document.getElementById('footer-nome').textContent = config.nome;
+
+            if (config.logoUrl) {
+                document.getElementById('hero-logo-container').innerHTML =
+                    `<img src="${config.logoUrl}" alt="Logo" style="max-height:110px;" class="img-fluid mb-2">`;
+                document.getElementById('footer-logo-container').innerHTML =
+                    `<img src="${config.logoUrl}" alt="Logo" style="max-height:55px;" class="img-fluid mb-2 opacity-75">`;
+            }
+
+            if (config.corPrimaria) {
+                const s = document.createElement('style');
+                s.innerHTML = `
+                    :root { --accent: ${config.corPrimaria}; }
+                    .bg-primary { background-color: ${config.corPrimaria} !important; }
+                    .btn-primary { background-color: ${config.corPrimaria} !important; border-color: ${config.corPrimaria} !important; }
+                    .text-primary { color: ${config.corPrimaria} !important; }
+                    .hero { background: linear-gradient(135deg, ${config.corPrimaria} 0%, #0f172a 100%) !important; }
+                    .nav-pills .nav-link.active { background: ${config.corPrimaria} !important; }
+                `;
+                document.head.appendChild(s);
+            }
+        } catch (e) { console.error('Erro ao carregar config:', e); }
+    }
+
+    // ── LISTA DE CAMPEONATOS ─────────────────────────────────
+    async function carregarCamps() {
+        try {
+            const res = await fetch(`${API}/campeonatos?prefeituraId=${currentPrefeituraId}`);
+            campsCache = await res.json();
+
+            const loading = document.getElementById('lista-camps-loading');
+            const lista   = document.getElementById('lista-camps');
+            const empty   = document.getElementById('camps-empty-state');
+            const total   = document.getElementById('total-camps');
+
+            loading.style.display = 'none';
+
+            if (!campsCache.length) {
+                empty.style.display = 'block';
+                return;
+            }
+
+            total.textContent = `${campsCache.length} campeonato${campsCache.length > 1 ? 's' : ''}`;
+            lista.style.removeProperty('display');
+
+            const statusInfo = {
+                'Ativo':     { label: 'Em andamento', cls: 'bg-success-subtle text-success'  },
+                'Encerrado': { label: 'Encerrado',    cls: 'bg-secondary-subtle text-secondary' },
+                'Planejado': { label: 'Em breve',     cls: 'bg-warning-subtle text-warning'   },
+            };
+
+            const modalidades = {
+                'Futebol': 'bi-dribbble',
+                'Futsal':  'bi-grid-3x3',
+                'Society': 'bi-circle',
+                default:   'bi-trophy-fill',
+            };
+
+            lista.innerHTML = campsCache.map(c => {
+                const si = statusInfo[c.status] || { label: c.status, cls: 'bg-light text-muted' };
+                const icon = modalidades[c.modalidade] || modalidades.default;
+                return `
+                <div class="col-md-6 col-lg-4">
+                    <a class="camp-card" href="#camp-${c.id}" onclick="return true;">
+                        <div class="d-flex align-items-start justify-content-between mb-3">
+                            <div class="camp-card-icon">
+                                <i class="bi ${icon}"></i>
+                            </div>
+                            <span class="camp-card-badge ${si.cls}">${si.label}</span>
+                        </div>
+                        <div class="camp-card-name">${c.nome}</div>
+                        <div class="camp-card-meta mb-3">
+                            <i class="bi bi-calendar3 me-1"></i>${c.ano}
+                            ${c.modalidade ? `&nbsp;·&nbsp;<i class="bi bi-joystick me-1"></i>${c.modalidade}` : ''}
+                        </div>
+                        <div class="camp-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                    </a>
+                </div>`;
+            }).join('');
+
+        } catch (e) { console.error('Erro ao carregar campeonatos:', e); }
+    }
+
+    // ── NAVEGAÇÃO ────────────────────────────────────────────
+    function mostrarLista() {
+        document.getElementById('view-lista').style.display = '';
+        document.getElementById('view-detalhe').style.display = 'none';
+        campeonatoAtual = null;
+        // Reset tabs para jogos
+        const tab = document.getElementById('pills-jogos-tab');
+        if (tab) bootstrap.Tab.getOrCreateInstance(tab).show();
+    }
+
+    function voltarParaLista() {
+        // Usa replaceState para limpar o hash sem disparar hashchange
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+        mostrarLista();
+    }
+
+    function abrirCampeonato(id) {
+        const camp = campsCache.find(c => String(c.id) === String(id));
+        if (!camp) {
+            // Campeonatos ainda não carregados — aguardar e tentar novamente
+            if (!campsCache.length) {
+                setTimeout(() => abrirCampeonato(id), 300);
+                return;
+            }
+            voltarParaLista();
+            return;
+        }
+
+        campeonatoAtual = id;
+
+        // Popula header do detalhe
+        document.getElementById('detalhe-nome').textContent = camp.nome;
+        document.getElementById('detalhe-meta').textContent =
+            [camp.ano, camp.modalidade, camp.status].filter(Boolean).join(' · ');
+
+        // Alterna views
+        document.getElementById('view-lista').style.display = 'none';
+        document.getElementById('view-detalhe').style.display = 'block';
+
+        // Reset tabs para jogos
+        const tab = document.getElementById('pills-jogos-tab');
+        if (tab) bootstrap.Tab.getOrCreateInstance(tab).show();
+
+        // Carrega dados
+        carregarRodadas(id);
+        carregarJogos(id);
+        loadClassificacao(id);
+        loadEstatisticas(id);
+    }
+
+    // ── RODADAS ──────────────────────────────────────────────
+    async function carregarRodadas(campId) {
+        try {
+            const res = await fetch(`${API}/campeonatos/${campId}/rodadas`);
+            const rodadas = await res.json();
+            const select = document.getElementById('select-rodada-portal');
+            select.innerHTML = '<option value="">Todas as Rodadas</option>';
+            rodadas.forEach(r => {
+                select.innerHTML += `<option value="${r.id}">Rodada ${r.numero}</option>`;
+            });
+        } catch (e) { console.error(e); }
+    }
+
+    function mudouRodadaPortal() {
+        if (campeonatoAtual) carregarJogos(campeonatoAtual);
+    }
+
+    // ── JOGOS ────────────────────────────────────────────────
+    async function carregarJogos(campId) {
+        const rodadaId  = document.getElementById('select-rodada-portal').value;
+        const container = document.getElementById('lista-jogos');
+        container.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div></div>';
+
+        try {
+            let url = `${API}/jogos?campeonatoId=${campId}`;
+            if (rodadaId) url += `&rodadaId=${rodadaId}`;
+            const res   = await fetch(url);
+            const jogos = await res.json();
+            container.innerHTML = '';
+
+            if (!jogos.length) {
+                container.innerHTML = '<div class="col-12"><div class="empty-state"><i class="bi bi-calendar-x"></i><p class="fw-semibold">Nenhum jogo cadastrado.</p></div></div>';
+                return;
+            }
+
+            const slug = new URLSearchParams(window.location.search).get('p') || '';
+            jogos.forEach(j => {
+                const statusClass = j.status === 'Finalizado' ? 'status-finalizado' : 'status-agendado';
+                const statusIcon  = j.status === 'Finalizado' ? 'lock-fill' : 'clock';
+                const descRodada  = j.rodada?.tipo === 'MATA_MATA'
+                    ? (j.rodada.nome || 'Mata-Mata')
+                    : (j.chave
+                        ? (j.chave.includes('Chave') ? j.chave : 'Chave ' + j.chave)
+                        : 'Fase de Grupos');
+
+                container.innerHTML += `
+                <div class="col-lg-6">
+                    <div class="card card-jogo h-100 p-4" onclick="location.href='detalhes-jogo.html?jogoId=${j.id}&p=${slug}&campId=${campId}'" style="cursor:pointer">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="status-badge ${statusClass}">
+                                <i class="bi bi-${statusIcon} me-1"></i>${j.status}
+                            </span>
+                            <div class="text-end">
+                                <small class="text-muted fw-bold d-block">JOGO ${j.numero}</small>
+                                <span class="badge bg-secondary-subtle text-secondary border mt-1" style="font-size:.65rem;">
+                                    ${descRodada}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-4 text-center">
+                                <div class="mb-2"><i class="bi bi-shield-shaded fs-1 text-primary"></i></div>
+                                <div class="team-name text-uppercase">${j.mandanteNome}</div>
+                            </div>
+                            <div class="col-4 text-center px-0">
+                                <div class="d-flex justify-content-center align-items-center gap-1">
+                                    <span class="placar-grande">${j.golsMandante}</span>
+                                    <span class="text-muted fw-light fs-2">:</span>
+                                    <span class="placar-grande">${j.golsVisitante}</span>
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="mb-2"><i class="bi bi-shield-shaded fs-1 text-secondary"></i></div>
+                                <div class="team-name text-uppercase">${j.visitanteNome}</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-top text-center">
+                            <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+                            <span class="text-muted small">${j.local || 'Local a definir'}</span>
+                            <span class="mx-2 text-muted">|</span>
+                            <i class="bi bi-calendar-event me-1"></i>
+                            <span class="text-muted small">${j.horario || 'Horário a definir'}</span>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        } catch (e) { console.error(e); }
+    }
+
+    // ── CLASSIFICAÇÃO ────────────────────────────────────────
+    async function loadClassificacao(idParam) {
+        const id = idParam || campeonatoAtual;
+        if (!id) return;
+
+        const containerGrupos   = document.getElementById('container-classificacao-grupos');
+        const containerMataMata = document.getElementById('container-classificacao-matamata');
+        containerGrupos.innerHTML   = '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
+        containerMataMata.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
+
+        const campObj      = campsCache.find(c => c.id == id);
+        const classificados = campObj ? (campObj.classificadosPorChave || 4) : 4;
+
+        try {
+            const resEq = await fetch(`${API}/campeonatos/${id}/equipes`);
+            const equipes = await resEq.json();
+            let chaves = [...new Set(equipes.map(e => e.chave).filter(c => c))].sort();
+            if (!chaves.length) chaves = [''];
+
+            containerGrupos.innerHTML = '';
+            for (const chave of chaves) {
+                const label = chave ? (chave.includes('Chave') ? chave : 'Chave ' + chave) : 'Classificação Geral';
+                let url = `${API}/campeonatos/${id}/classificacao`;
+                if (chave) url += `?chave=${encodeURIComponent(chave)}`;
+                const res  = await fetch(url);
+                const data = await res.json();
+
+                let html = `
+                <div class="mb-5">
+                    <h4 class="fw-bold text-primary mb-3 text-uppercase border-start border-4 border-primary ps-3">${label}</h4>
+                    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-primary text-white text-uppercase small">
+                                    <tr>
+                                        <th class="ps-4">Pos</th>
+                                        <th>Equipe</th>
+                                        <th class="text-center">P</th>
+                                        <th class="text-center">J</th>
+                                        <th class="text-center">V</th>
+                                        <th class="text-center">E</th>
+                                        <th class="text-center">D</th>
+                                        <th class="text-center">GF</th>
+                                        <th class="text-center">GS</th>
+                                        <th class="text-center">SG</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+                data.forEach((item, index) => {
+                    const qualificado = index < classificados;
+                    const rowClass = qualificado ? 'table-success' : '';
+                    html += `
+                        <tr class="${rowClass}">
+                            <td class="ps-4 fw-bold">${index + 1}º</td>
+                            <td class="fw-bold">${item.nome}</td>
+                            <td class="text-center fw-bold text-primary">${item.p}</td>
+                            <td class="text-center">${item.j}</td>
+                            <td class="text-center">${item.v}</td>
+                            <td class="text-center">${item.e || 0}</td>
+                            <td class="text-center">${item.d || 0}</td>
+                            <td class="text-center">${item.gp || 0}</td>
+                            <td class="text-center">${item.gc || 0}</td>
+                            <td class="text-center fw-bold ${item.sg >= 0 ? 'text-success' : 'text-danger'}">${item.sg}</td>
+                        </tr>`;
+                });
+                html += `</tbody></table></div></div></div>`;
+                containerGrupos.innerHTML += html;
+            }
+
+            // Mata-Mata
+            const resJogos = await fetch(`${API}/jogos?campeonatoId=${id}`);
+            const tJogos   = await resJogos.json();
+            const jogosMataMata = tJogos.filter(j => j.rodada?.tipo === 'MATA_MATA');
+
+            if (jogosMataMata.length) {
+                let mmHtml = '<div class="row g-3">';
+                jogosMataMata.forEach(j => {
+                    const sc = j.status === 'Finalizado' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning';
+                    mmHtml += `
+                        <div class="col-md-6">
+                            <div class="card shadow-sm border-0 border-start border-4 border-danger h-100 p-3" onclick="location.href='detalhes-jogo.html?jogoId=${j.id}'" style="cursor:pointer">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="badge ${sc} rounded-pill">${j.status}</span>
+                                    <span class="badge bg-danger-subtle text-danger fw-bold border">${j.rodada?.nome || 'Mata-Mata'} - Jogo ${j.numero}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold" style="width:40%">${j.mandanteNome}</span>
+                                    <div class="px-3 py-1 bg-light rounded text-center fw-bold fs-5 shadow-sm">
+                                        ${j.golsMandante} <span class="text-muted fw-light mx-1">x</span> ${j.golsVisitante}
+                                    </div>
+                                    <span class="fw-bold text-end" style="width:40%">${j.visitanteNome}</span>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                mmHtml += '</div>';
+                containerMataMata.innerHTML = mmHtml;
+            } else {
+                containerMataMata.innerHTML = `<div class="empty-state"><i class="bi bi-diagram-3"></i><p>Ainda não há jogos definidos para o mata-mata.</p></div>`;
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    // ── ESTATÍSTICAS ─────────────────────────────────────────
+    // Cache das listas para o "Mostrar Mais"
+    const _estatCache = { artilharia: [], disciplina: [], defesa: [] };
+    const _estatVisiveis = { artilharia: 10, disciplina: 10, defesa: 10 };
+    const PAGE_SIZE = 5;
+
+    function renderLinhaArt(a, i) {
+        return `<tr>
+            <td class="ps-4 fw-bold text-primary">${i+1}º</td>
+            <td><div class="fw-bold">${a.nome}</div></td>
+            <td class="text-muted small">${a.equipeNome}</td>
+            <td class="text-center fw-bold text-primary fs-5">${a.gols}</td>
+        </tr>`;
+    }
+    function renderLinhaDis(d, i) {
+        return `<tr>
+            <td class="ps-4 fw-bold text-warning">${i+1}º</td>
+            <td class="fw-bold">${d.nome}</td>
+            <td class="text-center"><span class="badge bg-warning text-dark px-3">${d.amarelos}</span></td>
+            <td class="text-center"><span class="badge bg-danger px-3">${d.vermelhos}</span></td>
+        </tr>`;
+    }
+    function renderLinhaDef(d, i) {
+        return `<tr>
+            <td class="ps-4 fw-bold text-success">${i+1}º</td>
+            <td class="fw-bold text-uppercase">${d.nome}</td>
+            <td class="text-center fw-bold">${d.golsSofridos}</td>
+            <td class="text-center text-muted">${d.jogos}</td>
+            <td class="text-center"><span class="badge bg-success px-3">${d.media}</span></td>
+        </tr>`;
+    }
+
+    function renderListaEstat(chave, tbodyId, btnId, renderFn) {
+        const lista   = _estatCache[chave];
+        const visivel = _estatVisiveis[chave];
+        const tbody   = document.getElementById(tbodyId);
+        const btn     = document.getElementById(btnId);
+
+        tbody.innerHTML = lista.slice(0, visivel).map((item, i) => renderFn(item, i)).join('');
+
+        if (visivel >= lista.length) {
+            btn.style.display = 'none';
+        } else {
+            btn.style.display = 'inline-block';
+            const restantes = lista.length - visivel;
+            const proxLote  = Math.min(PAGE_SIZE, restantes);
+            btn.innerHTML = `<i class="bi bi-chevron-down me-1"></i>Mostrar Mais (${proxLote} de ${restantes} restantes)`;
+        }
+    }
+
+    function mostrarMaisEstat(chave, tbodyId, btnId, renderFn) {
+        _estatVisiveis[chave] = Math.min(_estatVisiveis[chave] + PAGE_SIZE, _estatCache[chave].length);
+        renderListaEstat(chave, tbodyId, btnId, renderFn);
+    }
+
+    async function loadEstatisticas(idParam) {
+        const id = idParam || campeonatoAtual;
+        if (!id) return;
+
+        // Reseta contadores ao trocar de campeonato
+        _estatVisiveis.artilharia = 10;
+        _estatVisiveis.disciplina = 10;
+        _estatVisiveis.defesa     = 10;
+
+        try {
+            const res  = await fetch(`${API}/campeonatos/${id}/estatisticas`);
+            const data = await res.json();
+            console.log('[DEBUG API] Resposta completa recebida:', data);
+            console.log('[DEBUG API] Quantidade artilharia:', data.artilharia?.length);
+
+            _estatCache.artilharia = data.artilharia || [];
+            _estatCache.disciplina = data.disciplina || [];
+            _estatCache.defesa     = data.defesa     || [];
+
+            renderListaEstat('artilharia', 'corpo-artilharia', 'btn-mais-art', renderLinhaArt);
+            renderListaEstat('disciplina', 'corpo-disciplina', 'btn-mais-dis', renderLinhaDis);
+            renderListaEstat('defesa',     'corpo-defesa',     'btn-mais-def', renderLinhaDef);
+        } catch (e) { console.error(e); }
+    }
+</script>
+</body>
+</html>

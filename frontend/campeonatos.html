@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campeonatos - Placar Municipal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body data-bs-theme="light">
+
+<div class="main-content-overlay" onclick="toggleSidebar()"></div>
+
+<nav class="sidebar p-3 shadow">
+    <div class="d-flex align-items-center mb-4 px-2">
+        <i class="bi bi-trophy-fill me-2 fs-4 text-warning"></i>
+        <span class="prefeitura-nome fs-5 fw-bold text-white">Placar Municipal</span>
+    </div>
+    <ul class="nav flex-column">
+        <li class="nav-item mb-2"><a href="index.html" class="nav-link p-2"><i class="bi bi-house-door me-2"></i> Início</a></li>
+        <li class="nav-item mb-2"><a href="campeonatos.html" class="nav-link active p-2"><i class="bi bi-award me-2"></i> Campeonatos</a></li>
+        <li class="nav-item mb-2"><a href="equipes.html" class="nav-link p-2"><i class="bi bi-shield-shaded me-2"></i> Equipes</a></li>
+        <li class="nav-item mb-2"><a href="atletas.html" class="nav-link p-2"><i class="bi bi-people me-2"></i> Atletas</a></li>
+        <li class="nav-item mb-2"><a href="jogos.html" class="nav-link p-2"><i class="bi bi-calendar3 me-2"></i> Tabela de Jogos</a></li>
+        <li class="nav-item mb-2"><a href="sumula.html" class="nav-link p-2"><i class="bi bi-file-earmark-text me-2"></i> Súmula</a></li>
+        <hr class="text-white-50">
+        <li class="nav-item"><a href="login.html" class="nav-link p-2 text-danger-emphasis text-white"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
+    </ul>
+</nav>
+
+<main class="main-content">
+    <header class="top-navbar shadow-sm rounded-4">
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+            <h5 class="mb-0 fw-bold" id="titulo-painel-header">Gerenciar Campeonatos</h5>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <!-- Botão de tema removido -->
+        </div>
+    </header>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Gerenciar Campeonatos</h2>
+        <button class="btn btn-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCamp" onclick="prepararNovo()">
+            <i class="bi bi-plus-circle me-2"></i> Novo Campeonato
+        </button>
+    </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-muted small text-uppercase">
+                            <tr>
+                                <th class="px-4">ID</th>
+                                <th>Nome do Campeonato</th>
+                                <th>Ano</th>
+                                <th>Formato</th>
+                                <th class="text-end px-4">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-campeonatos"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="modal fade" id="modalCamp" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="modalTitle">Campeonato</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" id="btn-fechar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="formCamp">
+                    <input type="hidden" id="campId">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">NOME DO CAMPEONATO</label>
+                        <input type="text" id="nome" class="form-control" placeholder="Ex: Copa da Cidade" required>
+                    </div>
+                        <div class="col-4">
+                            <label class="form-label small fw-bold text-muted">ANO</label>
+                            <input type="number" id="ano" class="form-control" value="2026" required>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small fw-bold text-muted" title="Número de equipes que se classificam por chave na fase de grupos">CLASSIFICADOS</label>
+                            <input type="number" id="classificadosPorChave" class="form-control" value="4" min="1" max="10" required>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small fw-bold text-muted">FORMATO</label>
+                            <select id="formato" class="form-select" required>
+                                <option value="Pontos Corridos">Pontos Corridos</option>
+                                <option value="Grupo + Mata-Mata">Grupo + Mata-Mata</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 py-3 fw-bold">SALVAR CAMPEONATO</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalInscricao" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold">Equipes Inscritas</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="small text-muted mb-3">Campeonato: <strong id="nome-camp-inscricao">--</strong></p>
+                <form id="form-inscricao" class="mb-4">
+                    <input type="hidden" id="inscricao-camp-id">
+                    <div class="row g-2">
+                        <div class="col-7">
+                            <label class="form-label small fw-bold text-muted">EQUIPE</label>
+                            <select id="select-equipes-inscricao" class="form-select" required></select>
+                        </div>
+                        <div class="col-5">
+                            <label class="form-label small fw-bold text-muted">CHAVE (GRUPO)</label>
+                            <input type="text" id="inscricao-chave" class="form-control" placeholder="Ex: Chave A">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 mt-3 fw-bold">INSCREVER EQUIPE</button>
+                </form>
+                <h6 class="fw-bold small text-uppercase text-muted border-bottom pb-2">Lista de Participantes</h6>
+                <div id="lista-equipes-inscritas" class="list-group list-group-flush mt-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalRodadas" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold">Gerenciar Rodadas</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="small text-muted mb-3">Campeonato: <strong id="nome-camp-rodadas">--</strong></p>
+                <form id="form-rodada" class="mb-4">
+                    <input type="hidden" id="rodada-camp-id">
+                    <div class="row g-2 mb-2">
+                        <div class="col-8">
+                            <input type="text" id="nome-rodada" class="form-control" placeholder="Ex: 1ª Rodada, Semi-Final, Final" required>
+                        </div>
+                        <div class="col-4">
+                            <select id="tipo-rodada" class="form-select" required>
+                                <option value="GRUPO">Fase de Grupos</option>
+                                <option value="MATA_MATA">Mata-Mata</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100">Adicionar Rodada</button>
+                </form>
+                <h6 class="fw-bold small text-uppercase text-muted border-bottom pb-2">Rodadas Criadas</h6>
+                <div id="lista-rodadas" class="list-group list-group-flush mt-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/main.js"></script>
+<script>
+    const API = 'http://localhost:3001/api';
+    let prefeituraId = null;
+
+    async function init() {
+        const user = checkSession();
+        if (!user) return;
+        prefeituraId = user.prefeituraId;
+        if (!prefeituraId) {
+            console.error("prefeituraId não encontrado no usuário logado");
+            return;
+        }
+        carregarCampeonatos();
+    }
+
+    async function carregarCampeonatos() {
+        try {
+            const res = await fetch(`${API}/campeonatos?prefeituraId=${prefeituraId}`);
+            const camps = await res.json();
+            const body = document.getElementById('tabela-campeonatos');
+            body.innerHTML = '';
+            
+            camps.forEach(c => {
+                body.innerHTML += `
+                    <tr>
+                        <td class="px-4 text-muted">#${c.id}</td>
+                        <td class="fw-bold">${c.nome}</td>
+                        <td>${c.ano}</td>
+                        <td><span class="badge bg-info-subtle text-info border border-info-subtle">${c.formato}</span></td>
+                        <td class="text-end px-4">
+                            <div class="btn-group shadow-sm">
+                                <button class="btn btn-sm btn-outline-success" onclick="abrirModalInscricao(${c.id}, '${c.nome}')" title="Inscrições">
+                                    <i class="bi bi-shield-plus"></i> Equipes
+                                </button>
+                                <button class="btn btn-sm btn-outline-dark" onclick="abrirModalRodadas(${c.id}, '${c.nome}')" title="Rodadas">
+                                    <i class="bi bi-calendar-event"></i> Rodadas
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" onclick="gerarChaveamento(${c.id})" title="Gerar Chaveamento Automático">
+                                    <i class="bi bi-diagram-3"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="editarCamp(${c.id}, '${c.nome}', ${c.ano}, '${c.formato}', ${c.classificadosPorChave || 4})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="excluirCamp(${c.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+        } catch (e) { console.error("Erro ao carregar:", e); }
+    }
+
+    // --- FUNÇÕES DE INSCRIÇÃO ---
+    async function abrirModalInscricao(id, nome) {
+        document.getElementById('nome-camp-inscricao').innerText = nome;
+        document.getElementById('inscricao-camp-id').value = id;
+
+        // Carrega equipes no select
+        const resEq = await fetch(`${API}/equipes?prefeituraId=${prefeituraId}`);
+        const equipes = await resEq.json();
+        const select = document.getElementById('select-equipes-inscricao');
+        select.innerHTML = '<option value="">Escolha uma equipe...</option>';
+        equipes.forEach(eq => select.innerHTML += `<option value="${eq.id}">${eq.nome}</option>`);
+
+        atualizarListaInscritos(id);
+        new bootstrap.Modal(document.getElementById('modalInscricao')).show();
+    }
+
+    async function atualizarListaInscritos(campId) {
+        const res = await fetch(`${API}/campeonatos/${campId}/equipes`);
+        const inscritos = await res.json();
+        const lista = document.getElementById('lista-equipes-inscritas');
+        
+        if (!inscritos.length) {
+            lista.innerHTML = '<p class="text-center text-muted small py-3">Vazio</p>';
+            return;
+        }
+
+        // Agrupar por Chave
+        const grupos = {};
+        inscritos.forEach(eq => {
+            const ch = eq.chave || 'Sem Chave';
+            if (!grupos[ch]) grupos[ch] = [];
+            grupos[ch].push(eq);
+        });
+
+        lista.innerHTML = '';
+        Object.keys(grupos).sort().forEach(chave => {
+            let htmlChave = `
+                <div class="mb-4">
+                    <h6 class="fw-bold small text-primary border-bottom pb-1 mb-2">
+                        <i class="bi bi-grid-3x3-gap me-1"></i> ${chave.toUpperCase()}
+                    </h6>
+                    <div class="list-group list-group-flush shadow-sm rounded border">`;
+            
+            grupos[chave].forEach(eq => {
+                htmlChave += `
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="fw-bold small">${eq.nome}</div>
+                        <span class="badge bg-success-subtle text-success border small" style="font-size: 0.7rem;">Inscrita</span>
+                    </div>`;
+            });
+
+            htmlChave += `</div></div>`;
+            lista.innerHTML += htmlChave;
+        });
+    }
+
+    document.getElementById('form-inscricao').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const campId = document.getElementById('inscricao-camp-id').value;
+        await fetch(`${API}/participacoes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                campeonatoId: campId, 
+                equipeId: document.getElementById('select-equipes-inscricao').value,
+                chave: document.getElementById('inscricao-chave').value
+            })
+        });
+        document.getElementById('form-inscricao').reset();
+        document.getElementById('inscricao-camp-id').value = campId;
+        atualizarListaInscritos(campId);
+    });
+
+    // --- FUNÇÕES DE RODADAS ---
+    async function abrirModalRodadas(id, nome) {
+        document.getElementById('nome-camp-rodadas').innerText = nome;
+        document.getElementById('rodada-camp-id').value = id;
+        atualizarListaRodadas(id);
+        new bootstrap.Modal(document.getElementById('modalRodadas')).show();
+    }
+
+    async function atualizarListaRodadas(campId) {
+        try {
+            const res = await fetch(`${API}/campeonatos/${campId}/rodadas`);
+            const rodadas = await res.json();
+            const lista = document.getElementById('lista-rodadas');
+
+            if (!Array.isArray(rodadas)) {
+                console.error("[ERRO API] rodadas não é array:", rodadas);
+                lista.innerHTML = '<p class="text-center text-danger small py-3">Erro ao carregar rodadas. Verifique o console.</p>';
+                return;
+            }
+
+            lista.innerHTML = rodadas.length ? '' : '<p class="text-center text-muted small py-3">Nenhuma rodada criada</p>';
+            rodadas.forEach(r => {
+                const displayName = r.nome ? r.nome : `Rodada ${r.numero}`;
+                const badgeTipo = r.tipo === 'MATA_MATA' 
+                    ? '<span class="badge bg-warning-subtle text-warning border border-warning-subtle ms-2">Mata-Mata</span>' 
+                    : '<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle ms-2">Grupo</span>';
+                    
+                lista.innerHTML += `
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <span class="fw-bold text-uppercase small">${displayName}</span>
+                            ${badgeTipo}
+                        </div>
+                        <button class="btn btn-sm text-danger" onclick="excluirRodada(${r.id}, ${campId})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>`;
+            });
+        } catch (e) {
+            console.error("Erro ao carregar rodadas:", e);
+            document.getElementById('lista-rodadas').innerHTML = '<p class="text-center text-danger small py-3">Erro de conexão</p>';
+        }
+    }
+
+    document.getElementById('form-rodada').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const campId = document.getElementById('rodada-camp-id').value;
+        const nome = document.getElementById('nome-rodada').value;
+        const tipo = document.getElementById('tipo-rodada').value;
+        
+        try {
+            const res = await fetch(`${API}/rodadas`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ campeonatoId: campId, nome, tipo })
+            });
+
+            if (!res.ok) {
+                const erroData = await res.json();
+                console.error("[ERRO POST] Falha ao criar rodada:", erroData);
+                alert("Erro ao criar rodada: Verifique o console para mais detalhes");
+                return;
+            }
+
+            document.getElementById('nome-rodada').value = '';
+            document.getElementById('tipo-rodada').value = 'GRUPO';
+            atualizarListaRodadas(campId);
+        } catch (err) {
+            console.error("Erro de conexão ao criar rodada:", err);
+            alert("Erro de conexão.");
+        }
+    });
+
+    async function excluirRodada(id, campId) {
+        if (confirm("Excluir esta rodada?")) {
+            await fetch(`${API}/rodadas/${id}`, { method: 'DELETE' });
+            atualizarListaRodadas(campId);
+        }
+    }
+
+    async function gerarChaveamento(campId) {
+        if (confirm("Deseja gerar o chaveamento automático? Isso irá preencher os jogos de Mata-Mata com os classificados da Fase de Grupos.")) {
+            try {
+                const res = await fetch(`${API}/campeonatos/${campId}/gerar-chaveamento`, { method: 'POST' });
+                const data = await res.json();
+                if (res.ok) {
+                    alert(`Sucesso! ${data.jogosAtualizados} jogos foram atualizados com os times classificados.`);
+                } else {
+                    alert(data.error || "Erro ao gerar chaveamento.");
+                }
+            } catch (e) {
+                console.error("Erro ao gerar chaveamento", e);
+                alert("Erro de conexão.");
+            }
+        }
+    }
+
+    // --- FUNÇÕES DE CADASTRO ---
+    function prepararNovo() {
+        document.getElementById('formCamp').reset();
+        document.getElementById('campId').value = '';
+        document.getElementById('classificadosPorChave').value = '4';
+        document.getElementById('modalTitle').innerText = 'Novo Campeonato';
+    }
+
+    function editarCamp(id, nome, ano, formato, classificados) {
+        document.getElementById('campId').value = id;
+        document.getElementById('nome').value = nome;
+        document.getElementById('ano').value = ano;
+        document.getElementById('formato').value = formato;
+        document.getElementById('classificadosPorChave').value = classificados;
+        document.getElementById('modalTitle').innerText = 'Editar Campeonato';
+        new bootstrap.Modal(document.getElementById('modalCamp')).show();
+    }
+
+    async function excluirCamp(id) {
+        if (confirm("Deseja excluir este campeonato?")) {
+            await fetch(`${API}/campeonatos/${id}`, { method: 'DELETE' });
+            carregarCampeonatos();
+        }
+    }
+
+    document.getElementById('formCamp').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('campId').value;
+        const dados = {
+            nome: document.getElementById('nome').value,
+            ano: parseInt(document.getElementById('ano').value),
+            formato: document.getElementById('formato').value,
+            classificadosPorChave: parseInt(document.getElementById('classificadosPorChave').value),
+            prefeituraId: prefeituraId
+        };
+        await fetch(id ? `${API}/campeonatos/${id}` : `${API}/campeonatos`, {
+            method: id ? 'PUT' : 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(dados)
+        });
+        document.getElementById('btn-fechar').click();
+        carregarCampeonatos();
+    });
+
+    window.onload = init;
+</script>
+</body>
+</html>

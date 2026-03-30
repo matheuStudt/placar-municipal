@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabela de Jogos - Placar Municipal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .card-jogo { border: none; border-radius: 12px; transition: 0.2s; }
+        .badge-status { font-size: 0.75rem; padding: 0.4em 0.8em; }
+        .placar-badge { background: #f1f5f9; font-weight: 800; font-size: 1.2rem; min-width: 40px; display: inline-block; border-radius: 6px; }
+        [data-bs-theme="dark"] .placar-badge { background: #334155; color: #fff; }
+    </style>
+</head>
+<body data-bs-theme="light">
+
+<div class="main-content-overlay" onclick="toggleSidebar()"></div>
+
+<nav class="sidebar p-3 shadow">
+    <div class="d-flex align-items-center mb-4 px-2">
+        <i class="bi bi-trophy-fill me-2 fs-4 text-warning"></i>
+        <span class="prefeitura-nome fs-5 fw-bold text-white">Placar Municipal</span>
+    </div>
+    <ul class="nav flex-column">
+        <li class="nav-item mb-2"><a href="index.html" class="nav-link p-2"><i class="bi bi-house-door me-2"></i> Início</a></li>
+        <li class="nav-item mb-2"><a href="campeonatos.html" class="nav-link p-2"><i class="bi bi-award me-2"></i> Campeonatos</a></li>
+        <li class="nav-item mb-2"><a href="equipes.html" class="nav-link p-2"><i class="bi bi-shield-shaded me-2"></i> Equipes</a></li>
+        <li class="nav-item mb-2"><a href="atletas.html" class="nav-link p-2"><i class="bi bi-people me-2"></i> Atletas</a></li>
+        <li class="nav-item mb-2"><a href="jogos.html" class="nav-link active p-2"><i class="bi bi-calendar3 me-2"></i> Tabela de Jogos</a></li>
+        <li class="nav-item mb-2"><a href="sumula.html" class="nav-link p-2"><i class="bi bi-file-earmark-text me-2"></i> Súmula</a></li>
+        <hr class="text-white-50">
+        <li class="nav-item"><a href="login.html" class="nav-link p-2 text-danger-emphasis text-white"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
+    </ul>
+</nav>
+
+<main class="main-content">
+    <header class="top-navbar shadow-sm rounded-4">
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+            <h5 class="mb-0 fw-bold" id="titulo-painel-header">Tabela de Jogos</h5>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <!-- Botão de tema removido -->
+        </div>
+    </header>
+
+    <h2 class="fw-bold mb-4">Calendário de Jogos</h2>
+
+            <div class="card p-3 mb-4 shadow-sm border-0 bg-white">
+                <div class="row align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-muted small mb-1">SELECIONE O CAMPEONATO</label>
+                        <select id="select-campeonato-filtro" class="form-select form-select-lg" onchange="mudouCampeonato()">
+                            <option value="">Carregando campeonatos...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-muted small mb-1">RODADA</label>
+                        <select id="select-rodada-filtro" class="form-select form-select-lg" onchange="mudouRodadaFiltro()">
+                            <option value="">Todas as Rodadas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mt-3 mt-md-0 text-md-end">
+                        <button id="btn-novo-jogo" class="btn btn-primary fw-bold w-100 py-2" data-bs-toggle="modal" data-bs-target="#modalNovoJogo" onclick="prepararNovoJogo()" disabled>
+                            <i class="bi bi-calendar-plus me-2"></i> Adicionar Partida
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="lista-jogos" class="row">
+                <div class="col-12 text-center text-muted py-5">
+                    Selecione um campeonato acima para visualizar a tabela.
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNovoJogo" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold">Agendar Nova Partida</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" id="btn-fechar-modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="formNovoJogo">
+                    <input type="hidden" id="jogo-id-update">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold small">NÚMERO DO JOGO</label>
+                            <input type="number" class="form-control" id="numero-jogo" placeholder="Ex: 1" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold small">RODADA</label>
+                            <select class="form-select" id="select-rodada-form" required>
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">CHAVE (OPCIONAL)</label>
+                        <select id="jogo-chave" class="form-select" onchange="atualizarEquipesPorChave()">
+                            <option value="">Selecione a Chave...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">EQUIPE MANDANTE</label>
+                        <select class="form-select" id="select-mandante">
+                            <option value="">Selecione...</option>
+                        </select>
+                        <select class="form-select d-none mt-2" id="input-mandante-placeholder">
+                            <option value="">Selecione a classificação...</option>
+                        </select>
+                    </div>
+                    <div class="text-center my-2 fw-bold text-muted">VS</div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small">EQUIPE VISITANTE</label>
+                        <select class="form-select" id="select-visitante">
+                            <option value="">Selecione...</option>
+                        </select>
+                        <select class="form-select d-none mt-2" id="input-visitante-placeholder">
+                            <option value="">Selecione a classificação...</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold small">DATA</label>
+                            <input type="date" class="form-control" id="data-jogo" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold small">HORÁRIO</label>
+                            <input type="time" class="form-control" id="horario" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold small">LOCAL DO JOGO</label>
+                            <input type="text" class="form-control" id="local" placeholder="Estádio Municipal..." required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 py-3 fw-bold">SALVAR NA TABELA</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+        const API = API_BASE;
+        let prefeituraId = null;
+
+        async function init() {
+            const user = checkSession();
+            if (!user) return;
+            prefeituraId = user.prefeituraId;
+            carregarFiltroCampeonatos();
+        }
+
+    let campeonatoAtual = null;
+    let campsCache = [];
+
+    // 1. Carrega os campeonatos no dropdown superior
+    async function carregarFiltroCampeonatos() {
+        try {
+            const res = await fetch(`${API_BASE}/campeonatos?prefeituraId=${prefeituraId}`);
+            const camps = await res.json();
+            campsCache = camps;
+            const select = document.getElementById('select-campeonato-filtro');
+            select.innerHTML = '<option value="">-- Escolha um Campeonato --</option>';
+            camps.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.nome} (${c.ano})</option>`;
+            });
+        } catch (e) { console.error(e); }
+    }
+
+    // 2. Quando o usuário escolhe um campeonato
+    function mudouCampeonato() {
+        const select = document.getElementById('select-campeonato-filtro');
+        campeonatoAtual = select.value;
+        const btnNovoJogo = document.getElementById('btn-novo-jogo');
+
+        btnNovoJogo.disabled = false;
+        carregarRodadas(campeonatoAtual);
+        carregarJogos(campeonatoAtual);
+    }
+
+    let rodadasCache = [];
+
+    async function carregarRodadas(campId) {
+        try {
+            const res = await fetch(`${API_BASE}/campeonatos/${campId}/rodadas`);
+            const rodadas = await res.json();
+            rodadasCache = rodadas;
+            
+            const filtro = document.getElementById('select-rodada-filtro');
+            const form = document.getElementById('select-rodada-form');
+            
+            filtro.innerHTML = '<option value="">Todas as Rodadas</option>';
+            form.innerHTML = '<option value="">Selecione...</option>';
+            
+            rodadas.forEach(r => {
+                const opt = `<option value="${r.id}" data-tipo="${r.tipo || 'GRUPO'}">${r.nome || `Rodada ${r.numero}`}</option>`;
+                filtro.innerHTML += opt;
+                form.innerHTML += opt;
+            });
+
+            form.addEventListener('change', atualizarVisibilidadeEquipes);
+        } catch (e) { console.error(e); }
+    }
+
+    function mudouRodadaFiltro() {
+        carregarJogos(campeonatoAtual);
+    }
+
+    // 3. Carrega apenas os jogos do campeonato selecionado
+    async function carregarJogos(campId) {
+        const rodadaId = document.getElementById('select-rodada-filtro').value;
+        const container = document.getElementById('lista-jogos');
+        container.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div></div>';
+
+        try {
+            let url = `${API_BASE}/jogos?campeonatoId=${campId}`;
+            if (rodadaId) url += `&rodadaId=${rodadaId}`;
+            
+            const res = await fetch(url);
+            const jogos = await res.json();
+            container.innerHTML = '';
+
+            if(jogos.length === 0) {
+                container.innerHTML = '<div class="col-12 text-center text-muted py-5">Nenhum jogo agendado para este campeonato ainda.</div>';
+                return;
+            }
+
+            jogos.forEach(j => {
+                const badgeClass = j.status === 'Finalizado' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning';
+                const isFinalizado = j.status === 'Finalizado';
+                const opacityStyle = isFinalizado ? 'opacity: 0.8;' : '';
+                
+                container.innerHTML += `
+                    <div class="col-12 mb-3" style="${opacityStyle}">
+                        <div class="card card-jogo shadow-sm border-start border-4 ${isFinalizado ? 'border-success' : 'border-warning'}">
+                            <div class="card-body py-3">
+                                <div class="row align-items-center">
+                                    <div class="col-md-1 text-center border-end">
+                                        <span class="text-muted small fw-bold d-block">JOGO</span>
+                                        <div class="h5 mb-0 fw-bold text-primary">
+                                            ${j.numero}
+                                        </div>
+                                        <span class="badge bg-secondary-subtle text-secondary border mt-1" style="font-size: 0.65rem;">
+                                            ${j.rodada?.tipo === 'MATA_MATA' ? (j.rodada.nome || 'Mata-Mata') : (j.chave ? (j.chave.includes('Chave') ? j.chave : 'Chave ' + j.chave) : 'Fase de Grupos')}
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <span class="fw-bold fs-5">${j.mandanteNome}</span>
+                                    </div>
+                                    <div class="col-md-2 text-center px-0">
+                                        <div class="d-flex justify-content-center align-items-center gap-2">
+                                            <span class="placar-badge shadow-sm">${j.golsMandante}</span>
+                                            <span class="text-muted fw-bold">X</span>
+                                            <span class="placar-badge shadow-sm">${j.golsVisitante}</span>
+                                        </div>
+                                        <span class="badge ${badgeClass} badge-status mt-2">${j.status}</span>
+                                    </div>
+                                    <div class="col-md-3 text-start">
+                                        <span class="fw-bold fs-5">${j.visitanteNome}</span>
+                                    </div>
+                                    <div class="col-md-3 text-end border-start">
+                                        <div class="mb-2">
+                                            <small class="text-muted d-block"><i class="bi bi-calendar me-1"></i>${j.data ? j.data.split('-').reverse().join('/') : '--/--/----'} às ${j.horario || '--:--'}</small>
+                                            <small class="text-muted d-block text-truncate"><i class="bi bi-geo-alt me-1"></i>${j.local || 'Local não definido'}</small>
+
+                                        </div>
+                                        <div class="btn-group shadow-sm">
+                                            <a href="sumula.html?jogoId=${j.id}" class="btn btn-sm btn-outline-primary" title="Súmula">
+                                                <i class="bi bi-file-earmark-text"></i>
+                                            </a>
+                                            ${!isFinalizado ? `
+                                                <button class="btn btn-sm btn-outline-secondary" onclick='editarJogo(${JSON.stringify(j)})' title="Ajustar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" onclick="excluirJogo(${j.id})" title="Excluir">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        } catch (e) { console.error(e); }
+    }
+
+    let equipesCache = [];
+
+    // 4. Prepara o modal de Novo Jogo buscando APENAS equipes deste campeonato
+    async function prepararNovoJogo() {
+        if(!campeonatoAtual) return;
+        
+        document.getElementById('formNovoJogo').reset();
+        document.getElementById('jogo-id-update').value = '';
+        document.querySelector('#modalNovoJogo .modal-title').innerText = "Agendar Nova Partida";
+
+        // Busca os jogos existentes para definir o próximo número automaticamente e caching para opções
+        try {
+            const resJogos = await fetch(`${API_BASE}/jogos?campeonatoId=${campeonatoAtual}`);
+            const jogosExistentes = await resJogos.json();
+            window.jogosExistentesCache = jogosExistentes || [];
+            let proximo = 1;
+            if (jogosExistentes.length > 0) {
+                const numeros = jogosExistentes.map(j => parseInt(j.numero) || 0);
+                proximo = Math.max(...numeros) + 1;
+            }
+            document.getElementById('numero-jogo').value = proximo;
+        } catch (e) { console.error("Erro ao calcular próximo número:", e); }
+
+        const res = await fetch(`${API_BASE}/campeonatos/${campeonatoAtual}/equipes`);
+        const equipes = await res.json();
+        equipesCache = equipes;
+        
+        const m = document.getElementById('select-mandante');
+        const v = document.getElementById('select-visitante');
+        const sChave = document.getElementById('jogo-chave');
+        
+        m.innerHTML = '<option value="">Selecione...</option>';
+        v.innerHTML = '<option value="">Selecione...</option>';
+        sChave.innerHTML = '<option value="">Sem Chave / Geral</option>';
+        
+        if (equipes.length === 0) {
+            m.innerHTML = '<option value="">Nenhuma equipe inscrita neste campeonato</option>';
+            v.innerHTML = '<option value="">Nenhuma equipe inscrita neste campeonato</option>';
+            return;
+        }
+
+        // Extrair chaves únicas
+        const chavesUnicas = [...new Set(equipes.map(e => e.chave).filter(c => !!c))].sort();
+        chavesUnicas.forEach(ch => {
+            sChave.innerHTML += `<option value="${ch}">${ch}</option>`;
+        });
+
+        atualizarEquipesPorChave();
+    }
+
+    function atualizarEquipesPorChave() {
+        const chaveSel = document.getElementById('jogo-chave').value;
+        const m = document.getElementById('select-mandante');
+        const v = document.getElementById('select-visitante');
+        
+        m.innerHTML = '<option value="">Selecione...</option>';
+        v.innerHTML = '<option value="">Selecione...</option>';
+
+        const filtradas = chaveSel ? equipesCache.filter(e => e.chave === chaveSel) : equipesCache;
+
+        if (filtradas.length === 0) {
+            m.innerHTML = '<option value="">Nenhuma equipe nesta chave</option>';
+            v.innerHTML = '<option value="">Nenhuma equipe nesta chave</option>';
+            return;
+        }
+
+        filtradas.forEach(e => {
+            const opt = `<option value="${e.id}">${e.nome}</option>`;
+            m.innerHTML += opt;
+            v.innerHTML += opt;
+        });
+    }
+
+    // Auto-preenchimento do local baseado no mandante
+    document.getElementById('select-mandante').addEventListener('change', (e) => {
+        const eqId = e.target.value;
+        const equipe = equipesCache.find(eq => eq.id == eqId);
+        if (equipe && equipe.local) {
+            document.getElementById('local').value = equipe.local;
+        }
+    });
+
+    function atualizarVisibilidadeEquipes() {
+        const selectRodada = document.getElementById('select-rodada-form');
+        const selectedOption = selectRodada.options[selectRodada.selectedIndex];
+        const tipoRodada = selectedOption ? selectedOption.getAttribute('data-tipo') : 'GRUPO';
+
+        const selMandante = document.getElementById('select-mandante');
+        const inMandante = document.getElementById('input-mandante-placeholder');
+        const selVisitante = document.getElementById('select-visitante');
+        const inVisitante = document.getElementById('input-visitante-placeholder');
+
+        if (tipoRodada === 'MATA_MATA') {
+            selMandante.classList.add('d-none');
+            inMandante.classList.remove('d-none');
+            selVisitante.classList.add('d-none');
+            inVisitante.classList.remove('d-none');
+            
+            // Popula os selects dinamicamente usando classificadosPorChave
+            const campObj = campsCache.find(c => c.id == campeonatoAtual);
+            const classificados = campObj ? (campObj.classificadosPorChave || 4) : 4;
+            const chavesUnicas = [...new Set(equipesCache.map(e => e.chave).filter(c => !!c))].sort();
+            
+            let optionsHtml = '<option value="">Selecione a classificação...</option>';
+            chavesUnicas.forEach(ch => {
+                const prefix = ch.toLowerCase().includes('chave') || ch.toLowerCase().includes('grupo') ? ch : `Chave ${ch}`;
+                for (let i = 1; i <= classificados; i++) {
+                    optionsHtml += `<option value="${i}º ${prefix}">${i}º ${prefix}</option>`;
+                }
+            });
+            // Opções gerais de Melhores Colocados (apenas se houver 3 grupos ou mais, para ser enxuto)
+            if (chavesUnicas.length > 2 || chavesUnicas.length === 0) {
+                for (let i = 1; i <= classificados; i++) {
+                    optionsHtml += `<option value="${i}º GERAL">${i}º GERAL (Qualquer Chave)</option>`;
+                }
+            }
+            
+            // Vencedores e Perdedores de Jogos de Mata-Mata Anteriores
+            const jogosMataMataAnteriores = (window.jogosExistentesCache || []).filter(j => j.rodada?.tipo === 'MATA_MATA');
+            if (jogosMataMataAnteriores.length > 0) {
+                optionsHtml += `<option disabled>── Vencedores ──</option>`;
+                jogosMataMataAnteriores.forEach(j => {
+                    const desc = `Vencedor do Jogo ${j.numero}`;
+                    optionsHtml += `<option value="${desc}">${desc}</option>`;
+                });
+                optionsHtml += `<option disabled>── Perdedores ──</option>`;
+                jogosMataMataAnteriores.forEach(j => {
+                    const desc = `Perdedor do Jogo ${j.numero}`;
+                    optionsHtml += `<option value="${desc}">${desc}</option>`;
+                });
+            }
+
+            // Apenas repopula se os selects estiverem vazios ou precisarem de atualização (para não perder a seleção no editar)
+            if (inMandante.options.length <= 1) inMandante.innerHTML = optionsHtml;
+            if (inVisitante.options.length <= 1) inVisitante.innerHTML = optionsHtml;
+
+        } else {
+            selMandante.classList.remove('d-none');
+            inMandante.classList.add('d-none');
+            selVisitante.classList.remove('d-none');
+            inVisitante.classList.add('d-none');
+        }
+    }
+
+    async function editarJogo(jogo) {
+        await prepararNovoJogo(); // Carrega equipes e chaves
+        
+        document.getElementById('jogo-id-update').value = jogo.id;
+        document.getElementById('numero-jogo').value = jogo.numero;
+        document.getElementById('select-rodada-form').value = jogo.rodadaId || '';
+        document.getElementById('jogo-chave').value = jogo.chave || '';
+        
+        atualizarVisibilidadeEquipes();
+        atualizarEquipesPorChave();
+
+        document.getElementById('select-mandante').value = jogo.mandanteId || '';
+        document.getElementById('select-visitante').value = jogo.visitanteId || '';
+        const inMandante = document.getElementById('input-mandante-placeholder');
+        if (jogo.mandantePlaceholder && ![...inMandante.options].some(o => o.value === jogo.mandantePlaceholder)) {
+            inMandante.innerHTML += `<option value="${jogo.mandantePlaceholder}">${jogo.mandantePlaceholder} (Legado)</option>`;
+        }
+        inMandante.value = jogo.mandantePlaceholder || '';
+
+        const inVisitante = document.getElementById('input-visitante-placeholder');
+        if (jogo.visitantePlaceholder && ![...inVisitante.options].some(o => o.value === jogo.visitantePlaceholder)) {
+            inVisitante.innerHTML += `<option value="${jogo.visitantePlaceholder}">${jogo.visitantePlaceholder} (Legado)</option>`;
+        }
+        inVisitante.value = jogo.visitantePlaceholder || '';
+        document.getElementById('data-jogo').value = jogo.data || '';
+        document.getElementById('horario').value = jogo.horario || '';
+        document.getElementById('local').value = jogo.local || '';
+        
+        document.querySelector('#modalNovoJogo .modal-title').innerText = "Ajustar Partida";
+        const modal = new bootstrap.Modal(document.getElementById('modalNovoJogo'));
+        modal.show();
+    }
+
+    async function excluirJogo(id) {
+        if(confirm("Deseja realmente excluir este jogo? Esta ação é irreversível.")) {
+            const res = await fetch(`${API_BASE}/jogos/${id}`, { method: 'DELETE' });
+            if(res.ok) carregarJogos(campeonatoAtual);
+            else {
+                const err = await res.json();
+                alert(err.error || "Erro ao excluir.");
+            }
+        }
+    }
+
+    // 5. Salva o novo jogo atrelando ao campeonato atual
+    document.getElementById('formNovoJogo').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const selectRodada = document.getElementById('select-rodada-form');
+        const selectedOption = selectRodada.options[selectRodada.selectedIndex];
+        const tipoRodada = selectedOption ? selectedOption.getAttribute('data-tipo') : 'GRUPO';
+
+        let mandanteId = null, visitanteId = null;
+        let mandantePlaceholder = null, visitantePlaceholder = null;
+        let mandanteNome = '', visitanteNome = '';
+
+        if (tipoRodada === 'MATA_MATA') {
+            mandantePlaceholder = document.getElementById('input-mandante-placeholder').value;
+            visitantePlaceholder = document.getElementById('input-visitante-placeholder').value;
+            if (!mandantePlaceholder || !visitantePlaceholder) {
+                alert("Preencha os placeholders para o mandante e visitante (ex: '1º Chave A').");
+                return;
+            }
+        } else {
+            const mandanteSelect = document.getElementById('select-mandante');
+            mandanteId = mandanteSelect.value;
+            const visitanteSelect = document.getElementById('select-visitante');
+            visitanteId = visitanteSelect.value;
+            
+            if(!mandanteId || !visitanteId) {
+                alert("Selecione as duas equipes.");
+                return;
+            }
+            if(mandanteId === visitanteId) {
+                alert("Uma equipe não pode jogar contra ela mesma!");
+                return;
+            }
+            mandanteNome = mandanteSelect.options[mandanteSelect.selectedIndex].text;
+            visitanteNome = visitanteSelect.options[visitanteSelect.selectedIndex].text;
+        }
+
+        const idUpdate = document.getElementById('jogo-id-update').value;
+        const novo = {
+            campeonatoId: campeonatoAtual,
+            numero: document.getElementById('numero-jogo').value,
+            rodadaId: document.getElementById('select-rodada-form').value,
+            chave: document.getElementById('jogo-chave').value,
+            mandanteId,
+            visitanteId,
+            mandantePlaceholder,
+            visitantePlaceholder,
+            mandanteNome,
+            visitanteNome,
+            data: document.getElementById('data-jogo').value,
+            horario: document.getElementById('horario').value,
+            local: document.getElementById('local').value
+        };
+
+        const url = idUpdate ? `${API_BASE}/jogos/${idUpdate}` : `${API_BASE}/jogos`;
+        const method = idUpdate ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+            method: method,
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(novo)
+        });
+
+        if(res.ok) {
+            document.getElementById('btn-fechar-modal').click();
+            document.getElementById('formNovoJogo').reset();
+            carregarJogos(campeonatoAtual);
+        } else {
+            alert("Erro ao salvar o jogo.");
+        }
+    });
+
+    window.onload = init;
+</script>
+</body>
+</html>

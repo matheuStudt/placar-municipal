@@ -1,0 +1,31 @@
+src/server.ts(358,24): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(358,39): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(359,24): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(359,41): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(360,24): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(360,58): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(361,24): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(361,59): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(362,64): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(362,84): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(362,101): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(363,69): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(363,89): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(363,106): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(364,31): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(364,51): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(364,71): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(364,88): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(476,51): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
+  Type 'null' is not assignable to type 'number'.
+src/server.ts(477,52): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
+  Type 'null' is not assignable to type 'number'.
+src/server.ts(625,29): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(723,28): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(723,53): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(724,23): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(725,23): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(728,28): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(728,54): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(729,23): error TS2538: Type 'null' cannot be used as an index type.
+src/server.ts(730,23): error TS2538: Type 'null' cannot be used as an index type.

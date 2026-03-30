@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Placar Municipal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            overflow: hidden;
+            max-width: 400px;
+            width: 100%;
+        }
+        .login-header {
+            background-color: #f8fafc;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .login-body {
+            padding: 40px 30px;
+        }
+        .btn-primary {
+            background-color: #1e3a8a;
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #1e40af;
+            transform: translateY(-2px);
+        }
+        .form-control {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+            border-color: #1e3a8a;
+        }
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: #1e3a8a;
+            color: white;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card mx-3">
+    <div class="login-header">
+        <div class="logo-icon shadow">
+            <i class="bi bi-trophy-fill"></i>
+        </div>
+        <h4 class="fw-bold mb-0 text-dark">Placar Municipal</h4>
+        <p class="text-muted small mb-0">Gestão Esportiva para Prefeituras</p>
+    </div>
+    
+    <div class="login-body">
+        <form>
+            <div class="mb-3">
+                <label class="form-label fw-bold small text-secondary text-uppercase">E-mail ou Usuário</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-person"></i></span>
+                    <input type="email" class="form-control border-start-0 ps-0" placeholder="Digite seu acesso">
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <div class="d-flex justify-content-between">
+                    <label class="form-label fw-bold small text-secondary text-uppercase">Senha</label>
+                    <a href="#" class="text-decoration-none small fw-bold text-primary">Esqueceu?</a>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-lock"></i></span>
+                    <input type="password" class="form-control border-start-0 ps-0" placeholder="••••••••">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 mb-3 shadow">
+                Acessar Painel <i class="bi bi-box-arrow-in-right ms-2"></i>
+            </button>
+            
+            <div class="text-center mt-3">
+                <a href="portal.html" class="btn btn-outline-secondary w-100 py-2 fw-bold">
+                    <i class="bi bi-globe me-2"></i> Ver Portal Público
+                </a>
+                <p class="small text-muted mt-3 mb-0">Precisa de suporte? <a href="#" class="text-primary fw-bold text-decoration-none">Clique aqui</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const API_BASE = 'http://localhost:3001/api';
+    
+    document.querySelector('form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.querySelector('input[type="email"]').value;
+        const senha = document.querySelector('input[type="password"]').value;
+        const btn = e.target.querySelector('button');
+        
+        try {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Entrando...';
+
+            const res = await fetch(`${API_BASE}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, senha })
+            });
+
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.error || 'Erro ao entrar');
+            }
+
+            const data = await res.json();
+            
+            // Armazena dados da sessão
+            localStorage.setItem('usuario', JSON.stringify({
+                id: data.id,
+                email: data.email,
+                prefeituraId: data.prefeituraId,
+                prefeituraNome: data.prefeituraNome,
+                prefeituraSlug: data.prefeituraSlug
+            }));
+
+            // Redireciona para o painel adequado
+            if (!data.prefeituraId) {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'index.html';
+            }
+
+        } catch (error) {
+            alert(error.message);
+            btn.disabled = false;
+            btn.innerHTML = 'Acessar Painel <i class="bi bi-box-arrow-in-right ms-2"></i>';
+        }
+    });
+</script>
+</body>
+</html>

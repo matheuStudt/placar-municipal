@@ -1,0 +1,48 @@
+{
+  "jogo": {
+    "id": 2,
+    "rodadaId": 9,
+    "numero": 2,
+    "mandanteId": 2,
+    "visitanteId": 1,
+    "mandanteNome": "B",
+    "visitanteNome": "A",
+    "golsMandante": 0,
+    "golsVisitante": 0,
+    "data": "2026-04-03",
+    "horario": "15:54",
+    "local": "B",
+    "status": "Agendado",
+    "chave": "a",
+    "rodada": {
+      "id": 9,
+      "numero": 2,
+      "nome": "2",
+      "campeonatoId": 2
+    },
+    "campeonatoId": 2,
+    "debug_teste": "funcionando"
+  },
+  "elencoMandante": [
+    {
+      "id": 2,
+      "nome": "b",
+      "tipo": "Jogador de Linha",
+      "gols": 0,
+      "gc": 0,
+      "am": 0,
+      "vm": 0
+    }
+  ],
+  "elencoVisitante": [
+    {
+      "id": 1,
+      "nome": "a",
+      "tipo": "Jogador de Linha",
+      "gols": 0,
+      "gc": 0,
+      "am": 0,
+      "vm": 0
+    }
+  ]
+}

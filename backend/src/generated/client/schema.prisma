@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Campeonato {
+  id            Int            @id @default(autoincrement())
+  nome          String
+  ano           Int
+  formato       String
+  participacoes Participacao[]
+  jogos         Jogo[]
+}
+
+model Equipe {
+  id             Int            @id @default(autoincrement())
+  nome           String
+  responsavel    String
+  telefone       String
+  participacoes  Participacao[]
+  vinculos       Vinculo[]
+  jogosMandante  Jogo[]         @relation("Mandante")
+  jogosVisitante Jogo[]         @relation("Visitante")
+}
+
+model Atleta {
+  id       Int       @id @default(autoincrement())
+  nome     String
+  cpf      String
+  numero   String
+  vinculos Vinculo[]
+  eventos  Evento[]
+}
+
+model Participacao {
+  id           Int        @id @default(autoincrement())
+  equipe       Equipe     @relation(fields: [equipeId], references: [id])
+  equipeId     Int
+  campeonato   Campeonato @relation(fields: [campeonatoId], references: [id])
+  campeonatoId Int
+}
+
+model Vinculo {
+  id       Int    @id @default(autoincrement())
+  atleta   Atleta @relation(fields: [atletaId], references: [id])
+  atletaId Int
+  equipe   Equipe @relation(fields: [equipeId], references: [id])
+  equipeId Int
+  tipo     String
+}
+
+model Jogo {
+  id            Int        @id @default(autoincrement())
+  numero        Int
+  campeonato    Campeonato @relation(fields: [campeonatoId], references: [id])
+  campeonatoId  Int
+  mandante      Equipe     @relation("Mandante", fields: [mandanteId], references: [id])
+  mandanteId    Int
+  mandanteNome  String
+  visitante     Equipe     @relation("Visitante", fields: [visitanteId], references: [id])
+  visitanteId   Int
+  visitanteNome String
+  golsMandante  Int        @default(0)
+  golsVisitante Int        @default(0)
+  status        String     @default("Agendado")
+  eventos       Evento[]
+}
+
+model Evento {
+  id       Int    @id @default(autoincrement())
+  jogo     Jogo   @relation(fields: [jogoId], references: [id])
+  jogoId   Int
+  atleta   Atleta @relation(fields: [atletaId], references: [id])
+  atletaId Int
+  gols     Int    @default(0)
+  gc       Int    @default(0)
+  am       Int    @default(0)
+  vm       Int    @default(0)
+}
