@@ -43,9 +43,9 @@ app.post('/api/campeonatos', async (req: Request, res: Response) => {
     const { nome, ano, formato, prefeituraId, descricao, dataInicio, dataFim, classificadosPorChave } = req.body;
     try {
         const novo = await prisma.campeonato.create({
-            data: { 
-                nome, 
-                ano: parseInt(String(ano)) || new Date().getFullYear(), 
+            data: {
+                nome,
+                ano: parseInt(String(ano)) || new Date().getFullYear(),
                 formato,
                 descricao,
                 dataInicio: dataInicio || "2024-01-01",
@@ -66,9 +66,9 @@ app.put('/api/campeonatos/:id', async (req: Request, res: Response) => {
     try {
         const atualizado = await prisma.campeonato.update({
             where: { id },
-            data: { 
-                nome, 
-                ano: parseInt(String(ano)), 
+            data: {
+                nome,
+                ano: parseInt(String(ano)),
                 formato,
                 descricao,
                 dataInicio,
@@ -86,9 +86,9 @@ app.put('/api/campeonatos/:id', async (req: Request, res: Response) => {
 app.delete('/api/campeonatos/:id', async (req: Request, res: Response) => {
     const id = parseInt(String(req.params.id));
     try {
-        await prisma.participacao.deleteMany({ where: { campeonatoId: id }});
-        await prisma.rodada.deleteMany({ where: { campeonatoId: id }});
-        await prisma.campeonato.delete({ where: { id }});
+        await prisma.participacao.deleteMany({ where: { campeonatoId: id } });
+        await prisma.rodada.deleteMany({ where: { campeonatoId: id } });
+        await prisma.campeonato.delete({ where: { id } });
         res.status(204).send();
     } catch {
         res.status(404).send();
@@ -110,8 +110,8 @@ app.post('/api/atletas', async (req: Request, res: Response) => {
     const { nome, cpf, dataNasc } = req.body;
     try {
         const novo = await prisma.atleta.create({
-            data: { 
-                nome: String(nome), 
+            data: {
+                nome: String(nome),
                 cpf: String(cpf || "000.000.000-00"),
                 dataNasc: String(dataNasc || "2000-01-01")
             }
@@ -142,8 +142,8 @@ app.delete('/api/atletas/:id', async (req: Request, res: Response) => {
         const checkEventos = await prisma.evento.count({ where: { atletaId: id } });
         if (checkEventos > 0) return res.status(400).json({ error: "Não é possível excluir o atleta pois ele possui registros em súmulas." });
 
-        await prisma.vinculo.deleteMany({ where: { atletaId: id }});
-        await prisma.atleta.delete({ where: { id }});
+        await prisma.vinculo.deleteMany({ where: { atletaId: id } });
+        await prisma.atleta.delete({ where: { id } });
         res.status(204).send();
     } catch (e) {
         res.status(500).json({ error: "Erro ao excluir atleta. Verifique dependências." });
@@ -155,7 +155,7 @@ app.delete('/api/atletas/:id', async (req: Request, res: Response) => {
 app.post('/api/login', async (req: Request, res: Response) => {
     const { email, senha } = req.body;
     console.log(`[DEBUG] Tentativa de login: email=${email}, senha=${senha}`);
-    
+
     try {
         const user = await (prisma as any).usuario.findFirst({
             where: { email, senha },
@@ -199,10 +199,10 @@ app.post('/api/equipes', async (req: Request, res: Response) => {
     const { nome, responsavel, telefone, local, prefeituraId } = req.body;
     try {
         const nova = await prisma.equipe.create({
-            data: { 
-                nome, 
-                responsavel, 
-                telefone, 
+            data: {
+                nome,
+                responsavel,
+                telefone,
                 local,
                 prefeituraId: parseInt(String(prefeituraId)) || 1
             }
@@ -241,12 +241,12 @@ app.put('/api/equipes/:id', async (req: Request, res: Response) => {
 app.delete('/api/equipes/:id', async (req: Request, res: Response) => {
     const id = parseInt(String(req.params.id));
     try {
-        const checkJogos = await prisma.jogo.count({ where: { OR: [{ mandanteId: id }, { visitanteId: id }] }});
+        const checkJogos = await prisma.jogo.count({ where: { OR: [{ mandanteId: id }, { visitanteId: id }] } });
         if (checkJogos > 0) return res.status(400).json({ error: "Não é possível excluir a equipe pois ela já possui jogos na tabela." });
 
-        await prisma.vinculo.deleteMany({ where: { equipeId: id }});
-        await prisma.participacao.deleteMany({ where: { equipeId: id }});
-        await prisma.equipe.delete({ where: { id }});
+        await prisma.vinculo.deleteMany({ where: { equipeId: id } });
+        await prisma.participacao.deleteMany({ where: { equipeId: id } });
+        await prisma.equipe.delete({ where: { id } });
         res.status(204).send();
     } catch (e) {
         res.status(500).json({ error: "Erro ao excluir equipe. Verifique dependências." });
@@ -335,7 +335,7 @@ app.get('/api/campeonatos/:id/classificacao', async (req: Request, res: Response
     const { chave } = req.query;
     try {
         const participacoes = await prisma.participacao.findMany({
-            where: { 
+            where: {
                 campeonatoId,
                 ...(chave ? { chave: String(chave) } : {})
             },
@@ -343,9 +343,9 @@ app.get('/api/campeonatos/:id/classificacao', async (req: Request, res: Response
         });
 
         const jogos = await prisma.jogo.findMany({
-            where: { 
+            where: {
                 rodada: { campeonatoId },
-                status: 'Finalizado' 
+                status: 'Finalizado'
             }
         });
 
@@ -382,18 +382,18 @@ app.get('/api/campeonatos/:id/classificacao', async (req: Request, res: Response
             }
         });
 
-        const resultado = Object.values(tabela).map((item: any) => { 
-            item.sg = item.gp - item.gc; 
-            return item; 
+        const resultado = Object.values(tabela).map((item: any) => {
+            item.sg = item.gp - item.gc;
+            return item;
         });
-        
+
         resultado.sort((a: any, b: any) => {
             if (b.p !== a.p) return b.p - a.p;      // Pontos (Desc)
             if (b.v !== a.v) return b.v - a.v;      // Vitórias (Desc)
             if (a.gc !== b.gc) return a.gc - b.gc;  // Gols Sofridos (Asc - menor é melhor)
             return b.gp - a.gp;                     // Gols Pró (Desc)
         });
-        
+
         res.json(resultado);
     } catch (e) {
         res.status(500).json({ error: "Erro ao gerar classificação" });
@@ -454,15 +454,15 @@ app.get('/api/jogos', async (req: Request, res: Response) => {
     const campIdRaw = req.query.campeonatoId;
     const rodadaIdRaw = req.query.rodadaId;
     const chaveRaw = req.query.chave;
-    
+
     const where: any = {};
     if (campIdRaw) where.rodada = { campeonatoId: parseInt(String(campIdRaw)) };
     if (rodadaIdRaw) where.rodadaId = parseInt(String(rodadaIdRaw));
     if (chaveRaw) where.chave = String(chaveRaw);
 
     try {
-        const jogos = await prisma.jogo.findMany({ 
-            where, 
+        const jogos = await prisma.jogo.findMany({
+            where,
             orderBy: { numero: 'asc' },
             include: { rodada: true }
         });
@@ -476,7 +476,7 @@ app.get('/api/jogos/:id/detalhes', async (req: Request, res: Response) => {
     const jogoId = parseInt(String(req.params.id));
     console.log(`[API] Buscando detalhes do jogo ID: ${jogoId}`);
     try {
-        const jogo = await prisma.jogo.findUnique({ 
+        const jogo = await prisma.jogo.findUnique({
             where: { id: jogoId },
             include: { rodada: true }
         });
@@ -509,13 +509,13 @@ app.get('/api/jogos/:id/detalhes', async (req: Request, res: Response) => {
 
         console.log(`[API] Elenco Mandante: ${elencoMandante.length}, Elenco Visitante: ${elencoVisitante.length}`);
 
-        res.json({ 
+        res.json({
             jogo: {
                 ...jogo,
                 campeonatoId: jogo.rodada?.campeonatoId
-            }, 
-            elencoMandante, 
-            elencoVisitante 
+            },
+            elencoMandante,
+            elencoVisitante
         });
     } catch (e) {
         console.error("[API] Erro ao buscar detalhes do jogo:", e);
@@ -556,10 +556,10 @@ app.put('/api/jogos/:id', async (req: Request, res: Response) => {
     try {
         const atualizado = await prisma.jogo.update({
             where: { id },
-            data: { 
-                numero: parseInt(String(numero)), 
-                horario, 
-                local, 
+            data: {
+                numero: parseInt(String(numero)),
+                horario,
+                local,
                 mandanteId: mandanteId ? parseInt(String(mandanteId)) : null,
                 visitanteId: visitanteId ? parseInt(String(visitanteId)) : null,
                 mandantePlaceholder: mandantePlaceholder || null,
@@ -632,7 +632,7 @@ app.post('/api/campeonatos/:id/gerar-chaveamento', async (req: Request, res: Res
         for (const chave of chavesUnicas) {
             const equipesChave = participacoes.filter(p => p.chave === chave);
             const tabela: Record<number, any> = {};
-            
+
             equipesChave.forEach(p => {
                 if (p.equipe) {
                     tabela[p.equipe.id] = { id: p.equipe.id, nome: p.equipe.nome, p: 0, v: 0, sg: 0, gp: 0, gc: 0 };
@@ -698,7 +698,7 @@ app.post('/api/campeonatos/:id/gerar-chaveamento', async (req: Request, res: Res
                         }
                     }
                 }
-                
+
                 // Fallback para GERAL se nenhuma chave for especificada e hover apenas GERAL
                 if (rankingPorChave['GERAL'] && rankingPorChave['GERAL'][posicao]) {
                     return rankingPorChave['GERAL'][posicao];
@@ -745,7 +745,7 @@ app.get('/api/campeonatos/:id/estatisticas', async (req: Request, res: Response)
     try {
         const eventos = await prisma.evento.findMany({
             where: { jogo: { rodada: { campeonatoId: id } } },
-            include: { 
+            include: {
                 atleta: { include: { vinculos: { include: { equipe: true } } } }
             }
         });
@@ -855,7 +855,7 @@ const checkSuperAdmin = async (req: Request, res: Response, next: express.NextFu
 app.get('/api/admin/prefeituras', checkSuperAdmin, async (req: Request, res: Response) => {
     try {
         const prefeituras = await prisma.prefeitura.findMany({
-            include: { 
+            include: {
                 _count: { select: { usuarios: true, campeonatos: true, equipes: true } }
             }
         });
@@ -943,7 +943,7 @@ app.put('/api/admin/usuarios/:id', checkSuperAdmin, async (req: Request, res: Re
     try {
         const dataToUpdate: any = { email, prefeituraId: prefeituraId ? parseInt(String(prefeituraId)) : null };
         if (senha) dataToUpdate.senha = senha;
-        
+
         const u = await prisma.usuario.update({
             where: { id },
             data: dataToUpdate
@@ -966,8 +966,15 @@ app.delete('/api/admin/usuarios/:id', checkSuperAdmin, async (req: Request, res:
 
 // --- INICIALIZAÇÃO ---
 
+//const PORT = process.env.PORT || 3001;
+//app.listen(PORT, () => {
+//    console.log(`\n🚀 Servidor Rodando em http://localhost:${PORT}`);
+//    console.log(`✅ Sistema Online: Prata da casa pronto para o jogo!\n`);
+//});
+
+// O Render vai enviar a porta pela variável de ambiente PORT
 const PORT = process.env.PORT || 3001;
+
 app.listen(PORT, () => {
-    console.log(`\n🚀 Servidor Rodando em http://localhost:${PORT}`);
-    console.log(`✅ Sistema Online: Prata da casa pronto para o jogo!\n`);
+    console.log(`\n🚀 Servidor Rodando na porta ${PORT}`);
 });

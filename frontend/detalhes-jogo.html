@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    
+
     <style>
         :root {
             --primary: #0f172a;
@@ -15,8 +16,12 @@
             --bg: #f8fafc;
         }
 
-        body { font-family: 'Outfit', sans-serif; background-color: var(--bg); color: var(--primary); }
-        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+        }
+
         .header-partida {
             background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
             color: white;
@@ -26,21 +31,30 @@
         }
 
         .placar-box {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 30px;
             padding: 40px;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .gols-display { font-size: 5rem; font-weight: 800; line-height: 1; }
-        .sep { font-size: 3rem; opacity: 0.5; font-weight: 200; }
+        .gols-display {
+            font-size: 5rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .sep {
+            font-size: 3rem;
+            opacity: 0.5;
+            font-weight: 200;
+        }
 
         .card-eventos {
             background: white;
             border: none;
             border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             padding: 25px;
             height: 100%;
         }
@@ -51,17 +65,40 @@
             font-size: 0.75rem;
             letter-spacing: 1px;
         }
-        
-        .table-eventos th { border: none; padding: 15px; color: #64748b; }
-        .table-eventos td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
 
-        .icon-stat { font-size: 1.2rem; }
-        .icon-gol { color: #22c55e; }
-        .icon-amarelo { color: #eab308; }
-        .icon-vermelho { color: #ef4444; }
+        .table-eventos th {
+            border: none;
+            padding: 15px;
+            color: #64748b;
+        }
 
-        .atleta-nome { font-weight: 600; color: var(--primary); }
-        
+        .table-eventos td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .icon-stat {
+            font-size: 1.2rem;
+        }
+
+        .icon-gol {
+            color: #22c55e;
+        }
+
+        .icon-amarelo {
+            color: #eab308;
+        }
+
+        .icon-vermelho {
+            color: #ef4444;
+        }
+
+        .atleta-nome {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
         .btn-voltar {
             color: white;
             text-decoration: none;
@@ -72,164 +109,173 @@
             opacity: 0.8;
             transition: 0.3s;
         }
-        .btn-voltar:hover { opacity: 1; transform: translateX(-5px); }
+
+        .btn-voltar:hover {
+            opacity: 1;
+            transform: translateX(-5px);
+        }
     </style>
 </head>
+
 <body>
 
-<section class="header-partida">
-    <div class="container">
-        <a href="portal.html" class="btn-voltar" id="link-voltar">
-            <i class="bi bi-arrow-left"></i> Voltar ao Portal
-        </a>
-        
-        <div class="placar-box">
-            <div class="row align-items-center text-center">
-                <div class="col-md-4">
-                    <i class="bi bi-shield-shaded fs-1 mb-3 opacity-50"></i>
-                    <h2 id="nome-mandante" class="fw-bold text-uppercase">--</h2>
-                </div>
-                <div class="col-md-4">
-                    <div class="d-flex justify-content-center align-items-center gap-4">
-                        <span id="gols-mandante" class="gols-display">0</span>
-                        <span class="sep">X</span>
-                        <span id="gols-visitante" class="gols-display">0</span>
+    <section class="header-partida">
+        <div class="container">
+            <a href="portal.html" class="btn-voltar" id="link-voltar">
+                <i class="bi bi-arrow-left"></i> Voltar ao Portal
+            </a>
+
+            <div class="placar-box">
+                <div class="row align-items-center text-center">
+                    <div class="col-md-4">
+                        <i class="bi bi-shield-shaded fs-1 mb-3 opacity-50"></i>
+                        <h2 id="nome-mandante" class="fw-bold text-uppercase">--</h2>
                     </div>
-                    <div class="mt-3 d-flex justify-content-center align-items-center gap-2">
-                        <span id="label-jogo-info" class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 fw-bold text-uppercase" style="border: 1px solid rgba(0,0,0,0.1)">--</span>
-                        <span id="status-jogo" class="badge bg-white text-dark rounded-pill px-3 py-2">--</span>
+                    <div class="col-md-4">
+                        <div class="d-flex justify-content-center align-items-center gap-4">
+                            <span id="gols-mandante" class="gols-display">0</span>
+                            <span class="sep">X</span>
+                            <span id="gols-visitante" class="gols-display">0</span>
+                        </div>
+                        <div class="mt-3 d-flex justify-content-center align-items-center gap-2">
+                            <span id="label-jogo-info"
+                                class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 fw-bold text-uppercase"
+                                style="border: 1px solid rgba(0,0,0,0.1)">--</span>
+                            <span id="status-jogo" class="badge bg-white text-dark rounded-pill px-3 py-2">--</span>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <i class="bi bi-shield-shaded fs-1 mb-3 opacity-50"></i>
-                    <h2 id="nome-visitante" class="fw-bold text-uppercase">--</h2>
+                    <div class="col-md-4">
+                        <i class="bi bi-shield-shaded fs-1 mb-3 opacity-50"></i>
+                        <h2 id="nome-visitante" class="fw-bold text-uppercase">--</h2>
+                    </div>
                 </div>
             </div>
+
+            <div class="text-center mt-4">
+                <p class="mb-0 opacity-75">
+                    <i class="bi bi-geo-alt me-1"></i> <span id="local-jogo">--</span>
+                    <span class="mx-3">|</span>
+                    <i class="bi bi-clock me-1"></i> <span id="horario-jogo">--</span>
+                </p>
+            </div>
         </div>
-        
-        <div class="text-center mt-4">
-            <p class="mb-0 opacity-75">
-                <i class="bi bi-geo-alt me-1"></i> <span id="local-jogo">--</span>
-                <span class="mx-3">|</span>
-                <i class="bi bi-clock me-1"></i> <span id="horario-jogo">--</span>
-            </p>
+    </section>
+
+    <div class="container mb-5">
+        <div class="row g-4">
+            <!-- Mandante -->
+            <div class="col-lg-6">
+                <div class="card-eventos">
+                    <h4 class="fw-bold mb-4 d-flex align-items-center">
+                        <i class="bi bi-shield-fill me-2 text-primary"></i> <span id="label-mandante">Mandante</span>
+                    </h4>
+                    <div class="table-responsive">
+                        <table class="table table-eventos">
+                            <thead>
+                                <tr>
+                                    <th>Atleta</th>
+                                    <th class="text-center">Gols</th>
+                                    <th class="text-center text-warning" title="Amarelo">C.A</th>
+                                    <th class="text-center text-danger" title="Vermelho">C.V</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corpo-mandante"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visitante -->
+            <div class="col-lg-6">
+                <div class="card-eventos">
+                    <h4 class="fw-bold mb-4 d-flex align-items-center">
+                        <i class="bi bi-shield-fill me-2 text-secondary"></i> <span
+                            id="label-visitante">Visitante</span>
+                    </h4>
+                    <div class="table-responsive">
+                        <table class="table table-eventos">
+                            <thead>
+                                <tr>
+                                    <th>Atleta</th>
+                                    <th class="text-center">Gols</th>
+                                    <th class="text-center text-warning" title="Amarelo">C.A</th>
+                                    <th class="text-center text-danger" title="Vermelho">C.V</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corpo-visitante"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</section>
 
-<div class="container mb-5">
-    <div class="row g-4">
-        <!-- Mandante -->
-        <div class="col-lg-6">
-            <div class="card-eventos">
-                <h4 class="fw-bold mb-4 d-flex align-items-center">
-                    <i class="bi bi-shield-fill me-2 text-primary"></i> <span id="label-mandante">Mandante</span>
-                </h4>
-                <div class="table-responsive">
-                    <table class="table table-eventos">
-                        <thead>
-                            <tr>
-                                <th>Atleta</th>
-                                <th class="text-center">Gols</th>
-                                <th class="text-center text-warning" title="Amarelo">C.A</th>
-                                <th class="text-center text-danger" title="Vermelho">C.V</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpo-mandante"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Visitante -->
-        <div class="col-lg-6">
-            <div class="card-eventos">
-                <h4 class="fw-bold mb-4 d-flex align-items-center">
-                    <i class="bi bi-shield-fill me-2 text-secondary"></i> <span id="label-visitante">Visitante</span>
-                </h4>
-                <div class="table-responsive">
-                    <table class="table table-eventos">
-                        <thead>
-                            <tr>
-                                <th>Atleta</th>
-                                <th class="text-center">Gols</th>
-                                <th class="text-center text-warning" title="Amarelo">C.A</th>
-                                <th class="text-center text-danger" title="Vermelho">C.V</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpo-visitante"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    <script>
+        //const API = 'http://localhost:3001/api';
+        const API = 'https://placar-api-qvva.onrender.com/api'; // Novo
+        const params = new URLSearchParams(window.location.search);
+        const jogoId = params.get('jogoId');
+        const slug = params.get('p');
 
-<script>
-    const API = 'http://localhost:3001/api';
-    const params = new URLSearchParams(window.location.search);
-    const jogoId = params.get('jogoId');
-    const slug = params.get('p');
+        const campId = params.get('campId');
 
-    const campId = params.get('campId');
+        // Monta o link de voltar incluindo o hash do campeonato para retornar à tela correta
+        const linkVoltar = document.getElementById('link-voltar');
+        let portalUrl = 'portal.html';
+        if (slug) portalUrl += `?p=${slug}`;
+        if (campId) portalUrl += `#camp-${campId}`;
+        linkVoltar.href = portalUrl;
 
-    // Monta o link de voltar incluindo o hash do campeonato para retornar à tela correta
-    const linkVoltar = document.getElementById('link-voltar');
-    let portalUrl = 'portal.html';
-    if (slug) portalUrl += `?p=${slug}`;
-    if (campId) portalUrl += `#camp-${campId}`;
-    linkVoltar.href = portalUrl;
+        async function carregarDetalhes() {
+            if (!jogoId) return;
 
-    async function carregarDetalhes() {
-        if (!jogoId) return;
+            try {
+                const res = await fetch(`${API}/jogos/${jogoId}/detalhes`);
+                const data = await res.json();
+                const jogo = data.jogo;
 
-        try {
-            const res = await fetch(`${API}/jogos/${jogoId}/detalhes`);
-            const data = await res.json();
-            const jogo = data.jogo;
+                document.getElementById('nome-mandante').textContent = jogo.mandanteNome;
+                document.getElementById('nome-visitante').textContent = jogo.visitanteNome;
+                document.getElementById('label-mandante').textContent = jogo.mandanteNome;
+                document.getElementById('label-visitante').textContent = jogo.visitanteNome;
 
-            document.getElementById('nome-mandante').textContent = jogo.mandanteNome;
-            document.getElementById('nome-visitante').textContent = jogo.visitanteNome;
-            document.getElementById('label-mandante').textContent = jogo.mandanteNome;
-            document.getElementById('label-visitante').textContent = jogo.visitanteNome;
-            
-            document.getElementById('gols-mandante').textContent = jogo.golsMandante;
-            document.getElementById('gols-visitante').textContent = jogo.golsVisitante;
-            document.getElementById('status-jogo').textContent = jogo.status;
-            
-            let info = `JOGO ${jogo.numero}`;
-            if (jogo.chave) {
-                const label = jogo.chave.includes('Chave') ? jogo.chave : 'Chave ' + jogo.chave;
-                info = `<span class="opacity-75 me-1">${label}</span> | ${info}`;
-            }
-            document.getElementById('label-jogo-info').innerHTML = info;
+                document.getElementById('gols-mandante').textContent = jogo.golsMandante;
+                document.getElementById('gols-visitante').textContent = jogo.golsVisitante;
+                document.getElementById('status-jogo').textContent = jogo.status;
 
-            document.getElementById('local-jogo').textContent = jogo.local || 'Local não informado';
-            document.getElementById('horario-jogo').textContent = jogo.horario || 'Horário não informado';
+                let info = `JOGO ${jogo.numero}`;
+                if (jogo.chave) {
+                    const label = jogo.chave.includes('Chave') ? jogo.chave : 'Chave ' + jogo.chave;
+                    info = `<span class="opacity-75 me-1">${label}</span> | ${info}`;
+                }
+                document.getElementById('label-jogo-info').innerHTML = info;
 
-            preencherTabela('corpo-mandante', data.elencoMandante);
-            preencherTabela('corpo-visitante', data.elencoVisitante);
+                document.getElementById('local-jogo').textContent = jogo.local || 'Local não informado';
+                document.getElementById('horario-jogo').textContent = jogo.horario || 'Horário não informado';
 
-        } catch (e) { console.error(e); }
-    }
+                preencherTabela('corpo-mandante', data.elencoMandante);
+                preencherTabela('corpo-visitante', data.elencoVisitante);
 
-    function preencherTabela(tbodyId, elenco) {
-        const tbody = document.getElementById(tbodyId);
-        tbody.innerHTML = '';
-        
-        let teveEvento = false;
+            } catch (e) { console.error(e); }
+        }
 
-        elenco.forEach(at => {
-            // Soma gols (normais + contra)
-            const totalGols = (at.gols || 0) + (at.gc || 0);
-            const am = at.am || 0;
-            const vm = at.vm || 0;
+        function preencherTabela(tbodyId, elenco) {
+            const tbody = document.getElementById(tbodyId);
+            tbody.innerHTML = '';
 
-            if (totalGols > 0 || am > 0 || vm > 0) {
-                teveEvento = true;
-                
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
+            let teveEvento = false;
+
+            elenco.forEach(at => {
+                // Soma gols (normais + contra)
+                const totalGols = (at.gols || 0) + (at.gc || 0);
+                const am = at.am || 0;
+                const vm = at.vm || 0;
+
+                if (totalGols > 0 || am > 0 || vm > 0) {
+                    teveEvento = true;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
                     <td>
                         <div class="atleta-nome">${at.nome}</div>
                         ${at.posicao ? `<small class="text-muted">${at.posicao}</small>` : ''}
@@ -245,16 +291,17 @@
                         ${vm > 0 ? `<span class="fw-bold text-danger">${vm}</span> <i class="bi bi-square-fill icon-vermelho ms-1" style="font-size:0.8rem"></i>` : '--'}
                     </td>
                 `;
-                tbody.appendChild(tr);
+                    tbody.appendChild(tr);
+                }
+            });
+
+            if (!teveEvento) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Sem estatísticas registradas.</td></tr>';
             }
-        });
-
-        if (!teveEvento) {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Sem estatísticas registradas.</td></tr>';
         }
-    }
 
-    window.onload = carregarDetalhes;
-</script>
+        window.onload = carregarDetalhes;
+    </script>
 </body>
+
 </html>

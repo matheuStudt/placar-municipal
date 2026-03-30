@@ -9,63 +9,71 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/main.css">
 </head>
+
 <body data-bs-theme="light">
 
-<div class="main-content-overlay" onclick="toggleSidebar()"></div>
+    <div class="main-content-overlay" onclick="toggleSidebar()"></div>
 
-<nav class="sidebar p-3 shadow">
-    <div class="d-flex align-items-center mb-4 px-2">
-        <i class="bi bi-trophy-fill me-2 fs-4 text-warning"></i>
-        <span class="prefeitura-nome fs-5 fw-bold text-white">Placar Municipal</span>
+    <nav class="sidebar p-3 shadow">
+        <div class="d-flex align-items-center mb-4 px-2">
+            <i class="bi bi-trophy-fill me-2 fs-4 text-warning"></i>
+            <span class="prefeitura-nome fs-5 fw-bold text-white">Placar Municipal</span>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item mb-2"><a href="index.html" class="nav-link p-2"><i class="bi bi-house-door me-2"></i>
+                    Início</a></li>
+            <li class="nav-item mb-2"><a href="campeonatos.html" class="nav-link p-2"><i class="bi bi-award me-2"></i>
+                    Campeonatos</a></li>
+            <li class="nav-item mb-2"><a href="equipes.html" class="nav-link p-2"><i
+                        class="bi bi-shield-shaded me-2"></i> Equipes</a></li>
+            <li class="nav-item mb-2"><a href="atletas.html" class="nav-link active p-2"><i
+                        class="bi bi-people me-2"></i> Atletas</a></li>
+            <li class="nav-item mb-2"><a href="jogos.html" class="nav-link p-2"><i class="bi bi-calendar3 me-2"></i>
+                    Tabela de Jogos</a></li>
+            <li class="nav-item mb-2"><a href="sumula.html" class="nav-link p-2"><i
+                        class="bi bi-file-earmark-text me-2"></i> Súmula</a></li>
+            <hr class="text-white-50">
+            <li class="nav-item"><a href="login.html" class="nav-link p-2 text-danger-emphasis text-white"><i
+                        class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header class="top-navbar shadow-sm rounded-4">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <h5 class="mb-0 fw-bold" id="titulo-painel-header">Base de Atletas</h5>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <!-- Botão de tema removido -->
+            </div>
+        </header>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">Base Global de Atletas</h2>
+            <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalAtleta"
+                onclick="prepararNovo()">
+                <i class="bi bi-person-plus me-2"></i> Cadastrar Novo Atleta
+            </button>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-muted small text-uppercase">
+                        <tr>
+                            <th class="px-4">ID</th>
+                            <th>Nome Completo</th>
+                            <th>CPF</th>
+                            <th class="text-end px-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-atletas"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
     </div>
-    <ul class="nav flex-column">
-        <li class="nav-item mb-2"><a href="index.html" class="nav-link p-2"><i class="bi bi-house-door me-2"></i> Início</a></li>
-        <li class="nav-item mb-2"><a href="campeonatos.html" class="nav-link p-2"><i class="bi bi-award me-2"></i> Campeonatos</a></li>
-        <li class="nav-item mb-2"><a href="equipes.html" class="nav-link p-2"><i class="bi bi-shield-shaded me-2"></i> Equipes</a></li>
-        <li class="nav-item mb-2"><a href="atletas.html" class="nav-link active p-2"><i class="bi bi-people me-2"></i> Atletas</a></li>
-        <li class="nav-item mb-2"><a href="jogos.html" class="nav-link p-2"><i class="bi bi-calendar3 me-2"></i> Tabela de Jogos</a></li>
-        <li class="nav-item mb-2"><a href="sumula.html" class="nav-link p-2"><i class="bi bi-file-earmark-text me-2"></i> Súmula</a></li>
-        <hr class="text-white-50">
-        <li class="nav-item"><a href="login.html" class="nav-link p-2 text-danger-emphasis text-white"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
-    </ul>
-</nav>
-
-<main class="main-content">
-    <header class="top-navbar shadow-sm rounded-4">
-        <div class="d-flex align-items-center gap-3">
-            <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
-            <h5 class="mb-0 fw-bold" id="titulo-painel-header">Base de Atletas</h5>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <!-- Botão de tema removido -->
-        </div>
-    </header>
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="fw-bold">Base Global de Atletas</h2>
-                    <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalAtleta"
-                        onclick="prepararNovo()">
-                        <i class="bi bi-person-plus me-2"></i> Cadastrar Novo Atleta
-                    </button>
-                </div>
-
-                <div class="card border-0 shadow-sm">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="bg-light text-muted small text-uppercase">
-                                <tr>
-                                    <th class="px-4">ID</th>
-                                    <th>Nome Completo</th>
-                                    <th>CPF</th>
-                                    <th class="text-end px-4">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabela-atletas"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
-        </div>
     </div>
 
     <div class="modal fade" id="modalAtleta" tabindex="-1">
@@ -97,7 +105,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
     <script>
-        const API = 'http://localhost:3001/api';
+        //const API = 'http://localhost:3001/api';
+        const API = 'https://placar-api-qvva.onrender.com/api'; // Novo
         let prefeituraId = null;
 
         async function init() {
@@ -135,7 +144,7 @@
             if (confirm("Deseja realmente excluir este atleta? Isso também o removerá de qualquer equipe.")) {
                 const res = await fetch(`${API}/atletas/${id}`, { method: 'DELETE' });
                 if (!res.ok) {
-                    const data = await res.json().catch(()=>({}));
+                    const data = await res.json().catch(() => ({}));
                     alert(data.error || "Erro ao excluir atleta.");
                 } else {
                     carregarAtletas();
@@ -159,7 +168,7 @@
         document.getElementById('formAtleta').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('atletaId').value;
-            const dados = { 
+            const dados = {
                 nome: document.getElementById('nome').value,
                 cpf: document.getElementById('cpf').value,
                 prefeituraId: prefeituraId

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,51 +10,79 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/main.css">
     <style>
-        .card-stats { border: none; border-radius: 12px; transition: 0.2s; background: var(--bs-card-bg); }
-        .table-custom { background: var(--bs-card-bg); border-radius: 12px; overflow: hidden; }
-        .table-custom th { background-color: var(--bs-secondary-bg); border-bottom: 2px solid var(--bs-border-color); color: var(--bs-body-color); font-weight: 600; }
-        .badge-admin { font-size: 0.75rem; padding: 0.4rem 0.6rem; background: #818cf8; color: white; }
+        .card-stats {
+            border: none;
+            border-radius: 12px;
+            transition: 0.2s;
+            background: var(--bs-card-bg);
+        }
+
+        .table-custom {
+            background: var(--bs-card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-custom th {
+            background-color: var(--bs-secondary-bg);
+            border-bottom: 2px solid var(--bs-border-color);
+            color: var(--bs-body-color);
+            font-weight: 600;
+        }
+
+        .badge-admin {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.6rem;
+            background: #818cf8;
+            color: white;
+        }
     </style>
 </head>
+
 <body data-bs-theme="light">
 
-<div class="main-content-overlay" onclick="toggleSidebar()"></div>
+    <div class="main-content-overlay" onclick="toggleSidebar()"></div>
 
-<nav class="sidebar p-3 shadow-lg">
-    <div class="d-flex align-items-center mb-4 px-2">
-        <i class="bi bi-shield-lock-fill me-2 fs-4 text-warning"></i>
-        <span class="fs-5 fw-bold text-white">Super Admin</span>
-    </div>
-    <ul class="nav flex-column gap-2">
-        <li class="nav-item"><a href="#" class="nav-link active p-2" onclick="mostrarAba('prefeituras')"><i class="bi bi-building me-2"></i> Prefeituras (Clientes)</a></li>
-        <li class="nav-item"><a href="#" class="nav-link p-2" onclick="mostrarAba('usuarios')"><i class="bi bi-people me-2"></i> Usuários / Acessos</a></li>
-        <hr class="text-white-50 my-2">
-        <li class="nav-item"><a href="index.html" class="nav-link p-2 text-info"><i class="bi bi-arrow-return-left me-2"></i> Ir para Dashboard</a></li>
-        <li class="nav-item"><a href="login.html" class="nav-link p-2 text-danger-emphasis text-white"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
-    </ul>
-</nav>
-
-<main class="main-content">
-    <header class="top-navbar shadow-sm rounded-4">
-        <div class="d-flex align-items-center gap-3">
-            <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
-            <h5 class="mb-0 fw-bold" id="titulo-painel-header">Painel Super Admin</h5>
+    <nav class="sidebar p-3 shadow-lg">
+        <div class="d-flex align-items-center mb-4 px-2">
+            <i class="bi bi-shield-lock-fill me-2 fs-4 text-warning"></i>
+            <span class="fs-5 fw-bold text-white">Super Admin</span>
         </div>
-        <div class="d-flex align-items-center gap-2">
-        </div>
-    </header>
+        <ul class="nav flex-column gap-2">
+            <li class="nav-item"><a href="#" class="nav-link active p-2" onclick="mostrarAba('prefeituras')"><i
+                        class="bi bi-building me-2"></i> Prefeituras (Clientes)</a></li>
+            <li class="nav-item"><a href="#" class="nav-link p-2" onclick="mostrarAba('usuarios')"><i
+                        class="bi bi-people me-2"></i> Usuários / Acessos</a></li>
+            <hr class="text-white-50 my-2">
+            <li class="nav-item"><a href="index.html" class="nav-link p-2 text-info"><i
+                        class="bi bi-arrow-return-left me-2"></i> Ir para Dashboard</a></li>
+            <li class="nav-item"><a href="login.html" class="nav-link p-2 text-danger-emphasis text-white"><i
+                        class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
+        </ul>
+    </nav>
 
-    <div class="container-fluid py-2">
-            
+    <main class="main-content">
+        <header class="top-navbar shadow-sm rounded-4">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <h5 class="mb-0 fw-bold" id="titulo-painel-header">Painel Super Admin</h5>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+            </div>
+        </header>
+
+        <div class="container-fluid py-2">
+
             <!-- Aba Prefeituras -->
             <div id="aba-prefeituras">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="fw-bold mb-0">Gestão de Clientes (Prefeituras)</h2>
-                    <button class="btn btn-primary fw-bold px-4" data-bs-toggle="modal" data-bs-target="#modalPrefeitura" onclick="prepararModalPrefeitura()">
+                    <button class="btn btn-primary fw-bold px-4" data-bs-toggle="modal"
+                        data-bs-target="#modalPrefeitura" onclick="prepararModalPrefeitura()">
                         <i class="bi bi-plus-lg me-2"></i> Nova Prefeitura
                     </button>
                 </div>
-                
+
                 <div class="table-responsive table-custom shadow-sm mb-4 border">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
@@ -66,7 +95,9 @@
                             </tr>
                         </thead>
                         <tbody id="lista-prefeituras">
-                            <tr><td colspan="5" class="text-center py-4">Carregando clientes...</td></tr>
+                            <tr>
+                                <td colspan="5" class="text-center py-4">Carregando clientes...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -76,11 +107,12 @@
             <div id="aba-usuarios" class="d-none">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="fw-bold mb-0">Gestão de Usuários</h2>
-                    <button class="btn btn-success fw-bold px-4" data-bs-toggle="modal" data-bs-target="#modalUsuario" onclick="prepararModalUsuario()">
+                    <button class="btn btn-success fw-bold px-4" data-bs-toggle="modal" data-bs-target="#modalUsuario"
+                        onclick="prepararModalUsuario()">
                         <i class="bi bi-person-plus-fill me-2"></i> Novo Usuário
                     </button>
                 </div>
-                
+
                 <div class="table-responsive table-custom shadow-sm mb-4 border">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
@@ -92,152 +124,158 @@
                             </tr>
                         </thead>
                         <tbody id="lista-usuarios">
-                            <tr><td colspan="4" class="text-center py-4">Carregando usuários...</td></tr>
+                            <tr>
+                                <td colspan="4" class="text-center py-4">Carregando usuários...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-        </main>
+    </main>
     </div>
-</div>
+    </div>
 
-<!-- Modal Nova Prefeitura -->
-<div class="modal fade" id="modalPrefeitura" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content border-0">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title fw-bold" id="titulo-modal-prefeitura">Nova Prefeitura</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4">
-                <form id="formPrefeitura">
-                    <input type="hidden" id="form-pref-id">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small">NOME DA PREFEITURA</label>
-                        <input type="text" class="form-control" id="form-pref-nome" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small">SLUG (Caminho na URL)</label>
-                        <input type="text" class="form-control" id="form-pref-slug" placeholder="ex: cascavel">
-                    </div>
-                    <div class="row">
-                        <div class="col-6 mb-3">
-                            <label class="form-label fw-bold small">COR PRIMÁRIA</label>
-                            <input type="color" class="form-control form-control-color w-100" id="form-pref-cor1" value="#0d6efd">
+    <!-- Modal Nova Prefeitura -->
+    <div class="modal fade" id="modalPrefeitura" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold" id="titulo-modal-prefeitura">Nova Prefeitura</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="formPrefeitura">
+                        <input type="hidden" id="form-pref-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">NOME DA PREFEITURA</label>
+                            <input type="text" class="form-control" id="form-pref-nome" required>
                         </div>
-                        <div class="col-6 mb-3">
-                            <label class="form-label fw-bold small">COR SECUNDÁRIA</label>
-                            <input type="color" class="form-control form-control-color w-100" id="form-pref-cor2" value="#6c757d">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">SLUG (Caminho na URL)</label>
+                            <input type="text" class="form-control" id="form-pref-slug" placeholder="ex: cascavel">
                         </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold mt-2">Salvar Cliente</button>
-                </form>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-bold small">COR PRIMÁRIA</label>
+                                <input type="color" class="form-control form-control-color w-100" id="form-pref-cor1"
+                                    value="#0d6efd">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-bold small">COR SECUNDÁRIA</label>
+                                <input type="color" class="form-control form-control-color w-100" id="form-pref-cor2"
+                                    value="#6c757d">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold mt-2">Salvar Cliente</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal Novo Usuário -->
-<div class="modal fade" id="modalUsuario" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content border-0">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title fw-bold" id="titulo-modal-usuario">Novo Usuário</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4">
-                <form id="formUsuario">
-                    <input type="hidden" id="form-usu-id">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small">E-MAIL DE LOGIN</label>
-                        <input type="email" class="form-control" id="form-usu-email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small">SENHA</label>
-                        <input type="password" class="form-control" id="form-usu-senha" placeholder="Deixe em branco para manter a atual (na edição)">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small">VINCULAR À PREFEITURA</label>
-                        <select class="form-select" id="form-usu-pref">
-                            <option value="">Nenhuma (Será um Super Admin)</option>
-                            <!-- Preenchido via JS -->
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-success w-100 py-2 fw-bold mt-2">Salvar Usuário</button>
-                </form>
+    <!-- Modal Novo Usuário -->
+    <div class="modal fade" id="modalUsuario" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold" id="titulo-modal-usuario">Novo Usuário</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="formUsuario">
+                        <input type="hidden" id="form-usu-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">E-MAIL DE LOGIN</label>
+                            <input type="email" class="form-control" id="form-usu-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">SENHA</label>
+                            <input type="password" class="form-control" id="form-usu-senha"
+                                placeholder="Deixe em branco para manter a atual (na edição)">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">VINCULAR À PREFEITURA</label>
+                            <select class="form-select" id="form-usu-pref">
+                                <option value="">Nenhuma (Será um Super Admin)</option>
+                                <!-- Preenchido via JS -->
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 py-2 fw-bold mt-2">Salvar Usuário</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
     <script>
-    const API = 'http://localhost:3001/api';
-    let adminId = null;
-    let cachedPrefeituras = [];
+        //const API = 'http://localhost:3001/api';
+        const API = 'https://placar-api-qvva.onrender.com/api'; // Novo
+        let adminId = null;
+        let cachedPrefeituras = [];
 
-    // Verificação de segurança no carregamento
-    async function verificarAcesso() {
-        const user = checkSession();
-        if (!user) return;
-        
-        // Regra de Super Admin: prefeituraId é null ou 0.
-        if (user.prefeituraId) {
-            alert("Acesso Negado: Esta área é exclusiva para a administração do sistema.");
-            window.location.href = 'index.html';
-            return;
-        }
-        
-        adminId = user.id;
-        
-        // Iniciar carregamentos
-        carregarPrefeituras();
-        carregarUsuarios();
-    }
+        // Verificação de segurança no carregamento
+        async function verificarAcesso() {
+            const user = checkSession();
+            if (!user) return;
 
-    function getHeaders() {
-        return {
-            'Content-Type': 'application/json',
-            'x-admin-id': adminId
-        };
-    }
-
-    // Navegação entre abas
-    function mostrarAba(aba) {
-        document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        
-        document.getElementById('aba-prefeituras').classList.add('d-none');
-        document.getElementById('aba-usuarios').classList.add('d-none');
-        
-        document.getElementById(`aba-${aba}`).classList.remove('d-none');
-    }
-
-    // ==========================================
-    // PREFEITURAS (CLIENTES)
-    // ==========================================
-
-    async function carregarPrefeituras() {
-        try {
-            const res = await fetch(`${API}/admin/prefeituras`, { headers: getHeaders() });
-            if (!res.ok) throw await res.json();
-            
-            const prefeituras = await res.json();
-            cachedPrefeituras = prefeituras;
-            atualizarDropdownPrefeituras();
-
-            const tbody = document.getElementById('lista-prefeituras');
-            tbody.innerHTML = '';
-
-            if (prefeituras.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Nenhuma prefeitura cadastrada.</td></tr>';
+            // Regra de Super Admin: prefeituraId é null ou 0.
+            if (user.prefeituraId) {
+                alert("Acesso Negado: Esta área é exclusiva para a administração do sistema.");
+                window.location.href = 'index.html';
                 return;
             }
 
-            prefeituras.forEach(p => {
-                tbody.innerHTML += `
+            adminId = user.id;
+
+            // Iniciar carregamentos
+            carregarPrefeituras();
+            carregarUsuarios();
+        }
+
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'x-admin-id': adminId
+            };
+        }
+
+        // Navegação entre abas
+        function mostrarAba(aba) {
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            document.getElementById('aba-prefeituras').classList.add('d-none');
+            document.getElementById('aba-usuarios').classList.add('d-none');
+
+            document.getElementById(`aba-${aba}`).classList.remove('d-none');
+        }
+
+        // ==========================================
+        // PREFEITURAS (CLIENTES)
+        // ==========================================
+
+        async function carregarPrefeituras() {
+            try {
+                const res = await fetch(`${API}/admin/prefeituras`, { headers: getHeaders() });
+                if (!res.ok) throw await res.json();
+
+                const prefeituras = await res.json();
+                cachedPrefeituras = prefeituras;
+                atualizarDropdownPrefeituras();
+
+                const tbody = document.getElementById('lista-prefeituras');
+                tbody.innerHTML = '';
+
+                if (prefeituras.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Nenhuma prefeitura cadastrada.</td></tr>';
+                    return;
+                }
+
+                prefeituras.forEach(p => {
+                    tbody.innerHTML += `
                     <tr>
                         <td class="fw-bold text-muted">#${p.id}</td>
                         <td class="fw-bold">${p.nome}</td>
@@ -259,82 +297,82 @@
                         </td>
                     </tr>
                 `;
-            });
-        } catch(e) {
-            console.error(e);
-            alert("Erro ao carregar prefeituras! " + (e.error || e.message || ''));
+                });
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao carregar prefeituras! " + (e.error || e.message || ''));
+            }
         }
-    }
 
-    function prepararModalPrefeitura() {
-        document.getElementById('formPrefeitura').reset();
-        document.getElementById('form-pref-id').value = '';
-        document.getElementById('titulo-modal-prefeitura').textContent = 'Nova Prefeitura';
-    }
-
-    function editarPrefeitura(p) {
-        document.getElementById('form-pref-id').value = p.id;
-        document.getElementById('form-pref-nome').value = p.nome;
-        document.getElementById('form-pref-slug').value = p.slug || '';
-        document.getElementById('form-pref-cor1').value = p.corPrimaria || '#0d6efd';
-        document.getElementById('form-pref-cor2').value = p.corSecundaria || '#6c757d';
-        document.getElementById('titulo-modal-prefeitura').textContent = 'Editar Prefeitura';
-        new bootstrap.Modal(document.getElementById('modalPrefeitura')).show();
-    }
-
-    document.getElementById('formPrefeitura').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = document.getElementById('form-pref-id').value;
-        const body = {
-            nome: document.getElementById('form-pref-nome').value,
-            slug: document.getElementById('form-pref-slug').value,
-            corPrimaria: document.getElementById('form-pref-cor1').value,
-            corSecundaria: document.getElementById('form-pref-cor2').value
-        };
-
-        const url = id ? `${API}/admin/prefeituras/${id}` : `${API}/admin/prefeituras`;
-        const method = id ? 'PUT' : 'POST';
-
-        const res = await fetch(url, { method, headers: getHeaders(), body: JSON.stringify(body) });
-        if(res.ok) {
-            bootstrap.Modal.getInstance(document.getElementById('modalPrefeitura')).hide();
-            carregarPrefeituras();
-            alert("Prefeitura salva com sucesso!");
-        } else alert("Erro ao salvar prefeitura.");
-    });
-
-    async function excluirPrefeitura(id) {
-        if(confirm("Tem certeza que deseja excluir esta prefeitura e todos os usuários dela? Esta ação é extrema.")) {
-            const res = await fetch(`${API}/admin/prefeituras/${id}`, { method: 'DELETE', headers: getHeaders() });
-            if(res.ok) carregarPrefeituras();
-            else alert("Erro ao excluir.");
+        function prepararModalPrefeitura() {
+            document.getElementById('formPrefeitura').reset();
+            document.getElementById('form-pref-id').value = '';
+            document.getElementById('titulo-modal-prefeitura').textContent = 'Nova Prefeitura';
         }
-    }
 
-    // ==========================================
-    // USUÁRIOS (ACESSOS)
-    // ==========================================
+        function editarPrefeitura(p) {
+            document.getElementById('form-pref-id').value = p.id;
+            document.getElementById('form-pref-nome').value = p.nome;
+            document.getElementById('form-pref-slug').value = p.slug || '';
+            document.getElementById('form-pref-cor1').value = p.corPrimaria || '#0d6efd';
+            document.getElementById('form-pref-cor2').value = p.corSecundaria || '#6c757d';
+            document.getElementById('titulo-modal-prefeitura').textContent = 'Editar Prefeitura';
+            new bootstrap.Modal(document.getElementById('modalPrefeitura')).show();
+        }
 
-    function atualizarDropdownPrefeituras() {
-        const select = document.getElementById('form-usu-pref');
-        select.innerHTML = '<option value="">Nenhuma (Acesso Super Admin)</option>';
-        cachedPrefeituras.forEach(p => {
-            select.innerHTML += `<option value="${p.id}">${p.nome}</option>`;
+        document.getElementById('formPrefeitura').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('form-pref-id').value;
+            const body = {
+                nome: document.getElementById('form-pref-nome').value,
+                slug: document.getElementById('form-pref-slug').value,
+                corPrimaria: document.getElementById('form-pref-cor1').value,
+                corSecundaria: document.getElementById('form-pref-cor2').value
+            };
+
+            const url = id ? `${API}/admin/prefeituras/${id}` : `${API}/admin/prefeituras`;
+            const method = id ? 'PUT' : 'POST';
+
+            const res = await fetch(url, { method, headers: getHeaders(), body: JSON.stringify(body) });
+            if (res.ok) {
+                bootstrap.Modal.getInstance(document.getElementById('modalPrefeitura')).hide();
+                carregarPrefeituras();
+                alert("Prefeitura salva com sucesso!");
+            } else alert("Erro ao salvar prefeitura.");
         });
-    }
 
-    async function carregarUsuarios() {
-        try {
-            const res = await fetch(`${API}/admin/usuarios`, { headers: getHeaders() });
-            if (!res.ok) throw await res.json();
-            
-            const usuarios = await res.json();
-            const tbody = document.getElementById('lista-usuarios');
-            tbody.innerHTML = '';
+        async function excluirPrefeitura(id) {
+            if (confirm("Tem certeza que deseja excluir esta prefeitura e todos os usuários dela? Esta ação é extrema.")) {
+                const res = await fetch(`${API}/admin/prefeituras/${id}`, { method: 'DELETE', headers: getHeaders() });
+                if (res.ok) carregarPrefeituras();
+                else alert("Erro ao excluir.");
+            }
+        }
 
-            usuarios.forEach(u => {
-                const isAdmin = !u.prefeituraId;
-                tbody.innerHTML += `
+        // ==========================================
+        // USUÁRIOS (ACESSOS)
+        // ==========================================
+
+        function atualizarDropdownPrefeituras() {
+            const select = document.getElementById('form-usu-pref');
+            select.innerHTML = '<option value="">Nenhuma (Acesso Super Admin)</option>';
+            cachedPrefeituras.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.nome}</option>`;
+            });
+        }
+
+        async function carregarUsuarios() {
+            try {
+                const res = await fetch(`${API}/admin/usuarios`, { headers: getHeaders() });
+                if (!res.ok) throw await res.json();
+
+                const usuarios = await res.json();
+                const tbody = document.getElementById('lista-usuarios');
+                tbody.innerHTML = '';
+
+                usuarios.forEach(u => {
+                    const isAdmin = !u.prefeituraId;
+                    tbody.innerHTML += `
                     <tr>
                         <td class="fw-bold text-muted">#${u.id}</td>
                         <td class="fw-bold">
@@ -353,62 +391,63 @@
                         </td>
                     </tr>
                 `;
-            });
-        } catch(e) {
-            console.error(e);
+                });
+            } catch (e) {
+                console.error(e);
+            }
         }
-    }
 
-    function prepararModalUsuario() {
-        document.getElementById('formUsuario').reset();
-        document.getElementById('form-usu-id').value = '';
-        document.getElementById('form-usu-senha').required = true;
-        document.getElementById('titulo-modal-usuario').textContent = 'Novo Usuário';
-    }
-
-    function editarUsuario(u) {
-        document.getElementById('form-usu-id').value = u.id;
-        document.getElementById('form-usu-email').value = u.email;
-        document.getElementById('form-usu-senha').value = '';
-        document.getElementById('form-usu-senha').required = false; 
-        document.getElementById('form-usu-pref').value = u.prefeituraId || '';
-        document.getElementById('titulo-modal-usuario').textContent = 'Editar Vínculo/Senha';
-        new bootstrap.Modal(document.getElementById('modalUsuario')).show();
-    }
-
-    document.getElementById('formUsuario').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = document.getElementById('form-usu-id').value;
-        const body = {
-            email: document.getElementById('form-usu-email').value,
-            prefeituraId: document.getElementById('form-usu-pref').value || null
-        };
-        const pass = document.getElementById('form-usu-senha').value;
-        if(pass) body.senha = pass;
-
-        const url = id ? `${API}/admin/usuarios/${id}` : `${API}/admin/usuarios`;
-        const method = id ? 'PUT' : 'POST';
-
-        const res = await fetch(url, { method, headers: getHeaders(), body: JSON.stringify(body) });
-        if(res.ok) {
-            bootstrap.Modal.getInstance(document.getElementById('modalUsuario')).hide();
-            carregarUsuarios();
-        } else {
-            const err = await res.json();
-            alert("Erro: " + err.error);
+        function prepararModalUsuario() {
+            document.getElementById('formUsuario').reset();
+            document.getElementById('form-usu-id').value = '';
+            document.getElementById('form-usu-senha').required = true;
+            document.getElementById('titulo-modal-usuario').textContent = 'Novo Usuário';
         }
-    });
 
-    async function excluirUsuario(id) {
-        if(confirm("Tem certeza que deseja apagar este acesso?")) {
-            const res = await fetch(`${API}/admin/usuarios/${id}`, { method: 'DELETE', headers: getHeaders() });
-            if(res.ok) carregarUsuarios();
-            else alert("Erro ao excluir usuário.");
+        function editarUsuario(u) {
+            document.getElementById('form-usu-id').value = u.id;
+            document.getElementById('form-usu-email').value = u.email;
+            document.getElementById('form-usu-senha').value = '';
+            document.getElementById('form-usu-senha').required = false;
+            document.getElementById('form-usu-pref').value = u.prefeituraId || '';
+            document.getElementById('titulo-modal-usuario').textContent = 'Editar Vínculo/Senha';
+            new bootstrap.Modal(document.getElementById('modalUsuario')).show();
         }
-    }
 
-    // Ao carregar a página
-    window.onload = verificarAcesso;
-</script>
+        document.getElementById('formUsuario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('form-usu-id').value;
+            const body = {
+                email: document.getElementById('form-usu-email').value,
+                prefeituraId: document.getElementById('form-usu-pref').value || null
+            };
+            const pass = document.getElementById('form-usu-senha').value;
+            if (pass) body.senha = pass;
+
+            const url = id ? `${API}/admin/usuarios/${id}` : `${API}/admin/usuarios`;
+            const method = id ? 'PUT' : 'POST';
+
+            const res = await fetch(url, { method, headers: getHeaders(), body: JSON.stringify(body) });
+            if (res.ok) {
+                bootstrap.Modal.getInstance(document.getElementById('modalUsuario')).hide();
+                carregarUsuarios();
+            } else {
+                const err = await res.json();
+                alert("Erro: " + err.error);
+            }
+        });
+
+        async function excluirUsuario(id) {
+            if (confirm("Tem certeza que deseja apagar este acesso?")) {
+                const res = await fetch(`${API}/admin/usuarios/${id}`, { method: 'DELETE', headers: getHeaders() });
+                if (res.ok) carregarUsuarios();
+                else alert("Erro ao excluir usuário.");
+            }
+        }
+
+        // Ao carregar a página
+        window.onload = verificarAcesso;
+    </script>
 </body>
+
 </html>
