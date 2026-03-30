@@ -141,7 +141,8 @@
                 btn.disabled = true;
                 btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Entrando...';
 
-                const res = await fetch(`${API_BASE}/login`, {
+                //const res = await fetch(`${API_BASE}/login`, {
+                const res = await fetch(`${API}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, senha })

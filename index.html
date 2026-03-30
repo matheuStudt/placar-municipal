@@ -176,7 +176,8 @@
 
         async function fetchData(endpoint) {
             try {
-                const res = await fetch(`${API_BASE}/${endpoint}?prefeituraId=${prefeituraId}`);
+                //const res = await fetch(`${API_BASE}/${endpoint}?prefeituraId=${prefeituraId}`);
+                const res = await fetch(`${API}/${endpoint}?prefeituraId=${prefeituraId}`);
                 if (!res.ok) throw new Error(`Erro ao buscar ${endpoint}`);
                 return await res.json();
             } catch (error) {

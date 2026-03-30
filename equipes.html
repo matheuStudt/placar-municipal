@@ -169,7 +169,8 @@
 
         async function carregarEquipes() {
             try {
-                const res = await fetch(`${API_BASE}/equipes?prefeituraId=${prefeituraId}`);
+                //const res = await fetch(`${API_BASE}/equipes?prefeituraId=${prefeituraId}`);
+                const res = await fetch(`${API}/equipes?prefeituraId=${prefeituraId}`);
                 const equipes = await res.json();
                 const tabela = document.getElementById('tabela-equipes');
                 tabela.innerHTML = '';
@@ -224,7 +225,8 @@
 
         async function excluirEquipe(id) {
             if (confirm("Deseja realmente excluir esta equipe? Isso removerá todos os vínculos com atletas.")) {
-                const res = await fetch(`${API_BASE}/equipes/${id}`, { method: 'DELETE' });
+                //const res = await fetch(`${API_BASE}/equipes/${id}`, { method: 'DELETE' });
+                const res = await fetch(`${API}/equipes/${id}`, { method: 'DELETE' });
                 if (!res.ok) {
                     const data = await res.json().catch(() => ({}));
                     alert(data.error || "Erro ao excluir equipe.");
@@ -245,7 +247,8 @@
                 prefeituraId: prefeituraId
             };
 
-            const url = id ? `${API_BASE}/equipes/${id}` : `${API_BASE}/equipes`;
+            //const url = id ? `${API_BASE}/equipes/${id}` : `${API_BASE}/equipes`;
+            const url = id ? `${API}/equipes/${id}` : `${API}/equipes`;
             const method = id ? 'PUT' : 'POST';
 
             await fetch(url, {
@@ -263,7 +266,8 @@
             document.getElementById('nome-equipe-modal').innerText = nome;
             document.getElementById('equipe-id-vinculo').value = id;
 
-            const resAtletas = await fetch(`${API_BASE}/atletas?prefeituraId=${prefeituraId}`);
+            //const resAtletas = await fetch(`${API_BASE}/atletas?prefeituraId=${prefeituraId}`);
+            const resAtletas = await fetch(`${API}/atletas?prefeituraId=${prefeituraId}`);
             const atletas = await resAtletas.json();
             const select = document.getElementById('select-atletas');
             select.innerHTML = '<option value="">Selecione um Atleta...</option>';
@@ -274,7 +278,8 @@
         }
 
         async function atualizarListaElenco(equipeId) {
-            const res = await fetch(`${API_BASE}/equipes/${equipeId}/elenco`);
+            //const res = await fetch(`${API_BASE}/equipes/${equipeId}/elenco`);
+            const res = await fetch(`${API}/equipes/${equipeId}/elenco`);
             const elenco = await res.json();
             const lista = document.getElementById('lista-elenco');
             lista.innerHTML = elenco.length ? '' : '<div class="p-3 text-center text-muted">Nenhum atleta vinculado ainda.</div>';
@@ -290,7 +295,8 @@
         document.getElementById('form-vinculo').addEventListener('submit', async (e) => {
             e.preventDefault();
             const equipeId = document.getElementById('equipe-id-vinculo').value;
-            await fetch(`${API_BASE}/vinculos`, {
+            //await fetch(`${API_BASE}/vinculos`, {
+            await fetch(`${API}/vinculos`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
