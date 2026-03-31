@@ -219,14 +219,17 @@
         // Verificação de segurança no carregamento
         function verificarAcesso() {
             const user = JSON.parse(localStorage.getItem('usuario'));
+
             // Se não houver usuário ou se não for o admin principal
-            // Ajuste o e-mail abaixo para o seu e-mail de admin criado no Supabase
             if (!user || user.email !== 'admin@admin.com') {
                 alert("Acesso Negado: Esta área é exclusiva para a administração do sistema.");
                 window.location.href = 'login.html';
                 return;
             }
-            // Se passou, carrega os dados
+
+            // ESTA LINHA É A CHAVE: Preenche a variável que os cabeçalhos (headers) usam
+            adminId = user.id;
+
             carregarPrefeituras();
             carregarUsuarios();
         }
