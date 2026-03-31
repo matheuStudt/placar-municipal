@@ -219,16 +219,12 @@
         // Verificação de segurança no carregamento
         function verificarAcesso() {
             const user = JSON.parse(localStorage.getItem('usuario'));
-
-            // Se não houver usuário ou se não for o admin principal
             if (!user || user.email !== 'admin@admin.com') {
-                alert("Acesso Negado: Esta área é exclusiva para a administração do sistema.");
                 window.location.href = 'login.html';
                 return;
             }
-
-            // ESTA LINHA É A CHAVE: Preenche a variável que os cabeçalhos (headers) usam
             adminId = user.id;
+            console.log("ID do Administrador carregado:", adminId); // ADICIONE ESTA LINHA
 
             carregarPrefeituras();
             carregarUsuarios();
