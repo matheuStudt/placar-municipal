@@ -1,4 +1,5 @@
-const API_BASE_SHARED = 'http://localhost:3001/api';
+//const API_BASE_SHARED = 'http://localhost:3001/api';
+const API_BASE_SHARED = "https://placar-api-qvva.onrender.com/api";
 
 // 1. Sidebar Toggle
 function toggleSidebar() {
@@ -16,10 +17,10 @@ function checkSession() {
         return null;
     }
     const user = JSON.parse(session);
-    
+
     // Atualiza nomes da prefeitura se os elementos existirem
     const nomeParaExibir = user.prefeituraNome || "Sua Prefeitura";
-    
+
     document.querySelectorAll('.prefeitura-nome').forEach(el => {
         el.textContent = nomeParaExibir;
     });
@@ -28,7 +29,7 @@ function checkSession() {
     if (titulo) {
         titulo.textContent = nomeParaExibir;
     }
-    
+
     // Especial para dashboard index.html
     const tituloDashboard = document.getElementById('titulo-painel');
     if (tituloDashboard) {
