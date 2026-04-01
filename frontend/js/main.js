@@ -1,5 +1,10 @@
 //const API_BASE_SHARED = 'http://localhost:3001/api';
-const API_BASE_SHARED = "https://placar-api-qvva.onrender.com/api";
+//const API_BASE_SHARED = "https://placar-api-qvva.onrender.com/api";
+
+// O sistema detecta sozinho se você está testando no PC ou se está no site oficial
+const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:3001/api'
+    : 'https://placar-api-qvva.onrender.com/api';
 
 // 1. Sidebar Toggle
 function toggleSidebar() {
