@@ -4,6 +4,7 @@ import {
     getClassificacao, gerarChaveamento, getEstatisticas 
 } from '../controllers/campeonatos.controller.js';
 import { getEquipesInscritas } from '../controllers/participacoes.controller.js';
+import { getRodadasByCampeonato } from '../controllers/rodadas.controller.js';
 
 const router = Router();
 
@@ -13,6 +14,7 @@ router.put('/:id', updateCampeonato);
 router.delete('/:id', deleteCampeonato);
 
 router.get('/:id/equipes', getEquipesInscritas);
+router.get('/:id/rodadas', getRodadasByCampeonato);
 router.get('/:id/classificacao', getClassificacao);
 router.post('/:id/gerar-chaveamento', gerarChaveamento);
 router.get('/:id/estatisticas', getEstatisticas);
