@@ -1,0 +1,20 @@
+import { Router } from 'express';
+import { 
+    getCampeonatos, createCampeonato, updateCampeonato, deleteCampeonato,
+    getClassificacao, gerarChaveamento, getEstatisticas 
+} from '../controllers/campeonatos.controller.js';
+import { getEquipesInscritas } from '../controllers/participacoes.controller.js';
+
+const router = Router();
+
+router.get('/', getCampeonatos);
+router.post('/', createCampeonato);
+router.put('/:id', updateCampeonato);
+router.delete('/:id', deleteCampeonato);
+
+router.get('/:id/equipes', getEquipesInscritas);
+router.get('/:id/classificacao', getClassificacao);
+router.post('/:id/gerar-chaveamento', gerarChaveamento);
+router.get('/:id/estatisticas', getEstatisticas);
+
+export default router;

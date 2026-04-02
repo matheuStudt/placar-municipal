@@ -169,7 +169,7 @@
 
         async function carregarEquipes() {
             try {
-                //const res = await fetch(`${API_BASE}/equipes?prefeituraId=${prefeituraId}`);
+
                 const res = await fetch(`${API}/equipes?prefeituraId=${prefeituraId}`);
                 const equipes = await res.json();
                 const tabela = document.getElementById('tabela-equipes');
@@ -225,7 +225,7 @@
 
         async function excluirEquipe(id) {
             if (confirm("Deseja realmente excluir esta equipe? Isso removerá todos os vínculos com atletas.")) {
-                //const res = await fetch(`${API_BASE}/equipes/${id}`, { method: 'DELETE' });
+
                 const res = await fetch(`${API}/equipes/${id}`, { method: 'DELETE' });
                 if (!res.ok) {
                     const data = await res.json().catch(() => ({}));
@@ -266,7 +266,6 @@
             document.getElementById('nome-equipe-modal').innerText = nome;
             document.getElementById('equipe-id-vinculo').value = id;
 
-            //const resAtletas = await fetch(`${API_BASE}/atletas?prefeituraId=${prefeituraId}`);
             const resAtletas = await fetch(`${API}/atletas?prefeituraId=${prefeituraId}`);
             const atletas = await resAtletas.json();
             const select = document.getElementById('select-atletas');
@@ -278,7 +277,7 @@
         }
 
         async function atualizarListaElenco(equipeId) {
-            //const res = await fetch(`${API_BASE}/equipes/${equipeId}/elenco`);
+
             const res = await fetch(`${API}/equipes/${equipeId}/elenco`);
             const elenco = await res.json();
             const lista = document.getElementById('lista-elenco');
@@ -295,7 +294,7 @@
         document.getElementById('form-vinculo').addEventListener('submit', async (e) => {
             e.preventDefault();
             const equipeId = document.getElementById('equipe-id-vinculo').value;
-            //await fetch(`${API_BASE}/vinculos`, {
+
             await fetch(`${API}/vinculos`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

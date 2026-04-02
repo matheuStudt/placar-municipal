@@ -202,7 +202,7 @@
         // 1. Carrega os campeonatos no dropdown superior
         async function carregarFiltroCampeonatos() {
             try {
-                //const res = await fetch(`${API_BASE}/campeonatos?prefeituraId=${prefeituraId}`);
+
                 const res = await fetch(`${API}/campeonatos?prefeituraId=${prefeituraId}`);
                 const camps = await res.json();
                 campsCache = camps;
@@ -229,7 +229,7 @@
 
         async function carregarRodadas(campId) {
             try {
-                //const res = await fetch(`${API_BASE}/campeonatos/${campId}/rodadas`);
+
                 const res = await fetch(`${API}/campeonatos/${campId}/rodadas`);
                 const rodadas = await res.json();
                 rodadasCache = rodadas;
@@ -347,7 +347,7 @@
 
             // Busca os jogos existentes para definir o próximo número automaticamente e caching para opções
             try {
-                //const resJogos = await fetch(`${API_BASE}/jogos?campeonatoId=${campeonatoAtual}`);
+
                 const resJogos = await fetch(`${API}/jogos?campeonatoId=${campeonatoAtual}`);
                 const jogosExistentes = await resJogos.json();
                 window.jogosExistentesCache = jogosExistentes || [];
@@ -359,7 +359,6 @@
                 document.getElementById('numero-jogo').value = proximo;
             } catch (e) { console.error("Erro ao calcular próximo número:", e); }
 
-            //const res = await fetch(`${API_BASE}/campeonatos/${campeonatoAtual}/equipes`);
             const res = await fetch(`${API}/campeonatos/${campeonatoAtual}/equipes`);
             const equipes = await res.json();
             equipesCache = equipes;
@@ -516,7 +515,7 @@
 
         async function excluirJogo(id) {
             if (confirm("Deseja realmente excluir este jogo? Esta ação é irreversível.")) {
-                //const res = await fetch(`${API_BASE}/jogos/${id}`, { method: 'DELETE' });
+
                 const res = await fetch(`${API}/jogos/${id}`, { method: 'DELETE' });
                 if (res.ok) carregarJogos(campeonatoAtual);
                 else {
