@@ -589,9 +589,22 @@
             });
 
             if (res.ok) {
-                document.getElementById('btn-fechar-modal').click();
-                document.getElementById('formNovoJogo').reset();
                 carregarJogos(campeonatoAtual);
+
+                if (idUpdate) {
+                    // Trata-se de uma edição, fechamos o modal
+                    document.getElementById('btn-fechar-modal').click();
+                    document.getElementById('formNovoJogo').reset();
+                } else {
+                    // Trata-se de inclusão em sequência, prepara o próximo jogo
+                    const numeroAtual = parseInt(document.getElementById('numero-jogo').value) || 0;
+                    document.getElementById('numero-jogo').value = numeroAtual + 1;
+                    
+                    document.getElementById('select-mandante').value = '';
+                    document.getElementById('select-visitante').value = '';
+                    document.getElementById('input-mandante-placeholder').value = '';
+                    document.getElementById('input-visitante-placeholder').value = '';
+                }
             } else {
                 alert("Erro ao salvar o jogo.");
             }
