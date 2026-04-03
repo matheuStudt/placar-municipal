@@ -192,7 +192,30 @@
             const user = checkSession();
             if (!user) return;
             prefeituraId = user.prefeituraId;
-            carregarFiltroCampeonatos();
+            await carregarFiltroCampeonatos();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const campId = urlParams.get('campeonatoId');
+            const rodadaId = urlParams.get('rodadaId');
+
+            if (campId) {
+                const selectCamp = document.getElementById('select-campeonato-filtro');
+                selectCamp.value = campId;
+                campeonatoAtual = campId;
+                document.getElementById('btn-novo-jogo').disabled = false;
+                
+                await carregarRodadas(campId);
+                
+                if (rodadaId && rodadaId !== 'undefined' && rodadaId !== 'null') {
+                    const selectRodada = document.getElementById('select-rodada-filtro');
+                    selectRodada.value = rodadaId;
+                }
+                
+                carregarJogos(campId);
+                
+                // Limpa a URL para não manter os filtros presos nela em futuros reloads da página
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
         }
 
         let campeonatoAtual = null;

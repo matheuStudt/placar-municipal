@@ -401,7 +401,13 @@
             });
             if (res.ok) {
                 alert("Resultado Salvo!");
-                window.location.href = 'jogos.html';
+                const campId = document.getElementById('select-campeonato').value;
+                const rodadaId = document.getElementById('select-rodada').value;
+                if (campId) {
+                    window.location.href = `jogos.html?campeonatoId=${campId}&rodadaId=${rodadaId || ''}`;
+                } else {
+                    window.location.href = 'jogos.html';
+                }
             }
         }
 
