@@ -189,10 +189,12 @@
                 selectCamp.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
             });
 
-            // Se vier um ID de jogo na URL, carrega automaticamente
             const urlParams = new URLSearchParams(window.location.search);
             const jogoId = urlParams.get('jogoId');
             if (jogoId) {
+                document.getElementById('lista-mandante').innerHTML = '<div class="text-center p-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted small fw-bold">Carregando informações...</p></div>';
+                document.getElementById('lista-visitante').innerHTML = '<div class="text-center p-4"><div class="spinner-border text-danger" role="status"></div><p class="mt-2 text-muted small fw-bold">Carregando informações...</p></div>';
+
                 const resDetalhes = await fetch(`${API}/jogos/${jogoId}/detalhes`);
                 if (resDetalhes.ok) {
                     const dados = await resDetalhes.json();
@@ -202,6 +204,9 @@
                     await carregarJogos();
                     document.getElementById('select-jogo').value = jogoId;
                     carregarDadosDoJogo();
+                } else {
+                    document.getElementById('lista-mandante').innerHTML = '<p class="p-3 text-danger">Erro ao carregar os dados.</p>';
+                    document.getElementById('lista-visitante').innerHTML = '<p class="p-3 text-danger">Erro ao carregar os dados.</p>';
                 }
             }
         }
@@ -275,6 +280,9 @@
         async function carregarDadosDoJogo() {
             const id = document.getElementById('select-jogo').value;
             if (!id) return;
+
+            document.getElementById('lista-mandante').innerHTML = '<div class="text-center p-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted small fw-bold">Buscando atletas...</p></div>';
+            document.getElementById('lista-visitante').innerHTML = '<div class="text-center p-4"><div class="spinner-border text-danger" role="status"></div><p class="mt-2 text-muted small fw-bold">Buscando atletas...</p></div>';
 
             const res = await fetch(`${API}/jogos/${id}/detalhes`);
             const dados = await res.json();

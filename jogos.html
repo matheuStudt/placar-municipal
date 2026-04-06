@@ -336,9 +336,9 @@
 
                                         </div>
                                         <div class="btn-group shadow-sm">
-                                            <a href="sumula.html?jogoId=${j.id}" class="btn btn-sm btn-outline-primary" title="Súmula">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="abrirSumula(this, ${j.id})" title="Súmula">
                                                 <i class="bi bi-file-earmark-text"></i>
-                                            </a>
+                                            </button>
                                             ${!isFinalizado ? `
                                                 <button class="btn btn-sm btn-outline-secondary" onclick='editarJogo(${JSON.stringify(j)})' title="Ajustar">
                                                     <i class="bi bi-pencil"></i>
@@ -632,6 +632,13 @@
                 alert("Erro ao salvar o jogo.");
             }
         });
+
+        function abrirSumula(btn, jogoId) {
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            btn.classList.add('disabled');
+            btn.disabled = true;
+            window.location.href = `sumula.html?jogoId=${jogoId}`;
+        }
 
         window.onload = init;
     </script>
