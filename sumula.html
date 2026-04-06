@@ -161,7 +161,7 @@
             </div>
         </div>
 
-        <button class="btn btn-success w-100 py-3 fw-bold fs-5 shadow" onclick="finalizarPartida()">
+        <button id="btn-finalizar" class="btn btn-success w-100 py-3 fw-bold fs-5 shadow" onclick="finalizarPartida()">
             <i class="bi bi-check2-circle me-2"></i> FINALIZAR E SALVAR RESULTADO
         </button>
     </main>
@@ -266,7 +266,7 @@
             document.getElementById('lista-mandante').innerHTML = '<p class="p-3 text-muted">Selecione um jogo...</p>';
             document.getElementById('lista-visitante').innerHTML = '<p class="p-3 text-muted">Selecione um jogo...</p>';
 
-            const btnFinalizar = document.querySelector('button[onclick="finalizarPartida()"]');
+            const btnFinalizar = document.getElementById('btn-finalizar');
             btnFinalizar.disabled = false;
             btnFinalizar.innerHTML = '<i class="bi bi-check2-circle me-2"></i> FINALIZAR E SALVAR RESULTADO';
             btnFinalizar.classList.replace('btn-secondary', 'btn-success');
@@ -295,7 +295,7 @@
             renderizarLado(dados.elencoMandante, 'mandante', isFinalizado);
             renderizarLado(dados.elencoVisitante, 'visitante', isFinalizado);
 
-            const btnFinalizar = document.querySelector('button[onclick="finalizarPartida()"]');
+            const btnFinalizar = document.getElementById('btn-finalizar');
             if (isFinalizado) {
                 btnFinalizar.disabled = true;
                 btnFinalizar.innerHTML = '<i class="bi bi-lock-fill me-2"></i> JOGO FINALIZADO (SOMENTE LEITURA)';
@@ -381,33 +381,53 @@
         async function finalizarPartida() {
             if (!jogoAtivo || jogoAtivo.status === 'Finalizado') return;
 
-            const estatisticas = [];
-            document.querySelectorAll('.card-atleta').forEach(card => {
-                estatisticas.push({
-                    atletaId: parseInt(card.dataset.atletaId),
-                    gols: parseInt(card.querySelector('.gol-count').innerText),
-                    gc: parseInt(card.querySelector('.gc-count').innerText),
-                    am: parseInt(card.querySelector('.am-count').innerText),
-                    vm: parseInt(card.querySelector('.vm-count').innerText)
+            const btnFinalizar = document.getElementById('btn-finalizar');
+            const textoOriginal = btnFinalizar.innerHTML;
+
+            try {
+                btnFinalizar.disabled = true;
+                btnFinalizar.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> SALVANDO RESULTADO...';
+
+                const estatisticas = [];
+                document.querySelectorAll('.card-atleta').forEach(card => {
+                    estatisticas.push({
+                        atletaId: parseInt(card.dataset.atletaId),
+                        gols: parseInt(card.querySelector('.gol-count').innerText),
+                        gc: parseInt(card.querySelector('.gc-count').innerText),
+                        am: parseInt(card.querySelector('.am-count').innerText),
+                        vm: parseInt(card.querySelector('.vm-count').innerText)
+                    });
                 });
-            });
 
-            console.log("[FRONTEND] Enviando estatísticas:", estatisticas);
+                console.log("[FRONTEND] Enviando estatísticas:", estatisticas);
 
-            const res = await fetch(`${API}/jogos/finalizar`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ jogoId: jogoAtivo.id, golsM, golsV, estatisticas })
-            });
-            if (res.ok) {
-                alert("Resultado Salvo!");
-                const campId = document.getElementById('select-campeonato').value;
-                const rodadaId = document.getElementById('select-rodada').value;
-                if (campId) {
-                    window.location.href = `jogos.html?campeonatoId=${campId}&rodadaId=${rodadaId || ''}`;
+                const res = await fetch(`${API}/jogos/finalizar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ jogoId: jogoAtivo.id, golsM, golsV, estatisticas })
+                });
+
+                if (res.ok) {
+                    alert("Resultado Salvo!");
+                    const campId = document.getElementById('select-campeonato').value;
+                    const rodadaId = document.getElementById('select-rodada').value;
+                    if (campId) {
+                        window.location.href = `jogos.html?campeonatoId=${campId}&rodadaId=${rodadaId || ''}`;
+                    } else {
+                        window.location.href = 'jogos.html';
+                    }
                 } else {
-                    window.location.href = 'jogos.html';
+                    const errInfo = await res.text();
+                    console.error("Erro da API:", errInfo);
+                    alert("Ocorreu um erro ao salvar o resultado. Tente novamente.");
+                    btnFinalizar.disabled = false;
+                    btnFinalizar.innerHTML = textoOriginal;
                 }
+            } catch (error) {
+                console.error("Erro de conexão:", error);
+                alert("Erro de conexão. Verifique sua internet e tente novamente.");
+                btnFinalizar.disabled = false;
+                btnFinalizar.innerHTML = textoOriginal;
             }
         }
 
