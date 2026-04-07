@@ -116,6 +116,11 @@
                     Acessar Painel <i class="bi bi-box-arrow-in-right ms-2"></i>
                 </button>
 
+                <div id="login-erro" class="alert alert-danger d-none align-items-center gap-2" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span id="login-erro-msg"></span>
+                </div>
+
                 <div class="text-center mt-3">
                     <a href="portal.html" class="btn btn-outline-secondary w-100 py-2 fw-bold">
                         <i class="bi bi-globe me-2"></i> Ver Portal Público
@@ -171,7 +176,10 @@
                 }
 
             } catch (error) {
-                alert(error.message);
+                const erroDiv = document.getElementById('login-erro');
+                document.getElementById('login-erro-msg').textContent = error.message;
+                erroDiv.classList.remove('d-none');
+                erroDiv.classList.add('d-flex');
                 btn.disabled = false;
                 btn.innerHTML = 'Acessar Painel <i class="bi bi-box-arrow-in-right ms-2"></i>';
             }

@@ -255,7 +255,7 @@
                 const res = await fetch(`${API}/equipes/${id}`, { method: 'DELETE' });
                 if (!res.ok) {
                     const data = await res.json().catch(() => ({}));
-                    alert(data.error || "Erro ao excluir equipe.");
+                    showToast(data.error || 'Erro ao excluir equipe.', 'danger');
                 } else {
                     carregarEquipes();
                 }
@@ -350,7 +350,7 @@
             if(res.ok) {
                 atualizarListaElenco(equipeId);
             } else {
-                alert('Erro ao limpar elenco');
+                showToast('Erro ao limpar elenco', 'danger');
             }
         }
 

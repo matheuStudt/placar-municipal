@@ -272,7 +272,7 @@
         function gerarPDF() {
             const campId = document.getElementById('select-campeonato').value;
             if(!campId){
-                alert("Por favor, selecione um campeonato para gerar o relatório.");
+                showToast('Por favor, selecione um campeonato para gerar o relatório.', 'warning');
                 return;
             }
             window.print();

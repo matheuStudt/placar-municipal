@@ -144,7 +144,7 @@
                 const res = await fetch(`${API}/atletas/${id}`, { method: 'DELETE' });
                 if (!res.ok) {
                     const data = await res.json().catch(() => ({}));
-                    alert(data.error || "Erro ao excluir atleta.");
+                    showToast(data.error || 'Erro ao excluir atleta.', 'danger');
                 } else {
                     carregarAtletas();
                 }

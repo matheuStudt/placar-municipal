@@ -549,7 +549,7 @@
                 if (res.ok) carregarJogos(campeonatoAtual);
                 else {
                     const err = await res.json();
-                    alert(err.error || "Erro ao excluir.");
+                    showToast(err.error || 'Erro ao excluir.', 'danger');
                 }
             }
         }
@@ -570,7 +570,7 @@
                 mandantePlaceholder = document.getElementById('input-mandante-placeholder').value;
                 visitantePlaceholder = document.getElementById('input-visitante-placeholder').value;
                 if (!mandantePlaceholder || !visitantePlaceholder) {
-                    alert("Preencha os placeholders para o mandante e visitante (ex: '1º Chave A').");
+                    showToast("Preencha os placeholders para o mandante e visitante (ex: '1º Chave A').", 'warning');
                     return;
                 }
             } else {
@@ -580,11 +580,11 @@
                 visitanteId = visitanteSelect.value;
 
                 if (!mandanteId || !visitanteId) {
-                    alert("Selecione as duas equipes.");
+                    showToast('Selecione as duas equipes.', 'warning');
                     return;
                 }
                 if (mandanteId === visitanteId) {
-                    alert("Uma equipe não pode jogar contra ela mesma!");
+                    showToast('Uma equipe não pode jogar contra ela mesma!', 'warning');
                     return;
                 }
                 mandanteNome = mandanteSelect.options[mandanteSelect.selectedIndex].text;
@@ -636,7 +636,7 @@
                     document.getElementById('input-visitante-placeholder').value = '';
                 }
             } else {
-                alert("Erro ao salvar o jogo.");
+                showToast('Erro ao salvar o jogo.', 'danger');
             }
         });
 

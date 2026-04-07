@@ -369,7 +369,7 @@
                 if (!res.ok) {
                     const erroData = await res.json();
                     console.error("[ERRO POST] Falha ao criar rodada:", erroData);
-                    alert("Erro ao criar rodada: Verifique o console para mais detalhes");
+                    showToast('Erro ao criar rodada. Verifique o console para mais detalhes.', 'danger');
                     return;
                 }
 
@@ -378,7 +378,7 @@
                 atualizarListaRodadas(campId);
             } catch (err) {
                 console.error("Erro de conexão ao criar rodada:", err);
-                alert("Erro de conexão.");
+                showToast('Erro de conexão.', 'danger');
             }
         });
 
@@ -395,13 +395,13 @@
                     const res = await fetch(`${API}/campeonatos/${campId}/gerar-chaveamento`, { method: 'POST' });
                     const data = await res.json();
                     if (res.ok) {
-                        alert(`Sucesso! ${data.jogosAtualizados} jogos foram atualizados com os times classificados.`);
+                        showToast(`Sucesso! ${data.jogosAtualizados} jogos foram atualizados com os times classificados.`, 'success');
                     } else {
-                        alert(data.error || "Erro ao gerar chaveamento.");
+                        showToast(data.error || 'Erro ao gerar chaveamento.', 'danger');
                     }
                 } catch (e) {
                     console.error("Erro ao gerar chaveamento", e);
-                    alert("Erro de conexão.");
+                    showToast('Erro de conexão.', 'danger');
                 }
             }
         }

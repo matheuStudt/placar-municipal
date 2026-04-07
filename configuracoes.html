@@ -194,10 +194,10 @@
                     });
 
                     if (res.ok) {
-                        alert('Configurações salvas com sucesso!');
+                        showToast('Configurações salvas com sucesso!', 'success');
                         window.location.reload();
                     }
-                } catch (e) { alert('Erro ao salvar'); }
+                } catch (e) { showToast('Erro ao salvar', 'danger'); }
             });
         </script>
 </body>

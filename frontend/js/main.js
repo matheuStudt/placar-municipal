@@ -51,4 +51,51 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!window.location.href.includes('login.html')) {
         checkSession();
     }
+
+    // Cria o container de toasts se ainda não existir
+    if (!document.getElementById('toast-container')) {
+        const container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        container.style.zIndex = '9999';
+        document.body.appendChild(container);
+    }
 });
+
+/**
+ * Exibe uma notificação Toast Bootstrap.
+ * @param {string} mensagem  - Texto da mensagem.
+ * @param {'success'|'danger'|'warning'|'info'} tipo - Cor do toast.
+ */
+function showToast(mensagem, tipo = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const icons = {
+        success: 'bi-check-circle-fill',
+        danger:  'bi-x-circle-fill',
+        warning: 'bi-exclamation-triangle-fill',
+        info:    'bi-info-circle-fill'
+    };
+
+    const id = 'toast-' + Date.now();
+    const toastEl = document.createElement('div');
+    toastEl.id = id;
+    toastEl.className = `toast align-items-center text-bg-${tipo} border-0 shadow`;
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+    toastEl.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body fw-semibold d-flex align-items-center gap-2">
+                <i class="bi ${icons[tipo] || 'bi-bell-fill'}"></i>
+                ${mensagem}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+        </div>`;
+
+    container.appendChild(toastEl);
+    const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+    toast.show();
+    toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+}

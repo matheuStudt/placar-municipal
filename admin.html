@@ -293,7 +293,7 @@
                 });
             } catch (e) {
                 console.error(e);
-                alert("Erro ao carregar prefeituras! " + (e.error || e.message || ''));
+                showToast('Erro ao carregar prefeituras! ' + (e.error || e.message || ''), 'danger');
             }
         }
 
@@ -330,15 +330,15 @@
             if (res.ok) {
                 bootstrap.Modal.getInstance(document.getElementById('modalPrefeitura')).hide();
                 carregarPrefeituras();
-                alert("Prefeitura salva com sucesso!");
-            } else alert("Erro ao salvar prefeitura.");
+                showToast('Prefeitura salva com sucesso!', 'success');
+            } else showToast('Erro ao salvar prefeitura.', 'danger');
         });
 
         async function excluirPrefeitura(id) {
             if (confirm("Tem certeza que deseja excluir esta prefeitura e todos os usuários dela? Esta ação é extrema.")) {
                 const res = await fetch(`${API}/admin/prefeituras/${id}`, { method: 'DELETE', headers: getHeaders() });
                 if (res.ok) carregarPrefeituras();
-                else alert("Erro ao excluir.");
+                else showToast('Erro ao excluir.', 'danger');
             }
         }
 
@@ -426,7 +426,7 @@
                 carregarUsuarios();
             } else {
                 const err = await res.json();
-                alert("Erro: " + err.error);
+                showToast('Erro: ' + err.error, 'danger');
             }
         });
 
@@ -434,7 +434,7 @@
             if (confirm("Tem certeza que deseja apagar este acesso?")) {
                 const res = await fetch(`${API}/admin/usuarios/${id}`, { method: 'DELETE', headers: getHeaders() });
                 if (res.ok) carregarUsuarios();
-                else alert("Erro ao excluir usuário.");
+                else showToast('Erro ao excluir usuário.', 'danger');
             }
         }
 
