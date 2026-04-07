@@ -301,8 +301,8 @@
             document.getElementById('placar-v').innerText = golsV;
 
             const isFinalizado = jogoAtivo.status === 'Finalizado';
-            renderizarLado(dados.elencoMandante, 'mandante', isFinalizado);
-            renderizarLado(dados.elencoVisitante, 'visitante', isFinalizado);
+            renderizarLado(dados.elencoMandante, 'mandante', isFinalizado, jogoAtivo.mandanteId);
+            renderizarLado(dados.elencoVisitante, 'visitante', isFinalizado, jogoAtivo.visitanteId);
 
             const btnFinalizar = document.getElementById('btn-finalizar');
             if (isFinalizado) {
@@ -316,7 +316,7 @@
             }
         }
 
-        function renderizarLado(atletas, lado, bloqueado) {
+        function renderizarLado(atletas, lado, bloqueado, equipeId) {
             const container = document.getElementById(`lista-${lado}`);
             container.innerHTML = '';
             if (atletas.length === 0) container.innerHTML = '<p class="p-3 text-muted small">Nenhum atleta vinculado.</p>';
@@ -325,7 +325,7 @@
 
             atletas.forEach(a => {
                 container.innerHTML += `
-                <div class="card-atleta p-3 d-flex justify-content-between align-items-center" data-atleta-id="${a.id}">
+                <div class="card-atleta p-3 d-flex justify-content-between align-items-center" data-atleta-id="${a.id}" data-equipe-id="${equipeId || ''}">
                     <div>
                         <span class="fw-bold">${a.nome}</span>
                     </div>
@@ -401,6 +401,7 @@
                 document.querySelectorAll('.card-atleta').forEach(card => {
                     estatisticas.push({
                         atletaId: parseInt(card.dataset.atletaId),
+                        equipeId: parseInt(card.dataset.equipeId) || null,
                         gols: parseInt(card.querySelector('.gol-count').innerText),
                         gc: parseInt(card.querySelector('.gc-count').innerText),
                         am: parseInt(card.querySelector('.am-count').innerText),

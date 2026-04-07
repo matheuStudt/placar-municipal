@@ -39,6 +39,7 @@ model Equipe {
   prefeituraId  Int?
   jogosMandante Jogo[]         @relation("Mandante")
   jogosVisitante Jogo[]        @relation("Visitante")
+  eventos       Evento[]
 }
 
 model Campeonato {
@@ -124,6 +125,8 @@ model Evento {
   jogoId   Int
   atleta   Atleta @relation(fields: [atletaId], references: [id])
   atletaId Int
+  equipe   Equipe? @relation(fields: [equipeId], references: [id])
+  equipeId Int?
   gols     Int    @default(0)
   gc       Int    @default(0)
   am       Int    @default(0)

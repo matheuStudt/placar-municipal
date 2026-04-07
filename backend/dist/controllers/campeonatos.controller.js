@@ -325,6 +325,8 @@ export const getEstatisticas = async (req, res) => {
         const eventos = await prisma.evento.findMany({
             where: { jogo: { rodada: { campeonatoId: id } } },
             include: {
+                jogo: true,
+                equipe: true,
                 atleta: { include: { vinculos: { include: { equipe: true } } } }
             }
         });
@@ -334,8 +336,7 @@ export const getEstatisticas = async (req, res) => {
         eventos.forEach(e => {
             const atletaId = e.atletaId;
             const nomeAtleta = e.atleta.nome;
-            const vinculo = e.atleta.vinculos[0];
-            const nomeEquipe = vinculo?.equipe?.nome || "Time";
+            const nomeEquipe = e.equipe?.nome || e.atleta.vinculos[0]?.equipe?.nome || "Time";
             if (e.gols > 0) {
                 if (!artilhariaMap[atletaId])
                     artilhariaMap[atletaId] = { nome: nomeAtleta, equipeNome: nomeEquipe, gols: 0 };

@@ -141,6 +141,7 @@ export const finalizarJogo = async (req: Request, res: Response) => {
                     data: {
                         jogoId: idProcurado,
                         atletaId: Number(s.atletaId),
+                        equipeId: s.equipeId ? Number(s.equipeId) : null,
                         gols: Number(s.gols || 0),
                         gc: Number(s.gc || 0),
                         am: Number(s.am || 0),
