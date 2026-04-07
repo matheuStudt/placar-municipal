@@ -33,6 +33,7 @@ model Equipe {
   responsavel   String
   telefone      String
   local         String?
+  logoUrl       String?
   participacoes Participacao[]
   vinculos      Vinculo[]
   prefeitura    Prefeitura?    @relation(fields: [prefeituraId], references: [id])

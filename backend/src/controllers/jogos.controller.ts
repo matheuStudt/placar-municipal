@@ -15,7 +15,11 @@ export const getJogos = async (req: Request, res: Response) => {
         const jogos = await prisma.jogo.findMany({
             where,
             orderBy: { numero: 'asc' },
-            include: { rodada: true }
+            include: {
+                rodada: true,
+                mandante: { select: { id: true, logoUrl: true } },
+                visitante: { select: { id: true, logoUrl: true } }
+            }
         });
         res.json(jogos);
     } catch (e) {

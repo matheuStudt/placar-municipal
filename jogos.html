@@ -316,8 +316,11 @@
                                             ${j.rodada?.tipo === 'MATA_MATA' ? (j.rodada.nome || 'Mata-Mata') : (j.chave ? (j.chave.includes('Chave') ? j.chave : 'Chave ' + j.chave) : 'Fase de Grupos')}
                                         </span>
                                     </div>
-                                    <div class="col-md-3 text-end">
-                                        <span class="fw-bold fs-5">${j.mandanteNome}</span>
+                                    <div class="col-md-3 text-end pe-2">
+                                        <div class="d-flex align-items-center justify-content-end gap-2">
+                                            ${j.mandante?.logoUrl ? `<img src="${j.mandante.logoUrl}" alt="" style="width:32px;height:32px;object-fit:contain;">` : ''}
+                                            <span class="fw-bold fs-5">${j.mandanteNome}</span>
+                                        </div>
                                     </div>
                                     <div class="col-md-2 text-center px-0">
                                         <div class="d-flex justify-content-center align-items-center gap-2">
@@ -327,8 +330,11 @@
                                         </div>
                                         <span class="badge ${badgeClass} badge-status mt-2">${j.status}</span>
                                     </div>
-                                    <div class="col-md-3 text-start">
-                                        <span class="fw-bold fs-5">${j.visitanteNome}</span>
+                                    <div class="col-md-3 text-start ps-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            ${j.visitante?.logoUrl ? `<img src="${j.visitante.logoUrl}" alt="" style="width:32px;height:32px;object-fit:contain;">` : ''}
+                                            <span class="fw-bold fs-5">${j.visitanteNome}</span>
+                                        </div>
                                     </div>
                                     <div class="col-md-3 text-end border-start">
                                         <div class="mb-2">
