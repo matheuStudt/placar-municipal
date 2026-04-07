@@ -135,7 +135,7 @@
 
         async function carregarConfiguracoes() {
             try {
-                const res = await fetch(`${API}/configuracoes?prefeituraId=${prefeituraId}`);
+                const res = await fetch(`${API}/configuracao?prefeituraId=${prefeituraId}`);
                 if (res.ok) {
                     const config = await res.json();
                     if (config.nome) {
