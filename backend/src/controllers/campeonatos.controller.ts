@@ -84,7 +84,10 @@ export const getClassificacao = async (req: Request, res: Response) => {
 
         const jogos = await prisma.jogo.findMany({
             where: {
-                rodada: { campeonatoId },
+                rodada: { 
+                    campeonatoId,
+                    tipo: 'GRUPO'
+                },
                 status: 'Finalizado'
             }
         });
