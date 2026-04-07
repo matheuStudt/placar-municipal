@@ -340,6 +340,8 @@ export const getEstatisticas = async (req, res) => {
                     defesaMap[mId] = { nome: j.mandanteNome, golsSofridos: 0, jogos: 0 };
                 defesaMap[mId].golsSofridos += j.golsVisitante;
                 defesaMap[mId].jogos++;
+                if (!disciplinaMap[j.mandanteNome])
+                    disciplinaMap[j.mandanteNome] = { nome: j.mandanteNome, amarelos: 0, vermelhos: 0, peso: 0 };
             }
             if (j.visitanteId !== null) {
                 const vId = j.visitanteId;
@@ -347,10 +349,12 @@ export const getEstatisticas = async (req, res) => {
                     defesaMap[vId] = { nome: j.visitanteNome, golsSofridos: 0, jogos: 0 };
                 defesaMap[vId].golsSofridos += j.golsMandante;
                 defesaMap[vId].jogos++;
+                if (!disciplinaMap[j.visitanteNome])
+                    disciplinaMap[j.visitanteNome] = { nome: j.visitanteNome, amarelos: 0, vermelhos: 0, peso: 0 };
             }
         });
         const artilharia = Object.values(artilhariaMap).sort((a, b) => b.gols - a.gols);
-        const disciplina = Object.values(disciplinaMap).sort((a, b) => b.peso - a.peso);
+        const disciplina = Object.values(disciplinaMap).sort((a, b) => a.peso - b.peso);
         const defesa = Object.values(defesaMap).map((d) => ({
             ...d,
             media: d.jogos > 0 ? (d.golsSofridos / d.jogos).toFixed(2) : "0.00"
