@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - Placar Municipal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" href="frontend/css/main.css">
+    <style>
+        /* CSS Ocultação Nativa de Impressão (PDF) */
+        @media print {
+            body { font-size: 12pt; background-color: #fff !important; }
+            .sidebar, .top-navbar, .btn-print-hide, .main-content-overlay {
+                display: none !important;
+            }
+            .main-content { margin-left: 0 !important; width: 100% !important; padding: 0 !important; }
+            .card { border: none !important; box-shadow: none !important; }
+            .card-header { background-color: #fff !important; color: #000 !important; border-bottom: 2px solid #000 !important; }
+            table { width: 100% !important; border-collapse: collapse !important; }
+            th, td { border: 1px solid #ccc !important; padding: 8px !important; text-align: center !important; }
+            .bg-primary { background-color: #000 !important; color: #fff !important; }
+            .bg-light { background-color: #f8f9fa !important; }
+            .container, .print-container { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
+            @page { margin: 1cm; size: A4 portrait; }
+        }
+    </style>
+</head>
+
+<body data-bs-theme="light">
+
+    <div class="main-content-overlay" onclick="toggleSidebar()"></div>
+
+    <nav class="sidebar p-3 shadow">
+        <div class="d-flex align-items-center mb-4 px-2">
+            <i class="bi bi-trophy-fill me-2 fs-4 text-warning"></i>
+            <span class="prefeitura-nome fs-5 fw-bold text-white">Placar Municipal</span>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item mb-2"><a href="index.html" class="nav-link p-2"><i class="bi bi-house-door me-2"></i> Início</a></li>
+            <li class="nav-item mb-2"><a href="campeonatos.html" class="nav-link p-2"><i class="bi bi-award me-2"></i> Campeonatos</a></li>
+            <li class="nav-item mb-2"><a href="equipes.html" class="nav-link p-2"><i class="bi bi-shield-shaded me-2"></i> Equipes</a></li>
+            <li class="nav-item mb-2"><a href="atletas.html" class="nav-link p-2"><i class="bi bi-people me-2"></i> Atletas</a></li>
+            <li class="nav-item mb-2"><a href="jogos.html" class="nav-link p-2"><i class="bi bi-calendar3 me-2"></i> Tabela de Jogos</a></li>
+            <li class="nav-item mb-2"><a href="sumula.html" class="nav-link p-2"><i class="bi bi-file-earmark-text me-2"></i> Súmula</a></li>
+            <li class="nav-item mb-2"><a href="relatorios.html" class="nav-link active p-2"><i class="bi bi-file-pdf me-2"></i> Relatórios</a></li>
+            <hr class="text-white-50">
+            <li class="nav-item"><a href="login.html" class="nav-link p-2 text-danger-emphasis text-white"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content print-container">
+        <header class="top-navbar shadow-sm rounded-4 btn-print-hide">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <h5 class="mb-0 fw-bold" id="titulo-painel-header">Gerenciar Relatórios</h5>
+            </div>
+            <div class="d-flex align-items-center gap-2"></div>
+        </header>
+
+        <div class="d-flex justify-content-between align-items-center mb-4 btn-print-hide">
+            <h2 class="fw-bold">Exportação de Relatórios</h2>
+            <button class="btn btn-primary fw-bold shadow-sm" onclick="gerarPDF()">
+                <i class="bi bi-file-earmark-pdf me-2"></i> Salvar como PDF
+            </button>
+        </div>
+
+        <!-- Ferramentas de Filtro (Somente no Viewport) -->
+        <div class="card shadow-sm border-0 mb-4 btn-print-hide">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted">CAMPEONATO</label>
+                        <select id="select-campeonato" class="form-select form-select-lg" onchange="carregarRodadas()"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted">RODADA</label>
+                        <select id="select-rodada" class="form-select form-select-lg" onchange="carregarJogos()">
+                            <option value="">Selecione um Campeonato Primeiro...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela (Mostrada no PDF também) -->
+        <div class="card shadow-sm border-0" id="print-area">
+            <div class="card-header bg-primary text-white d-none d-print-block" style="padding: 1rem;">
+                <h3 class="mb-0 text-center fw-bold" id="pdf-titulo-campeonato">Tabela Oficial</h3>
+                <p class="mb-0 text-center" id="pdf-subtitulo-rodada">Todos os Jogos</p>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-muted small text-uppercase">
+                        <tr>
+                            <th class="ps-4">Data/Hora</th>
+                            <th>Local</th>
+                            <th class="text-end" style="width: 30%">Mandante</th>
+                            <th class="text-center" style="width: 10%">Placar</th>
+                            <th class="text-start" style="width: 30%">Visitante</th>
+                            <th>Chave/Rodada</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-jogos-relatorio">
+                        <tr><td colspan="6" class="text-center text-muted p-4">Selecione o campeonato e a rodada para exibir.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="frontend/js/main.js"></script>
+    <script>
+        let prefeituraId = null;
+
+        async function init() {
+            const user = checkSession();
+            if (!user) return;
+            prefeituraId = user.prefeituraId;
+            carregarCampeonatos();
+        }
+
+        async function carregarCampeonatos() {
+            try {
+                const res = await fetch(`${API}/campeonatos?prefeituraId=${prefeituraId}`);
+                const camps = await res.json();
+                const select = document.getElementById('select-campeonato');
+                select.innerHTML = '<option value="">Selecione...</option>';
+                camps.forEach(c => select.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+            } catch (e) {
+                console.error("Erro campeonato:", e);
+            }
+        }
+
+        async function carregarRodadas() {
+            const campId = document.getElementById('select-campeonato').value;
+            const cbRodada = document.getElementById('select-rodada');
+            cbRodada.innerHTML = '<option value="">Carregando...</option>';
+
+            if (!campId) {
+                cbRodada.innerHTML = '<option value="">Selecione um Campeonato Primeiro...</option>';
+                document.getElementById('tabela-jogos-relatorio').innerHTML = '<tr><td colspan="6" class="text-center p-4">Selecione o campeonato para visualizar.</td></tr>';
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/campeonatos/${campId}/rodadas`);
+                if (!res.ok) throw new Error("Falha buscando rodadas.");
+                const rodadas = await res.json();
+
+                cbRodada.innerHTML = '<option value="todas">Todas as Rodadas</option>';
+                rodadas.forEach(r => cbRodada.innerHTML += `<option value="${r.id}">${r.nome}</option>`);
+                
+                carregarJogos();
+            } catch (e) {
+                console.error(e);
+                cbRodada.innerHTML = '<option value="">(Erro)</option>';
+            }
+        }
+
+        async function carregarJogos() {
+            const campId = document.getElementById('select-campeonato').value;
+            const rodadaId = document.getElementById('select-rodada').value;
+            const tbody = document.getElementById('tabela-jogos-relatorio');
+
+            if (!campId) return;
+
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4">Carregando...</td></tr>';
+
+            try {
+                let url = `${API}/jogos?campeonatoId=${campId}`;
+                const res = await fetch(url);
+                let jogos = await res.json();
+
+                if (rodadaId && rodadaId !== 'todas') {
+                    jogos = jogos.filter(j => String(j.rodadaId) === String(rodadaId));
+                }
+
+                // Ajustando Titulos do PDF
+                const selCamp = document.getElementById('select-campeonato');
+                const selRod = document.getElementById('select-rodada');
+                document.getElementById('pdf-titulo-campeonato').innerText = selCamp.options[selCamp.selectedIndex].text;
+                document.getElementById('pdf-subtitulo-rodada').innerText = selRod.options[selRod.selectedIndex].text;
+
+                if (jogos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted p-4">Nenhum jogo encontrado para este filtro.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                jogos.forEach(j => {
+                    const dataFormatada = j.data ? new Date(j.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'A definir';
+                    const horaFormatada = j.hora || '';
+                    const dh = dataFormatada + (horaFormatada ? ` às ${horaFormatada}` : '');
+                    const labelRodada = j.rodada && j.rodada.nome ? j.rodada.nome : 'Rodada ?';
+
+                    const gM = j.golsMandante !== null ? j.golsMandante : '-';
+                    const gV = j.golsVisitante !== null ? j.golsVisitante : '-';
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="ps-4 fw-bold small text-muted">${dh}</td>
+                            <td class="small">${j.local || ''}</td>
+                            <td class="text-end fw-bold text-primary">${j.mandanteNome}</td>
+                            <td class="text-center bg-light fw-bold fs-6">${gM} X ${gV}</td>
+                            <td class="text-start fw-bold text-dark">${j.visitanteNome}</td>
+                            <td class="small fw-bold border-start"><span class="badge bg-secondary-subtle text-secondary px-2">${labelRodada}</span></td>
+                        </tr>
+                    `;
+                });
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger p-4">Erro ao carregar jogos.</td></tr>';
+            }
+        }
+
+        function gerarPDF() {
+            const campId = document.getElementById('select-campeonato').value;
+            if(!campId){
+                alert("Por favor, selecione um campeonato para gerar o relatório.");
+                return;
+            }
+            window.print();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
