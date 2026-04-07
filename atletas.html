@@ -8,6 +8,37 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="frontend/css/main.css">
+    <style>
+        .search-bar .input-group-text {
+            background: #f8fafc;
+            border-right: none;
+            color: #94a3b8;
+        }
+        .search-bar .form-control {
+            border-left: none;
+        }
+        .search-bar .form-control:focus {
+            box-shadow: none;
+        }
+        .pagination .page-link {
+            border-radius: 8px !important;
+            margin: 0 2px;
+            font-weight: 600;
+            color: #0d6efd;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        .badge-total {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+    </style>
 </head>
 
 <body data-bs-theme="light">
@@ -45,9 +76,6 @@
                 <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
                 <h5 class="mb-0 fw-bold" id="titulo-painel-header">Base de Atletas</h5>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <!-- Botão de tema removido -->
-            </div>
         </header>
 
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -58,6 +86,32 @@
             </button>
         </div>
 
+        <!-- Barra de busca + contador -->
+        <div class="card border-0 shadow-sm p-3 mb-3">
+            <div class="row align-items-center g-2">
+                <div class="col-md-6">
+                    <div class="input-group search-bar">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="input-busca" class="form-control"
+                            placeholder="Buscar por nome ou CPF..." oninput="filtrarAtletas()">
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-center gap-2">
+                    <label class="form-label small fw-bold text-muted mb-0">Por página:</label>
+                    <select id="select-por-pagina" class="form-select form-select-sm w-auto" onchange="mudarPorPagina()">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <div class="col-md-2 text-md-end">
+                    <span class="badge-total" id="contador-atletas">0 atletas</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela -->
         <div class="card border-0 shadow-sm">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -72,10 +126,16 @@
                     <tbody id="tabela-atletas"></tbody>
                 </table>
             </div>
+
+            <!-- Paginação -->
+            <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top" id="area-paginacao">
+                <small class="text-muted" id="info-paginacao"></small>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0" id="controles-paginacao"></ul>
+                </nav>
+            </div>
         </div>
     </main>
-    </div>
-    </div>
 
     <div class="modal fade" id="modalAtleta" tabindex="-1">
         <div class="modal-dialog">
@@ -94,7 +154,8 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold small">CPF</label>
-                            <input type="text" class="form-control" id="cpf" placeholder="000.000.000-00" required>
+                            <input type="text" class="form-control font-monospace" id="cpf"
+                                placeholder="000.000.000-00" maxlength="14">
                         </div>
                         <button type="submit" class="btn btn-success w-100 py-3 fw-bold">SALVAR NO SISTEMA</button>
                     </form>
@@ -107,38 +168,142 @@
     <script src="frontend/js/main.js"></script>
     <script>
         let prefeituraId = null;
+        let atletasCache = [];
+        let atletasFiltrados = [];
+        let paginaAtual = 1;
+        let porPagina = 10;
 
         async function init() {
             const user = checkSession();
             if (!user) return;
             prefeituraId = user.prefeituraId;
+
+            // Máscara de CPF
+            document.getElementById('cpf').addEventListener('input', function () {
+                let v = this.value.replace(/\D/g, '').substring(0, 11);
+                if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+                else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+                else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+                this.value = v;
+            });
+
             carregarAtletas();
         }
 
         async function carregarAtletas() {
             const res = await fetch(`${API}/atletas?prefeituraId=${prefeituraId}`);
-            const atletas = await res.json();
-            const body = document.getElementById('tabela-atletas');
-            body.innerHTML = '';
-            atletas.forEach(a => {
-                body.innerHTML += `
-                <tr>
-                    <td class="px-4 text-muted">#${a.id}</td>
-                    <td class="fw-bold">${a.nome}</td>
-                    <td class="text-secondary small font-monospace">${a.cpf || '--'}</td>
-                    <td class="text-end px-4">
-                        <button class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#modalAtleta" onclick="editarAtleta(${a.id}, '${a.nome}', '${a.cpf}')">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="excluirAtleta(${a.id})">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
-                </tr>`;
-            });
+            atletasCache = await res.json();
+            filtrarAtletas();
         }
 
-        // Função para Deletar Atleta
+        function filtrarAtletas() {
+            const termo = document.getElementById('input-busca').value.toLowerCase().trim();
+            atletasFiltrados = atletasCache.filter(a => {
+                const nome = (a.nome || '').toLowerCase();
+                const cpf = (a.cpf || '').replace(/\D/g, '');
+                const termoDigitos = termo.replace(/\D/g, '');
+                return nome.includes(termo) || (termoDigitos && cpf.includes(termoDigitos));
+            });
+            paginaAtual = 1;
+            renderizarTabela();
+        }
+
+        function mudarPorPagina() {
+            porPagina = parseInt(document.getElementById('select-por-pagina').value);
+            paginaAtual = 1;
+            renderizarTabela();
+        }
+
+        function renderizarTabela() {
+            const total = atletasFiltrados.length;
+            const totalPaginas = Math.max(1, Math.ceil(total / porPagina));
+            if (paginaAtual > totalPaginas) paginaAtual = totalPaginas;
+
+            const inicio = (paginaAtual - 1) * porPagina;
+            const fim = Math.min(inicio + porPagina, total);
+            const pagina = atletasFiltrados.slice(inicio, fim);
+
+            const body = document.getElementById('tabela-atletas');
+            body.innerHTML = '';
+
+            if (pagina.length === 0) {
+                body.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-5">
+                    <i class="bi bi-person-x fs-2 d-block mb-2 opacity-50"></i>Nenhum atleta encontrado.</td></tr>`;
+            } else {
+                pagina.forEach(a => {
+                    body.innerHTML += `
+                    <tr>
+                        <td class="px-4 text-muted">#${a.id}</td>
+                        <td class="fw-bold">${a.nome}</td>
+                        <td class="text-secondary small font-monospace">${a.cpf || '--'}</td>
+                        <td class="text-end px-4">
+                            <button class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#modalAtleta" onclick="editarAtleta(${a.id}, '${a.nome.replace(/'/g,"\\'")}', '${a.cpf || ''}')">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="excluirAtleta(${a.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+            }
+
+            // Contador
+            document.getElementById('contador-atletas').textContent =
+                total === atletasCache.length
+                    ? `${total} atleta${total !== 1 ? 's' : ''}`
+                    : `${total} de ${atletasCache.length} atleta${atletasCache.length !== 1 ? 's' : ''}`;
+
+            // Info paginação
+            document.getElementById('info-paginacao').textContent =
+                total === 0 ? '' : `Mostrando ${inicio + 1}–${fim} de ${total}`;
+
+            // Controles de paginação
+            const nav = document.getElementById('controles-paginacao');
+            nav.innerHTML = '';
+
+            // Prev
+            nav.innerHTML += `<li class="page-item ${paginaAtual === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="irParaPagina(${paginaAtual - 1})">
+                    <i class="bi bi-chevron-left"></i></a></li>`;
+
+            // Numeração compacta
+            const delta = 2;
+            const range = [];
+            for (let i = Math.max(1, paginaAtual - delta); i <= Math.min(totalPaginas, paginaAtual + delta); i++) {
+                range.push(i);
+            }
+            if (range[0] > 1) {
+                nav.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="irParaPagina(1)">1</a></li>`;
+                if (range[0] > 2) nav.innerHTML += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+            }
+            range.forEach(p => {
+                nav.innerHTML += `<li class="page-item ${p === paginaAtual ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="irParaPagina(${p})">${p}</a></li>`;
+            });
+            if (range[range.length - 1] < totalPaginas) {
+                if (range[range.length - 1] < totalPaginas - 1)
+                    nav.innerHTML += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+                nav.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="irParaPagina(${totalPaginas})">${totalPaginas}</a></li>`;
+            }
+
+            // Next
+            nav.innerHTML += `<li class="page-item ${paginaAtual === totalPaginas ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="irParaPagina(${paginaAtual + 1})">
+                    <i class="bi bi-chevron-right"></i></a></li>`;
+
+            // Esconde paginação se tiver só 1 página
+            document.getElementById('area-paginacao').style.display = totalPaginas <= 1 ? 'none' : 'flex';
+        }
+
+        function irParaPagina(p) {
+            event.preventDefault();
+            const totalPaginas = Math.ceil(atletasFiltrados.length / porPagina);
+            if (p < 1 || p > totalPaginas) return;
+            paginaAtual = p;
+            renderizarTabela();
+        }
+
         async function excluirAtleta(id) {
             if (confirm("Deseja realmente excluir este atleta? Isso também o removerá de qualquer equipe.")) {
                 const res = await fetch(`${API}/atletas/${id}`, { method: 'DELETE' });
