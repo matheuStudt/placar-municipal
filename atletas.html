@@ -193,6 +193,8 @@
         async function carregarAtletas() {
             const res = await fetch(`${API}/atletas?prefeituraId=${prefeituraId}`);
             atletasCache = await res.json();
+            // Ordenar por nome crescente
+            atletasCache.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }));
             filtrarAtletas();
         }
 
