@@ -3,9 +3,29 @@ export const getCampeonatos = async (req, res) => {
     const prefeituraId = req.query.prefeituraId ? parseInt(String(req.query.prefeituraId)) : undefined;
     try {
         const camps = await prisma.campeonato.findMany({
-            where: prefeituraId ? { prefeituraId } : {}
+            where: prefeituraId ? { prefeituraId } : {},
+            include: { rodadas: { include: { jogos: true } } }
         });
-        res.json(camps);
+        const campsDynamic = camps.map(c => {
+            let statusDin = 'Inscrições Abertas';
+            const todosJogos = c.rodadas.flatMap(r => r.jogos);
+            if (todosJogos.length > 0) {
+                statusDin = 'Em Andamento';
+                const rodadaFinal = c.rodadas.find(r => r.nome?.toLowerCase().includes('final') && r.tipo === 'MATA_MATA' && !r.nome?.toLowerCase().includes('semi') && !r.nome?.toLowerCase().includes('quarta'));
+                if (rodadaFinal && rodadaFinal.jogos.length > 0 && rodadaFinal.jogos.every(j => j.status === 'Finalizado')) {
+                    statusDin = 'Finalizado';
+                }
+                else if (c.formato === 'Pontos Corridos' && todosJogos.every(j => j.status === 'Finalizado')) {
+                    statusDin = 'Finalizado';
+                }
+            }
+            return {
+                ...c,
+                status: statusDin,
+                rodadas: undefined
+            };
+        });
+        res.json(campsDynamic);
     }
     catch (e) {
         console.error("[DEBUG] Erro GET campeonatos:", e);
