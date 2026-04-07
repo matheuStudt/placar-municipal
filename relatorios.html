@@ -96,12 +96,12 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light text-muted small text-uppercase">
                         <tr>
-                            <th class="ps-4">Data/Hora</th>
-                            <th>Local</th>
-                            <th class="text-end" style="width: 30%">Mandante</th>
-                            <th class="text-center" style="width: 10%">Placar</th>
-                            <th class="text-start" style="width: 30%">Visitante</th>
-                            <th>Chave/Rodada</th>
+                            <th class="text-center" style="width: 8%">Jogo</th>
+                            <th class="text-center" style="width: 12%">Hora</th>
+                            <th class="text-end" style="width: 25%">Mandante</th>
+                            <th class="text-center" style="width: 15%">Placar</th>
+                            <th class="text-start" style="width: 25%">Visitante</th>
+                            <th class="text-center" style="width: 15%">Chave</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-jogos-relatorio">
@@ -193,25 +193,48 @@
                 }
 
                 tbody.innerHTML = '';
+
+                // Agrupando por Data e Local
+                const grupos = {};
                 jogos.forEach(j => {
-                    const dataFormatada = j.data ? new Date(j.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'A definir';
-                    const horaFormatada = j.hora || '';
-                    const dh = dataFormatada + (horaFormatada ? ` às ${horaFormatada}` : '');
-                    const labelRodada = j.rodada && j.rodada.nome ? j.rodada.nome : 'Rodada ?';
+                    const localStr = j.local || 'Local Definir';
+                    const dataStr = j.data ? new Date(j.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data Indefinida';
+                    const key = `${localStr} - ${dataStr}`;
+                    if(!grupos[key]) grupos[key] = [];
+                    grupos[key].push(j);
+                });
 
-                    const gM = j.golsMandante !== null ? j.golsMandante : '-';
-                    const gV = j.golsVisitante !== null ? j.golsVisitante : '-';
-
+                Object.keys(grupos).forEach(key => {
+                    // Linha de Cabeçalho
                     tbody.innerHTML += `
-                        <tr>
-                            <td class="ps-4 fw-bold small text-muted">${dh}</td>
-                            <td class="small">${j.local || ''}</td>
-                            <td class="text-end fw-bold text-primary">${j.mandanteNome}</td>
-                            <td class="text-center bg-light fw-bold fs-6">${gM} X ${gV}</td>
-                            <td class="text-start fw-bold text-dark">${j.visitanteNome}</td>
-                            <td class="small fw-bold border-start"><span class="badge bg-secondary-subtle text-secondary px-2">${labelRodada}</span></td>
+                        <tr class="table-secondary">
+                            <td colspan="6" class="fw-bold text-center text-dark fs-6 py-2" style="background-color: #f1f5f9 !important;">
+                                <i class="bi bi-geo-alt-fill me-1"></i> ${key}
+                            </td>
                         </tr>
                     `;
+
+                    // Linhas de Jogo
+                    grupos[key].forEach(j => {
+                        const hr = j.horario || '--:--';
+                        const gM = j.golsMandante !== null ? j.golsMandante : '-';
+                        const gV = j.golsVisitante !== null ? j.golsVisitante : '-';
+                        const nJ = j.numero || '-';
+                        const ch = j.chave || '-';
+
+                        tbody.innerHTML += `
+                            <tr>
+                                <td class="text-center text-muted fw-bold">#${nJ}</td>
+                                <td class="text-center fw-bold text-secondary">${hr}</td>
+                                <td class="text-end fw-bold text-primary">${j.mandanteNome}</td>
+                                <td class="text-center bg-light fw-bold fs-6">${gM} X ${gV}</td>
+                                <td class="text-start fw-bold text-dark">${j.visitanteNome}</td>
+                                <td class="text-center small fw-bold border-start">
+                                    <span class="badge bg-secondary-subtle text-secondary px-2">${ch}</span>
+                                </td>
+                            </tr>
+                        `;
+                    });
                 });
             } catch (e) {
                 console.error(e);
