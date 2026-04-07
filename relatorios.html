@@ -13,19 +13,21 @@
     <style>
         /* CSS Ocultação Nativa de Impressão (PDF) */
         @media print {
-            body { font-size: 12pt; background-color: #fff !important; }
+            @page { margin: 0; size: A4 portrait; }
+            body { font-size: 12pt; background-color: #fff !important; padding: 1.5cm !important; color: #000 !important; }
             .sidebar, .top-navbar, .btn-print-hide, .main-content-overlay {
                 display: none !important;
             }
             .main-content { margin-left: 0 !important; width: 100% !important; padding: 0 !important; }
             .card { border: none !important; box-shadow: none !important; }
             .card-header { background-color: #fff !important; color: #000 !important; border-bottom: 2px solid #000 !important; }
-            table { width: 100% !important; border-collapse: collapse !important; }
-            th, td { border: 1px solid #ccc !important; padding: 8px !important; text-align: center !important; }
-            .bg-primary { background-color: #000 !important; color: #fff !important; }
+            #pdf-titulo-campeonato, #pdf-subtitulo-rodada { color: #000 !important; font-weight: bold !important; }
+            table { width: 100% !important; border-collapse: collapse !important; color: #000 !important; }
+            th, td { border: 1px solid #ccc !important; padding: 8px !important; text-align: center !important; color: #000 !important; }
+            .text-muted, .text-secondary { color: #000 !important; }
+            .bg-primary { background-color: #fff !important; color: #000 !important; }
             .bg-light { background-color: #f8f9fa !important; }
             .container, .print-container { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
-            @page { margin: 1cm; size: A4 portrait; }
         }
     </style>
 </head>
@@ -88,9 +90,14 @@
 
         <!-- Tabela (Mostrada no PDF também) -->
         <div class="card shadow-sm border-0" id="print-area">
-            <div class="card-header bg-primary text-white d-none d-print-block" style="padding: 1rem;">
-                <h3 class="mb-0 text-center fw-bold" id="pdf-titulo-campeonato">Tabela Oficial</h3>
-                <p class="mb-0 text-center" id="pdf-subtitulo-rodada">Todos os Jogos</p>
+            <div class="card-header bg-primary text-white d-none d-print-block text-center" style="padding: 1rem;">
+                <!-- NOVO CABEÇALHO PREFEITURA -->
+                <img id="pdf-logo-prefeitura" src="" alt="Logo da Prefeitura" style="max-height: 90px; display: none;" class="img-fluid mb-2">
+                <h4 class="fw-bold mb-3 text-uppercase" id="pdf-nome-prefeitura">PREFEITURA MUNICIPAL</h4>
+                <hr class="border-dark opacity-50 mb-3" style="width: 50%; margin: 0 auto;">
+                
+                <h3 class="mb-0 fw-bold" id="pdf-titulo-campeonato">Tabela Oficial</h3>
+                <p class="mb-0" id="pdf-subtitulo-rodada">Todos os Jogos</p>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -123,6 +130,26 @@
             if (!user) return;
             prefeituraId = user.prefeituraId;
             carregarCampeonatos();
+            carregarConfiguracoes();
+        }
+
+        async function carregarConfiguracoes() {
+            try {
+                const res = await fetch(`${API}/configuracoes?prefeituraId=${prefeituraId}`);
+                if (res.ok) {
+                    const config = await res.json();
+                    if (config.nome) {
+                        document.getElementById('pdf-nome-prefeitura').innerText = config.nome;
+                    }
+                    if (config.logoUrl) {
+                        const img = document.getElementById('pdf-logo-prefeitura');
+                        img.src = config.logoUrl;
+                        img.style.display = 'inline-block';
+                    }
+                }
+            } catch (e) {
+                console.error("Erro configurações:", e);
+            }
         }
 
         async function carregarCampeonatos() {
@@ -217,8 +244,8 @@
                     // Linhas de Jogo
                     grupos[key].forEach(j => {
                         const hr = j.horario || '--:--';
-                        const gM = j.golsMandante !== null ? j.golsMandante : '-';
-                        const gV = j.golsVisitante !== null ? j.golsVisitante : '-';
+                        const gM = j.status === 'Finalizado' ? j.golsMandante : '&nbsp;&nbsp;';
+                        const gV = j.status === 'Finalizado' ? j.golsVisitante : '&nbsp;&nbsp;';
                         const nJ = j.numero || '-';
                         const ch = j.chave || '-';
 
