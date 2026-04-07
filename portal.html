@@ -994,6 +994,40 @@
 
                     const rounds = Object.values(groups).sort((a, b) => a.rodadaNumero - b.rodadaNumero);
 
+                    // Ordenamento lógico das chaves (Organograma de trás pra frente)
+                    let targetOrder = [];
+                    for (let i = rounds.length - 1; i >= 0; i--) {
+                        if (targetOrder.length > 0) {
+                            rounds[i].jogos.sort((a, b) => {
+                                let idxA = targetOrder.indexOf(a.numero);
+                                let idxB = targetOrder.indexOf(b.numero);
+                                if (idxA === -1) idxA = 999;
+                                if (idxB === -1) idxB = 999;
+                                if (idxA === idxB) return a.numero - b.numero;
+                                return idxA - idxB;
+                            });
+                        }
+                        
+                        let newTargetOrder = [];
+                        const getDep = (str) => {
+                            if (!str) return null;
+                            const m = str.match(/Jogo\s*(\d+)/i);
+                            return m ? parseInt(m[1]) : null;
+                        };
+                        
+                        rounds[i].jogos.forEach(j => {
+                            const dA = getDep(j.mandantePlaceholder) || getDep(j.mandanteNome);
+                            const dB = getDep(j.visitantePlaceholder) || getDep(j.visitanteNome);
+                            if (dA) newTargetOrder.push(dA);
+                            if (dB) newTargetOrder.push(dB);
+                        });
+                        
+                        // Atualiza a ordem esperada para a coluna anterior, se houver referências
+                        if (newTargetOrder.length > 0) {
+                            targetOrder = newTargetOrder;
+                        }
+                    }
+
                     let mmHtml = `
                     <style>
                         .bracket-col:not(:last-child) .bracket-match::after {
