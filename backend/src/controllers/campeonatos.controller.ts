@@ -206,6 +206,33 @@ export const gerarChaveamento = async (req: Request, res: Response) => {
 
             const processPlaceholder = (placeholder: string | null) => {
                 if (!placeholder) return null;
+
+                const matchVencedor = placeholder.match(/Vencedor.*?Jogo\s*(\d+)/i);
+                if (matchVencedor) {
+                    const jogoRefNumero = parseInt(matchVencedor[1]);
+                    const jogoRef = jogosMataMata.find(j => j.numero === jogoRefNumero);
+                    if (jogoRef && jogoRef.status === 'Finalizado') {
+                        const gM = jogoRef.golsMandante || 0;
+                        const gV = jogoRef.golsVisitante || 0;
+                        if (gM > gV) return { id: jogoRef.mandanteId, nome: jogoRef.mandanteNome };
+                        if (gV > gM) return { id: jogoRef.visitanteId, nome: jogoRef.visitanteNome };
+                    }
+                    return null;
+                }
+
+                const matchPerdedor = placeholder.match(/Perdedor.*?Jogo\s*(\d+)/i);
+                if (matchPerdedor) {
+                    const jogoRefNumero = parseInt(matchPerdedor[1]);
+                    const jogoRef = jogosMataMata.find(j => j.numero === jogoRefNumero);
+                    if (jogoRef && jogoRef.status === 'Finalizado') {
+                        const gM = jogoRef.golsMandante || 0;
+                        const gV = jogoRef.golsVisitante || 0;
+                        if (gM < gV) return { id: jogoRef.mandanteId, nome: jogoRef.mandanteNome };
+                        if (gV < gM) return { id: jogoRef.visitanteId, nome: jogoRef.visitanteNome };
+                    }
+                    return null;
+                }
+
                 const matchPos = placeholder.match(/(\d+)º/);
                 if (!matchPos) return null;
                 const posicao = parseInt(matchPos[1]) - 1;
