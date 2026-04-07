@@ -828,7 +828,8 @@
                 const select = document.getElementById('select-rodada-portal');
                 select.innerHTML = '<option value="">Todas as Rodadas</option>';
                 rodadas.forEach(r => {
-                    select.innerHTML += `<option value="${r.id}">Rodada ${r.numero}</option>`;
+                    const label = (r.tipo === 'MATA_MATA' && r.nome) ? r.nome : `Rodada ${r.numero}`;
+                    select.innerHTML += `<option value="${r.id}">${label}</option>`;
                 });
             } catch (e) { console.error(e); }
         }
