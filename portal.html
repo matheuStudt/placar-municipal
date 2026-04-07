@@ -1071,11 +1071,11 @@
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
                                     <span class="fw-bold text-truncate" style="max-width: 75%;">${j.mandanteNome}</span>
-                                    <span class="fw-bold fs-5 px-2 ${j.golsMandante > j.golsVisitante && j.status === 'Finalizado' ? 'text-success' : 'text-primary'}">${j.golsMandante}</span>
+                                    <span class="fw-bold fs-5 px-2 ${j.status === 'Finalizado' ? (j.golsMandante > j.golsVisitante ? 'text-success' : (j.golsMandante < j.golsVisitante ? 'text-danger' : 'text-primary')) : 'text-primary'}">${j.golsMandante}</span>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="fw-bold text-truncate" style="max-width: 75%;">${j.visitanteNome}</span>
-                                    <span class="fw-bold fs-5 px-2 ${j.golsVisitante > j.golsMandante && j.status === 'Finalizado' ? 'text-success' : 'text-primary'}">${j.golsVisitante}</span>
+                                    <span class="fw-bold fs-5 px-2 ${j.status === 'Finalizado' ? (j.golsVisitante > j.golsMandante ? 'text-success' : (j.golsVisitante < j.golsMandante ? 'text-danger' : 'text-primary')) : 'text-primary'}">${j.golsVisitante}</span>
                                 </div>
                             </div>`;
                         });
