@@ -32,7 +32,11 @@ export const getJogoDetalhes = async (req, res) => {
     try {
         const jogo = await prisma.jogo.findUnique({
             where: { id: jogoId },
-            include: { rodada: true }
+            include: {
+                rodada: true,
+                mandante: { select: { id: true, logoUrl: true } },
+                visitante: { select: { id: true, logoUrl: true } }
+            }
         });
         if (!jogo)
             return res.status(404).json({ error: "Jogo não encontrado" });

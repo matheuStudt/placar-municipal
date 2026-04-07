@@ -128,7 +128,10 @@
             <div class="placar-box">
                 <div class="row align-items-center text-center">
                     <div class="col-md-4">
-                        <i class="bi bi-shield-shaded fs-1 mb-3 opacity-50"></i>
+                        <div id="logo-mandante-container" class="mb-3">
+                            <i id="icon-mandante" class="bi bi-shield-shaded fs-1 opacity-50"></i>
+                            <img id="img-logo-mandante" src="" alt="" style="max-height:80px;max-width:80px;object-fit:contain;display:none;">
+                        </div>
                         <h2 id="nome-mandante" class="fw-bold text-uppercase">--</h2>
                     </div>
                     <div class="col-md-4">
@@ -145,7 +148,10 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <i class="bi bi-shield-shaded fs-1 mb-3 opacity-50"></i>
+                        <div id="logo-visitante-container" class="mb-3">
+                            <i id="icon-visitante" class="bi bi-shield-shaded fs-1 opacity-50"></i>
+                            <img id="img-logo-visitante" src="" alt="" style="max-height:80px;max-width:80px;object-fit:contain;display:none;">
+                        </div>
                         <h2 id="nome-visitante" class="fw-bold text-uppercase">--</h2>
                     </div>
                 </div>
@@ -166,8 +172,10 @@
             <!-- Mandante -->
             <div class="col-lg-6">
                 <div class="card-eventos">
-                    <h4 class="fw-bold mb-4 d-flex align-items-center">
-                        <i class="bi bi-shield-fill me-2 text-primary"></i> <span id="label-mandante">Mandante</span>
+                    <h4 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                        <img id="label-img-mandante" src="" alt="" style="width:28px;height:28px;object-fit:contain;display:none;">
+                        <i id="label-icon-mandante" class="bi bi-shield-fill text-primary"></i>
+                        <span id="label-mandante">Mandante</span>
                     </h4>
                     <div class="table-responsive">
                         <table class="table table-eventos">
@@ -188,9 +196,10 @@
             <!-- Visitante -->
             <div class="col-lg-6">
                 <div class="card-eventos">
-                    <h4 class="fw-bold mb-4 d-flex align-items-center">
-                        <i class="bi bi-shield-fill me-2 text-secondary"></i> <span
-                            id="label-visitante">Visitante</span>
+                    <h4 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                        <img id="label-img-visitante" src="" alt="" style="width:28px;height:28px;object-fit:contain;display:none;">
+                        <i id="label-icon-visitante" class="bi bi-shield-fill text-secondary"></i>
+                        <span id="label-visitante">Visitante</span>
                     </h4>
                     <div class="table-responsive">
                         <table class="table table-eventos">
@@ -238,6 +247,20 @@
                 document.getElementById('nome-visitante').textContent = jogo.visitanteNome;
                 document.getElementById('label-mandante').textContent = jogo.mandanteNome;
                 document.getElementById('label-visitante').textContent = jogo.visitanteNome;
+
+                // Logos das equipes
+                function aplicarLogo(imgId, iconId, labelImgId, labelIconId, logoUrl) {
+                    if (logoUrl) {
+                        document.getElementById(imgId).src = logoUrl;
+                        document.getElementById(imgId).style.display = 'inline-block';
+                        document.getElementById(iconId).style.display = 'none';
+                        document.getElementById(labelImgId).src = logoUrl;
+                        document.getElementById(labelImgId).style.display = 'inline-block';
+                        document.getElementById(labelIconId).style.display = 'none';
+                    }
+                }
+                aplicarLogo('img-logo-mandante', 'icon-mandante', 'label-img-mandante', 'label-icon-mandante', jogo.mandante?.logoUrl);
+                aplicarLogo('img-logo-visitante', 'icon-visitante', 'label-img-visitante', 'label-icon-visitante', jogo.visitante?.logoUrl);
 
                 document.getElementById('gols-mandante').textContent = jogo.golsMandante;
                 document.getElementById('gols-visitante').textContent = jogo.golsVisitante;
