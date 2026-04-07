@@ -89,3 +89,15 @@ export const getElenco = async (req, res) => {
         res.status(500).json({ error: "Erro ao buscar elenco" });
     }
 };
+export const limparElenco = async (req, res) => {
+    const equipeId = parseInt(String(req.params.id));
+    try {
+        await prisma.vinculo.deleteMany({
+            where: { equipeId }
+        });
+        res.status(204).send();
+    }
+    catch (e) {
+        res.status(500).json({ error: "Erro ao limpar elenco" });
+    }
+};

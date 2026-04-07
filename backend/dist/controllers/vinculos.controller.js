@@ -15,3 +15,13 @@ export const createVinculo = async (req, res) => {
         res.status(500).json({ error: "Erro ao criar vínculo" });
     }
 };
+export const deleteVinculo = async (req, res) => {
+    const id = parseInt(String(req.params.id));
+    try {
+        await prisma.vinculo.delete({ where: { id } });
+        res.status(204).send();
+    }
+    catch (e) {
+        res.status(500).json({ error: "Erro ao excluir vínculo" });
+    }
+};

@@ -143,7 +143,10 @@
                             </div>
                         </form>
                     </div>
-                    <h6 class="fw-bold px-1 mb-3">Atletas Inscritos</h6>
+                    <div class="d-flex justify-content-between align-items-center px-1 mb-3">
+                        <h6 class="fw-bold mb-0">Atletas Inscritos</h6>
+                        <button class="btn btn-sm btn-danger fw-bold shadow-sm" onclick="limparElencoDaEquipe()"><i class="bi bi-trash3 me-1"></i>Limpar Elenco</button>
+                    </div>
                     <div class="list-group list-group-flush border rounded shadow-sm" id="lista-elenco">
                     </div>
                 </div>
@@ -285,7 +288,10 @@
                 lista.innerHTML += `
                 <div class="list-group-item d-flex justify-content-between align-items-center">
                     <div><i class="bi bi-person me-2 text-secondary"></i><span class="fw-bold">${at.nome}</span></div>
-                    <span class="badge rounded-pill bg-info-subtle text-info border border-info-subtle">${at.tipo}</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge rounded-pill bg-info-subtle text-info border border-info-subtle">${at.tipo}</span>
+                        <button class="btn btn-sm btn-outline-danger" title="Remover" onclick="removerAtleta(${at.vinculoId}, ${equipeId})"><i class="bi bi-trash"></i></button>
+                    </div>
                 </div>`;
             });
         }
@@ -305,6 +311,23 @@
             });
             atualizarListaElenco(equipeId);
         });
+
+        async function removerAtleta(vinculoId, equipeId) {
+            if (!confirm("Deseja remover este atleta da equipe?")) return;
+            await fetch(`${API}/vinculos/${vinculoId}`, { method: 'DELETE' });
+            atualizarListaElenco(equipeId);
+        }
+
+        async function limparElencoDaEquipe() {
+            const equipeId = document.getElementById('equipe-id-vinculo').value;
+            if (!confirm("Atenção! Deseja remover TODOS os atletas vinculados a esta equipe?")) return;
+            const res = await fetch(`${API}/equipes/${equipeId}/elenco`, { method: 'DELETE' });
+            if(res.ok) {
+                atualizarListaElenco(equipeId);
+            } else {
+                alert('Erro ao limpar elenco');
+            }
+        }
 
         window.onload = init;
     </script>
