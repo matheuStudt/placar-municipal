@@ -979,27 +979,69 @@
                 const jogosMataMata = tJogos.filter(j => j.rodada?.tipo === 'MATA_MATA');
 
                 if (jogosMataMata.length) {
-                    let mmHtml = '<div class="row g-3">';
+                    const groups = {};
                     jogosMataMata.forEach(j => {
-                        const sc = j.status === 'Finalizado' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning';
+                        const rId = j.rodadaId;
+                        if (!groups[rId]) {
+                            groups[rId] = {
+                                rodadaNumero: j.rodada?.numero || 99,
+                                rodadaNome: j.rodada?.nome || 'Fase Mata-Mata',
+                                jogos: []
+                            };
+                        }
+                        groups[rId].jogos.push(j);
+                    });
+
+                    const rounds = Object.values(groups).sort((a, b) => a.rodadaNumero - b.rodadaNumero);
+
+                    let mmHtml = `
+                    <style>
+                        .bracket-col:not(:last-child) .bracket-match::after {
+                            content: ''; position: absolute; right: -20px; top: 50%; width: 20px; border-top: 2px dashed #94a3b8;
+                        }
+                        .bracket-col:not(:first-child) .bracket-match::before {
+                            content: ''; position: absolute; left: -20px; top: 50%; width: 20px; border-top: 2px dashed #94a3b8;
+                        }
+                        .bracket-match {
+                            transition: all 0.2s;
+                        }
+                        .bracket-match:hover {
+                            transform: translateY(-3px);
+                            box-shadow: 0 12px 24px rgba(0,0,0,0.12) !important;
+                            border-color: var(--accent) !important;
+                        }
+                    </style>
+                    <div class="bracket-wrapper" style="overflow-x: auto; padding-bottom: 20px; margin-top: 10px;">
+                        <div class="bracket-container" style="display: flex; gap: 40px; min-width: min-content;">
+                    `;
+                    
+                    rounds.forEach((round) => {
                         mmHtml += `
-                        <div class="col-md-6">
-                            <div class="card shadow-sm border-0 border-start border-4 border-danger h-100 p-3" onclick="location.href='detalhes-jogo.html?jogoId=${j.id}'" style="cursor:pointer">
+                        <div class="bracket-col" style="display: flex; flex-direction: column; justify-content: space-around; gap: 20px; min-width: 300px; position:relative;">
+                            <h5 class="text-center fw-bold text-primary mb-3 bg-white py-2 rounded-pill shadow-sm border">${round.rodadaNome}</h5>
+                        `;
+                        round.jogos.forEach(j => {
+                            const sc = j.status === 'Finalizado' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning';
+                            mmHtml += `
+                            <div class="bracket-match shadow-sm" onclick="location.href='detalhes-jogo.html?jogoId=${j.id}'" style="cursor:pointer; background: white; border-radius: 14px; padding: 16px; border-left: 6px solid #e2e8f0; position: relative;">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="badge ${sc} rounded-pill">${j.status}</span>
-                                    <span class="badge bg-danger-subtle text-danger fw-bold border">${j.rodada?.nome || 'Mata-Mata'} - Jogo ${j.numero}</span>
+                                    <span class="badge ${sc} rounded-pill" style="font-size:0.7rem;">${j.status}</span>
+                                    <span class="text-muted fw-bold" style="font-size:0.75rem;">Jogo ${j.numero}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                                    <span class="fw-bold text-truncate" style="max-width: 75%;">${j.mandanteNome}</span>
+                                    <span class="fw-bold fs-5 px-2 ${j.golsMandante > j.golsVisitante && j.status === 'Finalizado' ? 'text-success' : 'text-primary'}">${j.golsMandante}</span>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold" style="width:40%">${j.mandanteNome}</span>
-                                    <div class="px-3 py-1 bg-light rounded text-center fw-bold fs-5 shadow-sm">
-                                        ${j.golsMandante} <span class="text-muted fw-light mx-1">x</span> ${j.golsVisitante}
-                                    </div>
-                                    <span class="fw-bold text-end" style="width:40%">${j.visitanteNome}</span>
+                                    <span class="fw-bold text-truncate" style="max-width: 75%;">${j.visitanteNome}</span>
+                                    <span class="fw-bold fs-5 px-2 ${j.golsVisitante > j.golsMandante && j.status === 'Finalizado' ? 'text-success' : 'text-primary'}">${j.golsVisitante}</span>
                                 </div>
-                            </div>
-                        </div>`;
+                            </div>`;
+                        });
+                        mmHtml += `</div>`;
                     });
-                    mmHtml += '</div>';
+                    
+                    mmHtml += '</div></div>';
                     containerMataMata.innerHTML = mmHtml;
                 } else {
                     containerMataMata.innerHTML = `<div class="empty-state"><i class="bi bi-diagram-3"></i><p>Ainda não há jogos definidos para o mata-mata.</p></div>`;
