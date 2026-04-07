@@ -534,7 +534,13 @@
 
                 <!-- ESTATÍSTICAS -->
                 <div class="tab-pane fade" id="pills-stats">
-                    <h3 class="section-title">Desempenho e Estatísticas</h3>
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <h3 class="section-title mb-0">Desempenho e Estatísticas</h3>
+                        <div class="form-check form-switch bg-white p-2 px-3 rounded-pill shadow-sm border d-flex align-items-center gap-2">
+                            <input class="form-check-input m-0 fs-5 mt-0" type="checkbox" id="check-semifinalistas" style="cursor:pointer;" onchange="aplicarFiltroSemifinalistas()">
+                            <label class="form-check-label text-primary fw-bold small" for="check-semifinalistas" style="cursor:pointer; padding-top:2px;">Somente Semifinalistas</label>
+                        </div>
+                    </div>
                     <ul class="nav nav-pills mb-4 bg-white p-2 rounded-pill shadow-sm d-inline-flex border"
                         id="pills-stats-sub" role="tablist">
                         <li class="nav-item" role="presentation">
@@ -1086,9 +1092,11 @@
 
         // ── ESTATÍSTICAS ─────────────────────────────────────────
         // Cache das listas para o "Mostrar Mais"
+        const _estatCacheRaw = { artilharia: [], disciplina: [], defesa: [] };
         const _estatCache = { artilharia: [], disciplina: [], defesa: [] };
         const _estatVisiveis = { artilharia: 10, disciplina: 10, defesa: 10 };
         const PAGE_SIZE = 5;
+        let _semifinalistasSet = new Set();
 
         function renderLinhaArt(a, i) {
             return `<tr>
@@ -1117,7 +1125,7 @@
         }
 
         function renderListaEstat(chave, tbodyId, btnId, renderFn) {
-            const lista = _estatCache[chave];
+            const lista = _estatCache[chave] || [];
             const visivel = _estatVisiveis[chave];
             const tbody = document.getElementById(tbodyId);
             const btn = document.getElementById(btnId);
@@ -1139,6 +1147,28 @@
             renderListaEstat(chave, tbodyId, btnId, renderFn);
         }
 
+        function aplicarFiltroSemifinalistas() {
+            const isChecked = document.getElementById('check-semifinalistas').checked;
+            
+            if (isChecked && _semifinalistasSet.size > 0) {
+                _estatCache.artilharia = _estatCacheRaw.artilharia.filter(a => _semifinalistasSet.has(a.equipeNome));
+                _estatCache.disciplina = _estatCacheRaw.disciplina.filter(d => _semifinalistasSet.has(d.nome));
+                _estatCache.defesa     = _estatCacheRaw.defesa.filter(d => _semifinalistasSet.has(d.nome));
+            } else {
+                _estatCache.artilharia = [..._estatCacheRaw.artilharia];
+                _estatCache.disciplina = [..._estatCacheRaw.disciplina];
+                _estatCache.defesa     = [..._estatCacheRaw.defesa];
+            }
+
+            _estatVisiveis.artilharia = 10;
+            _estatVisiveis.disciplina = 10;
+            _estatVisiveis.defesa = 10;
+
+            renderListaEstat('artilharia', 'corpo-artilharia', 'btn-mais-art', renderLinhaArt);
+            renderListaEstat('disciplina', 'corpo-disciplina', 'btn-mais-dis', renderLinhaDis);
+            renderListaEstat('defesa', 'corpo-defesa', 'btn-mais-def', renderLinhaDef);
+        }
+
         async function loadEstatisticas(idParam) {
             const id = idParam || campeonatoAtual;
             if (!id) return;
@@ -1147,20 +1177,39 @@
             _estatVisiveis.artilharia = 10;
             _estatVisiveis.disciplina = 10;
             _estatVisiveis.defesa = 10;
+            document.getElementById('check-semifinalistas').checked = false;
 
             try {
                 const res = await fetch(`${API}/campeonatos/${id}/estatisticas`);
                 const data = await res.json();
-                console.log('[DEBUG API] Resposta completa recebida:', data);
-                console.log('[DEBUG API] Quantidade artilharia:', data.artilharia?.length);
 
-                _estatCache.artilharia = data.artilharia || [];
-                _estatCache.disciplina = data.disciplina || [];
-                _estatCache.defesa = data.defesa || [];
+                _estatCacheRaw.artilharia = data.artilharia || [];
+                _estatCacheRaw.disciplina = data.disciplina || [];
+                _estatCacheRaw.defesa     = data.defesa || [];
 
-                renderListaEstat('artilharia', 'corpo-artilharia', 'btn-mais-art', renderLinhaArt);
-                renderListaEstat('disciplina', 'corpo-disciplina', 'btn-mais-dis', renderLinhaDis);
-                renderListaEstat('defesa', 'corpo-defesa', 'btn-mais-def', renderLinhaDef);
+                // Descobrir semifinalistas dinamicamente
+                _semifinalistasSet.clear();
+                const resJogos = await fetch(`${API}/jogos?campeonatoId=${id}`);
+                const tJogos = await resJogos.json();
+                const jogosMataMata = tJogos.filter(j => j.rodada?.tipo === 'MATA_MATA');
+
+                const grupos = {};
+                jogosMataMata.forEach(j => {
+                    const rId = j.rodadaId;
+                    if (!grupos[rId]) grupos[rId] = [];
+                    grupos[rId].push(j);
+                });
+
+                Object.values(grupos).forEach(roundGames => {
+                    if (roundGames.length <= 2) {
+                        roundGames.forEach(j => {
+                            if (j.mandanteNome && !j.mandanteNome.includes('Vencedor')) _semifinalistasSet.add(j.mandanteNome);
+                            if (j.visitanteNome && !j.visitanteNome.includes('Vencedor')) _semifinalistasSet.add(j.visitanteNome);
+                        });
+                    }
+                });
+
+                aplicarFiltroSemifinalistas();
             } catch (e) { console.error(e); }
         }
     </script>
