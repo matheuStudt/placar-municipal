@@ -357,15 +357,25 @@
                 return;
             }
 
-            await Promise.all(selecionados.map(atletaId =>
+            const resultados = await Promise.all(selecionados.map(atletaId =>
                 fetch(`${API}/vinculos`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ atletaId, equipeId, tipo })
-                })
+                }).then(async r => ({ ok: r.ok, status: r.status }))
             ));
 
-            showToast(`${selecionados.length} atleta${selecionados.length > 1 ? 's adicionados' : ' adicionado'} com sucesso!`, 'success');
+            const adicionados = resultados.filter(r => r.ok).length;
+            const duplicados = resultados.filter(r => r.status === 409).length;
+            const erros = resultados.filter(r => !r.ok && r.status !== 409).length;
+
+            if (adicionados > 0)
+                showToast(`${adicionados} atleta${adicionados > 1 ? 's adicionados' : ' adicionado'} com sucesso!`, 'success');
+            if (duplicados > 0)
+                showToast(`${duplicados} atleta${duplicados > 1 ? 's já estavam' : ' já estava'} vinculado${duplicados > 1 ? 's' : ''} a esta equipe.`, 'warning');
+            if (erros > 0)
+                showToast(`${erros} erro${erros > 1 ? 's' : ''} ao vincular. Tente novamente.`, 'danger');
+
             document.querySelectorAll('.check-atleta:checked').forEach(c => c.checked = false);
             atualizarContadorSelecionados();
             atualizarListaElenco(equipeId);

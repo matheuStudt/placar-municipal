@@ -1,4 +1,6 @@
 import { prisma } from '../prisma.js';
+import bcrypt from 'bcrypt';
+const SALT_ROUNDS = 10;
 export const checkSuperAdmin = async (req, res, next) => {
     const adminId = parseInt(String(req.headers['x-admin-id'] || req.query.adminId || req.body?.adminId));
     if (!adminId || isNaN(adminId))
@@ -78,10 +80,11 @@ export const getUsuarios = async (req, res) => {
 export const createUsuario = async (req, res) => {
     const { email, senha, prefeituraId } = req.body;
     try {
+        const senhaHash = await bcrypt.hash(String(senha), SALT_ROUNDS);
         const u = await prisma.usuario.create({
             data: {
                 email,
-                senha,
+                senha: senhaHash,
                 prefeituraId: prefeituraId ? parseInt(String(prefeituraId)) : null
             }
         });
@@ -96,12 +99,10 @@ export const updateUsuario = async (req, res) => {
     const { email, senha, prefeituraId } = req.body;
     try {
         const dataToUpdate = { email, prefeituraId: prefeituraId ? parseInt(String(prefeituraId)) : null };
-        if (senha)
-            dataToUpdate.senha = senha;
-        const u = await prisma.usuario.update({
-            where: { id },
-            data: dataToUpdate
-        });
+        if (senha) {
+            dataToUpdate.senha = await bcrypt.hash(String(senha), SALT_ROUNDS);
+        }
+        const u = await prisma.usuario.update({ where: { id }, data: dataToUpdate });
         res.json({ id: u.id, email: u.email, prefeituraId: u.prefeituraId });
     }
     catch (e) {

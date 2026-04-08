@@ -1,5 +1,8 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma.js';
+import bcrypt from 'bcrypt';
+
+const SALT_ROUNDS = 10;
 
 export const checkSuperAdmin = async (req: Request, res: Response, next: express.NextFunction) => {
     const adminId = parseInt(String(req.headers['x-admin-id'] || req.query.adminId || req.body?.adminId));
@@ -81,10 +84,11 @@ export const getUsuarios = async (req: Request, res: Response) => {
 export const createUsuario = async (req: Request, res: Response) => {
     const { email, senha, prefeituraId } = req.body;
     try {
+        const senhaHash = await bcrypt.hash(String(senha), SALT_ROUNDS);
         const u = await prisma.usuario.create({
             data: {
                 email,
-                senha,
+                senha: senhaHash,
                 prefeituraId: prefeituraId ? parseInt(String(prefeituraId)) : null
             }
         });
@@ -99,12 +103,11 @@ export const updateUsuario = async (req: Request, res: Response) => {
     const { email, senha, prefeituraId } = req.body;
     try {
         const dataToUpdate: any = { email, prefeituraId: prefeituraId ? parseInt(String(prefeituraId)) : null };
-        if (senha) dataToUpdate.senha = senha;
+        if (senha) {
+            dataToUpdate.senha = await bcrypt.hash(String(senha), SALT_ROUNDS);
+        }
 
-        const u = await prisma.usuario.update({
-            where: { id },
-            data: dataToUpdate
-        });
+        const u = await prisma.usuario.update({ where: { id }, data: dataToUpdate });
         res.json({ id: u.id, email: u.email, prefeituraId: u.prefeituraId });
     } catch (e) {
         res.status(500).json({ error: "Erro ao atualizar usuário." });
