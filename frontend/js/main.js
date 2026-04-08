@@ -94,6 +94,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    document.documentElement.setAttribute('data-bs-theme', 'light');
+    document.body.setAttribute('data-bs-theme', 'light');
+
+    const currentUrl = window.location.href;
+    // Adicionamos 'detalhes-jogo.html' na lista de exceções
+    if (!currentUrl.includes('login.html') &&
+        !currentUrl.includes('portal.html') &&
+        !currentUrl.includes('detalhes-jogo.html')) {
+        checkSession();
+    }
+});
+
 /**
  * Exibe uma notificação Toast Bootstrap.
  * @param {string} mensagem  - Texto da mensagem.
