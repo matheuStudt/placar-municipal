@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -297,7 +297,7 @@
             const campId = document.getElementById('inscricao-camp-id').value;
             await fetch(`${API}/participacoes`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     campeonatoId: campId,
                     equipeId: document.getElementById('select-equipes-inscricao').value,
@@ -362,7 +362,7 @@
             try {
                 const res = await fetch(`${API}/rodadas`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({ campeonatoId: campId, nome, tipo })
                 });
 
@@ -443,7 +443,7 @@
             };
             await fetch(id ? `${API}/campeonatos/${id}` : `${API}/campeonatos`, {
                 method: id ? 'PUT' : 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(dados)
             });
             document.getElementById('btn-fechar').click();

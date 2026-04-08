@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -341,7 +341,7 @@
             };
             const res = await fetch(id ? `${API}/atletas/${id}` : `${API}/atletas`, {
                 method: id ? 'PUT' : 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(dados)
             });
 

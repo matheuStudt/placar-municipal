@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -292,7 +292,7 @@
 
             await fetch(url, {
                 method: method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(dados)
             });
 
@@ -360,7 +360,7 @@
             const resultados = await Promise.all(selecionados.map(atletaId =>
                 fetch(`${API}/vinculos`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({ atletaId, equipeId, tipo })
                 }).then(async r => ({ ok: r.ok, status: r.status }))
             ));
@@ -421,3 +421,4 @@
 </body>
 
 </html>
+

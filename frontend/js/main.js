@@ -9,15 +9,34 @@ function toggleSidebar() {
     document.body.classList.toggle('sidebar-show');
 }
 
-// 2. Session Check & Personalization
+// 2. Retorna os headers de autenticação JWT para chamadas protegidas
+function getAuthHeaders() {
+    const token = localStorage.getItem('authToken');
+    return {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
+}
+
+// 3. Logout — limpa sessão e token
+function logout() {
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('authToken');
+    window.location.href = 'login.html';
+}
+
+// 4. Session Check & Personalization
 function checkSession() {
     const session = localStorage.getItem('usuario');
-    if (!session) {
+    const token = localStorage.getItem('authToken');
+
+    if (!session || !token) {
         if (!window.location.href.includes('login.html')) {
             window.location.href = 'login.html';
         }
         return null;
     }
+
     const user = JSON.parse(session);
 
     // Atualiza nomes da prefeitura se os elementos existirem
@@ -41,7 +60,7 @@ function checkSession() {
     return user;
 }
 
-// 3. Initialize
+// 5. Initialize
 document.addEventListener('DOMContentLoaded', () => {
     // Garante modo claro
     document.documentElement.setAttribute('data-bs-theme', 'light');

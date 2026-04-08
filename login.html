@@ -159,7 +159,10 @@
 
                 const data = await res.json();
 
-                // Armazena dados da sessão
+                // Armazena token JWT separado
+                localStorage.setItem('authToken', data.token);
+
+                // Armazena dados da sessão (sem senha)
                 localStorage.setItem('usuario', JSON.stringify({
                     id: data.id,
                     email: data.email,

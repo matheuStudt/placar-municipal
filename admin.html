@@ -229,9 +229,11 @@
         }
 
         function getHeaders() {
+            const token = localStorage.getItem('authToken');
             return {
                 'Content-Type': 'application/json',
-                'x-admin-id': adminId
+                'x-admin-id': adminId,
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
             };
         }
 
