@@ -59,7 +59,7 @@ function checkSession() {
 
     return user;
 }
-
+/*
 // 5. Initialize
 document.addEventListener('DOMContentLoaded', () => {
     // Garante modo claro
@@ -79,6 +79,19 @@ document.addEventListener('DOMContentLoaded', () => {
         container.style.zIndex = '9999';
         document.body.appendChild(container);
     }
+});*/
+
+// 3. Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    // Garante modo claro
+    document.documentElement.setAttribute('data-bs-theme', 'light');
+    document.body.setAttribute('data-bs-theme', 'light');
+
+    // Sessão - NÃO exige login nas telas de login e portal
+    const currentUrl = window.location.href;
+    if (!currentUrl.includes('login.html') && !currentUrl.includes('portal.html')) {
+        checkSession();
+    }
 });
 
 /**
@@ -92,9 +105,9 @@ function showToast(mensagem, tipo = 'success') {
 
     const icons = {
         success: 'bi-check-circle-fill',
-        danger:  'bi-x-circle-fill',
+        danger: 'bi-x-circle-fill',
         warning: 'bi-exclamation-triangle-fill',
-        info:    'bi-info-circle-fill'
+        info: 'bi-info-circle-fill'
     };
 
     const id = 'toast-' + Date.now();
