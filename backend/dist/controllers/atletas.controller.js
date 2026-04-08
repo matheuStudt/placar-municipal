@@ -14,14 +14,14 @@ export const createAtleta = async (req, res) => {
         const novo = await prisma.atleta.create({
             data: {
                 nome: String(nome),
-                cpf: String(cpf || "000.000.000-00"),
-                dataNasc: String(dataNasc || "2000-01-01")
+                cpf: cpf && String(cpf).trim() ? String(cpf).trim() : null,
+                dataNasc: dataNasc && String(dataNasc).trim() ? String(dataNasc).trim() : null
             }
         });
         res.status(201).json(novo);
     }
     catch (e) {
-        res.status(500).json({ error: "Erro ao criar atleta" });
+        res.status(500).json({ error: 'Erro ao criar atleta' });
     }
 };
 export const updateAtleta = async (req, res) => {

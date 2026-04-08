@@ -336,16 +336,22 @@
             const id = document.getElementById('atletaId').value;
             const dados = {
                 nome: document.getElementById('nome').value,
-                cpf: document.getElementById('cpf').value,
+                cpf: document.getElementById('cpf').value || null,
                 prefeituraId: prefeituraId
             };
-            await fetch(id ? `${API}/atletas/${id}` : `${API}/atletas`, {
+            const res = await fetch(id ? `${API}/atletas/${id}` : `${API}/atletas`, {
                 method: id ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados)
             });
-            document.getElementById('btn-fechar').click();
-            carregarAtletas();
+
+            if (res.ok) {
+                document.getElementById('btn-fechar').click();
+                carregarAtletas();
+            } else {
+                const err = await res.json().catch(() => ({}));
+                showToast(err.error || 'Erro ao salvar atleta.', res.status === 409 ? 'warning' : 'danger');
+            }
         });
 
         window.onload = init;

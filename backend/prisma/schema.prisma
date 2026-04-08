@@ -71,8 +71,8 @@ model Participacao {
 model Atleta {
   id       Int       @id @default(autoincrement())
   nome     String
-  cpf      String    @unique
-  dataNasc String
+  cpf      String?
+  dataNasc String?
   vinculos Vinculo[]
   eventos  Evento[]
 }
