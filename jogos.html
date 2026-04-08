@@ -59,7 +59,8 @@
                         class="bi bi-calendar3 me-2"></i> Tabela de Jogos</a></li>
             <li class="nav-item mb-2"><a href="sumula.html" class="nav-link p-2"><i
                         class="bi bi-file-earmark-text me-2"></i> Súmula</a></li>
-            <li class="nav-item mb-2"><a href="relatorios.html" class="nav-link p-2"><i class="bi bi-file-pdf me-2"></i> Relatórios</a></li>
+            <li class="nav-item mb-2"><a href="relatorios.html" class="nav-link p-2"><i class="bi bi-file-pdf me-2"></i>
+                    Relatórios</a></li>
             <hr class="text-white-50">
             <li class="nav-item"><a href="login.html" class="nav-link p-2 text-danger-emphasis text-white"><i
                         class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
@@ -204,16 +205,16 @@
                 selectCamp.value = campId;
                 campeonatoAtual = campId;
                 document.getElementById('btn-novo-jogo').disabled = false;
-                
+
                 await carregarRodadas(campId);
-                
+
                 if (rodadaId && rodadaId !== 'undefined' && rodadaId !== 'null') {
                     const selectRodada = document.getElementById('select-rodada-filtro');
                     selectRodada.value = rodadaId;
                 }
-                
+
                 carregarJogos(campId);
-                
+
                 // Limpa a URL para não manter os filtros presos nela em futuros reloads da página
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
@@ -312,9 +313,9 @@
                                         <div class="h5 mb-0 fw-bold text-primary">
                                             ${j.numero}
                                         </div>
-                                        <span class="badge bg-secondary-subtle text-secondary border mt-1" style="font-size: 0.65rem;">
-                                            ${j.rodada?.tipo === 'MATA_MATA' ? (j.rodada.nome || 'Mata-Mata') : (j.chave ? (j.chave.includes('Chave') ? j.chave : 'Chave ' + j.chave) : 'Fase de Grupos')}
-                                        </span>
+                                        <span class="badge bg-secondary-subtle text-secondary border mt-1 text-wrap lh-sm" style="font-size: 0.65rem; width: 100%;">
+    ${j.rodada?.tipo === 'MATA_MATA' ? (j.rodada.nome || 'Mata-Mata') : (j.chave ? (j.chave.includes('Chave') ? j.chave : 'Chave ' + j.chave) : 'Fase de Grupos')}
+</span>
                                     </div>
                                     <div class="col-md-3 text-end pe-2">
                                         <div class="d-flex align-items-center justify-content-end gap-2">
@@ -629,7 +630,7 @@
                     // Trata-se de inclusão em sequência, prepara o próximo jogo
                     const numeroAtual = parseInt(document.getElementById('numero-jogo').value) || 0;
                     document.getElementById('numero-jogo').value = numeroAtual + 1;
-                    
+
                     document.getElementById('select-mandante').value = '';
                     document.getElementById('select-visitante').value = '';
                     document.getElementById('input-mandante-placeholder').value = '';
