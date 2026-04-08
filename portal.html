@@ -536,9 +536,12 @@
                 <div class="tab-pane fade" id="pills-stats">
                     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                         <h3 class="section-title mb-0">Desempenho e Estatísticas</h3>
-                        <div class="form-check form-switch bg-white p-2 px-3 rounded-pill shadow-sm border d-flex align-items-center gap-2">
-                            <input class="form-check-input m-0 fs-5 mt-0" type="checkbox" id="check-semifinalistas" style="cursor:pointer;" onchange="aplicarFiltroSemifinalistas()">
-                            <label class="form-check-label text-primary fw-bold small" for="check-semifinalistas" style="cursor:pointer; padding-top:2px;">Somente Semifinalistas</label>
+                        <div
+                            class="form-check form-switch bg-white p-2 px-3 rounded-pill shadow-sm border d-flex align-items-center gap-2">
+                            <input class="form-check-input m-0 fs-5 mt-0" type="checkbox" id="check-semifinalistas"
+                                style="cursor:pointer;" onchange="aplicarFiltroSemifinalistas()">
+                            <label class="form-check-label text-primary fw-bold small" for="check-semifinalistas"
+                                style="cursor:pointer; padding-top:2px;">Somente Semifinalistas</label>
                         </div>
                     </div>
                     <ul class="nav nav-pills mb-4 bg-white p-2 rounded-pill shadow-sm d-inline-flex border"
@@ -648,7 +651,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         //const API = 'http://localhost:3001/api';
-        const API = 'https://placar-api-qvva.onrender.com/api'; // Novo
+        //const API = 'https://placar-api-qvva.onrender.com/api'; // Novo
         let currentPrefeituraId = 1;
         let campsCache = [];
         let campeonatoAtual = null;
@@ -883,9 +886,9 @@
                         <div class="row align-items-center">
                             <div class="col-4 text-center">
                                 <div class="mb-2">
-                                    ${j.mandante?.logoUrl 
-                                        ? `<img src="${j.mandante.logoUrl}" alt="${j.mandanteNome}" style="width:56px;height:56px;object-fit:contain;">` 
-                                        : `<i class="bi bi-shield-shaded fs-1 text-primary"></i>`}
+                                    ${j.mandante?.logoUrl
+                            ? `<img src="${j.mandante.logoUrl}" alt="${j.mandanteNome}" style="width:56px;height:56px;object-fit:contain;">`
+                            : `<i class="bi bi-shield-shaded fs-1 text-primary"></i>`}
                                 </div>
                                 <div class="team-name text-uppercase">${j.mandanteNome}</div>
                             </div>
@@ -898,9 +901,9 @@
                             </div>
                             <div class="col-4 text-center">
                                 <div class="mb-2">
-                                    ${j.visitante?.logoUrl 
-                                        ? `<img src="${j.visitante.logoUrl}" alt="${j.visitanteNome}" style="width:56px;height:56px;object-fit:contain;">` 
-                                        : `<i class="bi bi-shield-shaded fs-1 text-secondary"></i>`}
+                                    ${j.visitante?.logoUrl
+                            ? `<img src="${j.visitante.logoUrl}" alt="${j.visitanteNome}" style="width:56px;height:56px;object-fit:contain;">`
+                            : `<i class="bi bi-shield-shaded fs-1 text-secondary"></i>`}
                                 </div>
                                 <div class="team-name text-uppercase">${j.visitanteNome}</div>
                             </div>
@@ -1022,21 +1025,21 @@
                                 return idxA - idxB;
                             });
                         }
-                        
+
                         let newTargetOrder = [];
                         const getDep = (str) => {
                             if (!str) return null;
                             const m = str.match(/Jogo\s*(\d+)/i);
                             return m ? parseInt(m[1]) : null;
                         };
-                        
+
                         rounds[i].jogos.forEach(j => {
                             const dA = getDep(j.mandantePlaceholder) || getDep(j.mandanteNome);
                             const dB = getDep(j.visitantePlaceholder) || getDep(j.visitanteNome);
                             if (dA) newTargetOrder.push(dA);
                             if (dB) newTargetOrder.push(dB);
                         });
-                        
+
                         // Atualiza a ordem esperada para a coluna anterior, se houver referências
                         if (newTargetOrder.length > 0) {
                             targetOrder = newTargetOrder;
@@ -1063,7 +1066,7 @@
                     <div class="bracket-wrapper" style="overflow-x: auto; padding-bottom: 20px; margin-top: 10px;">
                         <div class="bracket-container" style="display: flex; gap: 40px; min-width: min-content;">
                     `;
-                    
+
                     rounds.forEach((round) => {
                         mmHtml += `
                         <div class="bracket-col" style="display: flex; flex-direction: column; min-width: 320px; position:relative;">
@@ -1096,7 +1099,7 @@
                         });
                         mmHtml += `</div></div>`;
                     });
-                    
+
                     mmHtml += '</div></div>';
                     containerMataMata.innerHTML = mmHtml;
                 } else {
@@ -1164,15 +1167,15 @@
 
         function aplicarFiltroSemifinalistas() {
             const isChecked = document.getElementById('check-semifinalistas').checked;
-            
+
             if (isChecked && _semifinalistasSet.size > 0) {
                 _estatCache.artilharia = _estatCacheRaw.artilharia.filter(a => _semifinalistasSet.has(a.equipeNome));
                 _estatCache.disciplina = _estatCacheRaw.disciplina.filter(d => _semifinalistasSet.has(d.nome));
-                _estatCache.defesa     = _estatCacheRaw.defesa.filter(d => _semifinalistasSet.has(d.nome));
+                _estatCache.defesa = _estatCacheRaw.defesa.filter(d => _semifinalistasSet.has(d.nome));
             } else {
                 _estatCache.artilharia = [..._estatCacheRaw.artilharia];
                 _estatCache.disciplina = [..._estatCacheRaw.disciplina];
-                _estatCache.defesa     = [..._estatCacheRaw.defesa];
+                _estatCache.defesa = [..._estatCacheRaw.defesa];
             }
 
             _estatVisiveis.artilharia = 10;
@@ -1200,7 +1203,7 @@
 
                 _estatCacheRaw.artilharia = data.artilharia || [];
                 _estatCacheRaw.disciplina = data.disciplina || [];
-                _estatCacheRaw.defesa     = data.defesa || [];
+                _estatCacheRaw.defesa = data.defesa || [];
 
                 // Descobrir semifinalistas dinamicamente
                 _semifinalistasSet.clear();
