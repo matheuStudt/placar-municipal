@@ -34,7 +34,8 @@
                     Tabela de Jogos</a></li>
             <li class="nav-item mb-2"><a href="sumula.html" class="nav-link p-2"><i
                         class="bi bi-file-earmark-text me-2"></i> Súmula</a></li>
-            <li class="nav-item mb-2"><a href="relatorios.html" class="nav-link p-2"><i class="bi bi-file-pdf me-2"></i> Relatórios</a></li>
+            <li class="nav-item mb-2"><a href="relatorios.html" class="nav-link p-2"><i class="bi bi-file-pdf me-2"></i>
+                    Relatórios</a></li>
             <hr class="text-white-50">
             <li class="nav-item"><a href="login.html" class="nav-link p-2 text-danger-emphasis text-white"><i
                         class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
@@ -112,7 +113,8 @@
                                 placeholder="Ex: Estádio Municipal ou Ginásio da Vila">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-muted">URL DA LOGO / BRASÃO (<span class="text-primary">opcional</span>)</label>
+                            <label class="form-label small fw-bold text-muted">URL DA LOGO / BRASÃO (<span
+                                    class="text-primary">opcional</span>)</label>
                             <input type="text" id="logoUrl" class="form-control form-control-lg"
                                 placeholder="Ex: https://i.imgur.com/abc123.png">
                             <div class="mt-2 text-center" id="logo-preview-container" style="display:none;">
@@ -140,7 +142,8 @@
                         <div class="row g-2 mb-2">
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                                    <span class="input-group-text bg-white"><i
+                                            class="bi bi-search text-muted"></i></span>
                                     <input type="text" id="busca-atletas-vinculo" class="form-control"
                                         placeholder="Buscar atleta por nome..." oninput="filtrarListaVinculo()">
                                 </div>
@@ -159,14 +162,16 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center mt-2">
                             <small class="text-muted" id="contador-selecionados">0 selecionados</small>
-                            <button type="button" class="btn btn-primary btn-sm fw-bold px-4" onclick="adicionarSelecionados()">
+                            <button type="button" class="btn btn-primary btn-sm fw-bold px-4"
+                                onclick="adicionarSelecionados()">
                                 <i class="bi bi-person-plus me-1"></i> Adicionar Selecionados
                             </button>
                         </div>
                     </div>
                     <div class="d-flex justify-content-between align-items-center px-1 mb-3">
                         <h6 class="fw-bold mb-0">Atletas Inscritos</h6>
-                        <button class="btn btn-sm btn-danger fw-bold shadow-sm" onclick="limparElencoDaEquipe()"><i class="bi bi-trash3 me-1"></i>Limpar Elenco</button>
+                        <button class="btn btn-sm btn-danger fw-bold shadow-sm" onclick="limparElencoDaEquipe()"><i
+                                class="bi bi-trash3 me-1"></i>Limpar Elenco</button>
                     </div>
                     <div class="list-group list-group-flush border rounded shadow-sm" id="lista-elenco">
                     </div>
@@ -195,6 +200,8 @@
 
                 const res = await fetch(`${API}/equipes?prefeituraId=${prefeituraId}`);
                 const equipes = await res.json();
+                // Adicione esta linha para ordenar de A a Z
+                equipes.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }));
                 const tabela = document.getElementById('tabela-equipes');
                 tabela.innerHTML = '';
 
@@ -203,12 +210,12 @@
                     tabela.innerHTML += `
                     <tr>
                         <td class="px-3">
-                            ${eq.logoUrl 
-                                ? `<img src="${eq.logoUrl}" alt="${eq.nome}" style="width:36px;height:36px;object-fit:contain;border-radius:6px;">` 
-                                : `<div style="width:36px;height:36px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;"><i class="bi bi-shield text-muted"></i></div>`
-                            }
-                        </td>
-                        <td class="fw-bold text-primary">${eq.nome}</td>
+                            ${eq.logoUrl
+                            ? `<img src="${eq.logoUrl}" alt="${eq.nome}" style="width:36px;height:36px;object-fit:contain;border-radius:6px;">`
+                            : `<div style="width:36px;height:36px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;"><i class="bi bi-shield text-muted"></i></div>`
+                        }
+                        </td>                        
+                        <td class="fw-bold text-dark">${eq.nome}</td>
                         <td>${eq.responsavel}</td>
                         <td>
                             <a href="https://wa.me/55${foneLimpo}" target="_blank" class="whatsapp-link">
@@ -409,7 +416,7 @@
             const equipeId = document.getElementById('equipe-id-vinculo').value;
             if (!confirm("Atenção! Deseja remover TODOS os atletas vinculados a esta equipe?")) return;
             const res = await fetch(`${API}/equipes/${equipeId}/elenco`, { method: 'DELETE' });
-            if(res.ok) {
+            if (res.ok) {
                 atualizarListaElenco(equipeId);
             } else {
                 showToast('Erro ao limpar elenco', 'danger');
@@ -421,4 +428,3 @@
 </body>
 
 </html>
-
