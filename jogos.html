@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -300,9 +300,11 @@
                                     </div>
                                     <div class="col-md-2 text-center px-0">
                                         <div class="d-flex justify-content-center align-items-center gap-2">
+                                            ${j.penaltisMandante !== null && j.penaltisMandante !== undefined ? `<span class="text-muted small fw-bold">(${j.penaltisMandante})</span>` : ''}
                                             <span class="placar-badge shadow-sm">${j.golsMandante}</span>
                                             <span class="text-muted fw-bold">X</span>
                                             <span class="placar-badge shadow-sm">${j.golsVisitante}</span>
+                                            ${j.penaltisVisitante !== null && j.penaltisVisitante !== undefined ? `<span class="text-muted small fw-bold">(${j.penaltisVisitante})</span>` : ''}
                                         </div>
                                         <span class="badge ${badgeClass} badge-status mt-2">${j.status}</span>
                                     </div>

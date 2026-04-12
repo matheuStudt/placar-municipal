@@ -110,9 +110,11 @@ model Jogo {
   visitantePlaceholder String?
   mandanteNome  String
   visitanteNome String
-  golsMandante  Int      @default(0)
-  golsVisitante Int      @default(0)
-  data          String
+  golsMandante      Int      @default(0)
+  golsVisitante     Int      @default(0)
+  penaltisMandante  Int?
+  penaltisVisitante Int?
+  data              String
   horario       String?
   local         String?
   status        String   @default("Agendado")

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -114,6 +114,25 @@
                         <div class="score-number" id="placar-v">0</div>
                     </div>
                 </div>
+
+                <div id="penaltis-container" class="mt-4 pt-4 border-top" style="display: none;">
+                    <h5 class="text-center text-muted fw-bold mb-3">CONFRONTO NOS PÊNALTIS</h5>
+                    <div class="row align-items-center text-center justify-content-center">
+                        <div class="col-4 d-flex justify-content-end align-items-center gap-2">
+                            <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(-1, 'mandante')" id="btn-penalti-sub-m">-</button>
+                            <div class="score-number fs-1 text-secondary" id="placar-penalti-m">0</div>
+                            <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(1, 'mandante')" id="btn-penalti-add-m">+</button>
+                        </div>
+                        <div class="col-auto">
+                            <span class="fs-4 fw-light text-muted">X</span>
+                        </div>
+                        <div class="col-4 d-flex justify-content-start align-items-center gap-2">
+                            <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(-1, 'visitante')" id="btn-penalti-sub-v">-</button>
+                            <div class="score-number fs-1 text-secondary" id="placar-penalti-v">0</div>
+                            <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(1, 'visitante')" id="btn-penalti-add-v">+</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -154,6 +173,8 @@
         let jogoAtivo = null;
         let golsM = 0;
         let golsV = 0;
+        let penaltisM = 0;
+        let penaltisV = 0;
 
         async function init() {
             const user = checkSession();
@@ -246,6 +267,9 @@
             document.getElementById('label-visitante').innerText = 'Time B';
             document.getElementById('placar-m').innerText = '0';
             document.getElementById('placar-v').innerText = '0';
+            document.getElementById('placar-penalti-m').innerText = '0';
+            document.getElementById('placar-penalti-v').innerText = '0';
+            document.getElementById('penaltis-container').style.display = 'none';
             document.getElementById('lista-mandante').innerHTML = '<p class="p-3 text-muted">Selecione um jogo...</p>';
             document.getElementById('lista-visitante').innerHTML = '<p class="p-3 text-muted">Selecione um jogo...</p>';
 
@@ -274,22 +298,43 @@
 
             golsM = jogoAtivo.golsMandante || 0;
             golsV = jogoAtivo.golsVisitante || 0;
+            penaltisM = jogoAtivo.penaltisMandante || 0;
+            penaltisV = jogoAtivo.penaltisVisitante || 0;
+
             document.getElementById('placar-m').innerText = golsM;
             document.getElementById('placar-v').innerText = golsV;
+            document.getElementById('placar-penalti-m').innerText = penaltisM;
+            document.getElementById('placar-penalti-v').innerText = penaltisV;
 
             const isFinalizado = jogoAtivo.status === 'Finalizado';
             renderizarLado(dados.elencoMandante, 'mandante', isFinalizado, jogoAtivo.mandanteId);
             renderizarLado(dados.elencoVisitante, 'visitante', isFinalizado, jogoAtivo.visitanteId);
+
+            const isMataMata = jogoAtivo.rodada && jogoAtivo.rodada.tipo === 'MATA_MATA';
+            if (isMataMata || penaltisM > 0 || penaltisV > 0) {
+                document.getElementById('penaltis-container').style.display = 'block';
+            } else {
+                document.getElementById('penaltis-container').style.display = 'none';
+            }
 
             const btnFinalizar = document.getElementById('btn-finalizar');
             if (isFinalizado) {
                 btnFinalizar.disabled = true;
                 btnFinalizar.innerHTML = '<i class="bi bi-lock-fill me-2"></i> JOGO FINALIZADO (SOMENTE LEITURA)';
                 btnFinalizar.classList.replace('btn-success', 'btn-secondary');
+                
+                // Desabilita botões de penaltis
+                document.querySelectorAll('.btn-counter').forEach(b => b.disabled = true);
             } else {
                 btnFinalizar.disabled = false;
                 btnFinalizar.innerHTML = '<i class="bi bi-check2-circle me-2"></i> FINALIZAR E SALVAR RESULTADO';
                 btnFinalizar.classList.replace('btn-secondary', 'btn-success');
+                
+                // Habilita botões de penaltis
+                document.getElementById('btn-penalti-sub-m').disabled = false;
+                document.getElementById('btn-penalti-add-m').disabled = false;
+                document.getElementById('btn-penalti-sub-v').disabled = false;
+                document.getElementById('btn-penalti-add-v').disabled = false;
             }
         }
 
@@ -364,6 +409,20 @@
             }
         }
 
+        function atualizarPenalti(valor, lado) {
+            if (jogoAtivo && jogoAtivo.status === 'Finalizado') return;
+
+            if (lado === 'mandante') {
+                if (penaltisM + valor < 0) return;
+                penaltisM += valor;
+                document.getElementById('placar-penalti-m').innerText = penaltisM;
+            } else {
+                if (penaltisV + valor < 0) return;
+                penaltisV += valor;
+                document.getElementById('placar-penalti-v').innerText = penaltisV;
+            }
+        }
+
         async function finalizarPartida() {
             if (!jogoAtivo || jogoAtivo.status === 'Finalizado') return;
 
@@ -388,10 +447,19 @@
 
                 console.log("[FRONTEND] Enviando estatísticas:", estatisticas);
 
+                const envioData = { 
+                    jogoId: jogoAtivo.id, 
+                    golsM, 
+                    golsV, 
+                    estatisticas,
+                    penaltisM: penaltisM,
+                    penaltisV: penaltisV
+                };
+
                 const res = await fetch(`${API}/jogos/finalizar`, {
                     method: 'POST',
                     headers: getAuthHeaders(),
-                    body: JSON.stringify({ jogoId: jogoAtivo.id, golsM, golsV, estatisticas })
+                    body: JSON.stringify(envioData)
                 });
 
                 if (res.ok) {

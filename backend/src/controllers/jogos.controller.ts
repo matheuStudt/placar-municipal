@@ -105,7 +105,7 @@ export const createJogo = async (req: Request, res: Response) => {
 
 export const updateJogo = async (req: Request, res: Response) => {
     const id = parseInt(String(req.params.id));
-    const { numero, horario, local, mandanteId, visitanteId, mandanteNome, visitanteNome, mandantePlaceholder, visitantePlaceholder, data, status, chave } = req.body;
+    const { numero, horario, local, mandanteId, visitanteId, mandanteNome, visitanteNome, mandantePlaceholder, visitantePlaceholder, data, status, chave, penaltisMandante, penaltisVisitante } = req.body;
     try {
         const atualizado = await prisma.jogo.update({
             where: { id },
@@ -118,7 +118,9 @@ export const updateJogo = async (req: Request, res: Response) => {
                 visitantePlaceholder: visitantePlaceholder || null,
                 mandanteNome: mandanteNome || mandantePlaceholder || "A Definir",
                 visitanteNome: visitanteNome || visitantePlaceholder || "A Definir",
-                data, status, chave
+                data, status, chave,
+                penaltisMandante: penaltisMandante !== undefined && penaltisMandante !== null && penaltisMandante !== '' ? Number(penaltisMandante) : null,
+                penaltisVisitante: penaltisVisitante !== undefined && penaltisVisitante !== null && penaltisVisitante !== '' ? Number(penaltisVisitante) : null,
             }
         });
         res.json(atualizado);
@@ -129,7 +131,7 @@ export const updateJogo = async (req: Request, res: Response) => {
 };
 
 export const finalizarJogo = async (req: Request, res: Response) => {
-    const { jogoId, golsM, golsV, estatisticas } = req.body;
+    const { jogoId, golsM, golsV, estatisticas, penaltisM, penaltisV } = req.body;
     const idProcurado = parseInt(String(jogoId));
     try {
         const jogoAtualizado = await prisma.jogo.update({
@@ -137,6 +139,8 @@ export const finalizarJogo = async (req: Request, res: Response) => {
             data: {
                 golsMandante: Number(golsM),
                 golsVisitante: Number(golsV),
+                penaltisMandante: penaltisM !== undefined && penaltisM !== null && penaltisM !== '' ? Number(penaltisM) : null,
+                penaltisVisitante: penaltisV !== undefined && penaltisV !== null && penaltisV !== '' ? Number(penaltisV) : null,
                 status: "Finalizado"
             }
         });
