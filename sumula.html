@@ -115,21 +115,27 @@
                     </div>
                 </div>
 
-                <div id="penaltis-container" class="mt-4 pt-4 border-top" style="display: none;">
-                    <h5 class="text-center text-muted fw-bold mb-3">CONFRONTO NOS PÊNALTIS</h5>
-                    <div class="row align-items-center text-center justify-content-center">
-                        <div class="col-4 d-flex justify-content-end align-items-center gap-2">
-                            <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(-1, 'mandante')" id="btn-penalti-sub-m">-</button>
-                            <div class="score-number fs-1 text-secondary" id="placar-penalti-m">0</div>
-                            <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(1, 'mandante')" id="btn-penalti-add-m">+</button>
-                        </div>
-                        <div class="col-auto">
-                            <span class="fs-4 fw-light text-muted">X</span>
-                        </div>
-                        <div class="col-4 d-flex justify-content-start align-items-center gap-2">
-                            <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(-1, 'visitante')" id="btn-penalti-sub-v">-</button>
-                            <div class="score-number fs-1 text-secondary" id="placar-penalti-v">0</div>
-                            <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(1, 'visitante')" id="btn-penalti-add-v">+</button>
+                <div id="penaltis-wrapper" class="mt-4 pt-4 border-top" style="display: none;">
+                    <div class="form-check form-switch d-flex justify-content-center align-items-center gap-2 mb-3" id="toggle-penaltis-container">
+                        <input class="form-check-input fs-5" type="checkbox" role="switch" id="toggle-penaltis" onchange="togglePenaltisView()" style="margin-top:0;">
+                        <label class="form-check-label fs-6 fw-bold text-muted text-uppercase" for="toggle-penaltis">Houve decisão por pênaltis?</label>
+                    </div>
+                    <div id="penaltis-container" style="display: none;">
+                        <h5 class="text-center text-muted fw-bold mb-3 d-none d-md-block">CONFRONTO NOS PÊNALTIS</h5>
+                        <div class="row align-items-center text-center justify-content-center">
+                            <div class="col-4 d-flex justify-content-end align-items-center gap-2">
+                                <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(-1, 'mandante')" id="btn-penalti-sub-m">-</button>
+                                <div class="score-number fs-1 text-secondary" id="placar-penalti-m">0</div>
+                                <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(1, 'mandante')" id="btn-penalti-add-m">+</button>
+                            </div>
+                            <div class="col-auto">
+                                <span class="fs-4 fw-light text-muted">X</span>
+                            </div>
+                            <div class="col-4 d-flex justify-content-start align-items-center gap-2">
+                                <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(-1, 'visitante')" id="btn-penalti-sub-v">-</button>
+                                <div class="score-number fs-1 text-secondary" id="placar-penalti-v">0</div>
+                                <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(1, 'visitante')" id="btn-penalti-add-v">+</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -269,7 +275,11 @@
             document.getElementById('placar-v').innerText = '0';
             document.getElementById('placar-penalti-m').innerText = '0';
             document.getElementById('placar-penalti-v').innerText = '0';
+            document.getElementById('penaltis-wrapper').style.display = 'none';
             document.getElementById('penaltis-container').style.display = 'none';
+            const toggle = document.getElementById('toggle-penaltis');
+            if(toggle) toggle.checked = false;
+            
             document.getElementById('lista-mandante').innerHTML = '<p class="p-3 text-muted">Selecione um jogo...</p>';
             document.getElementById('lista-visitante').innerHTML = '<p class="p-3 text-muted">Selecione um jogo...</p>';
 
@@ -303,18 +313,38 @@
 
             document.getElementById('placar-m').innerText = golsM;
             document.getElementById('placar-v').innerText = golsV;
-            document.getElementById('placar-penalti-m').innerText = penaltisM;
-            document.getElementById('placar-penalti-v').innerText = penaltisV;
+            
+            let isPenaltisDecididos = (jogoAtivo.penaltisMandante !== null && jogoAtivo.penaltisMandante !== undefined);
+            
+            document.getElementById('placar-penalti-m').innerText = isPenaltisDecididos ? penaltisM : '0';
+            document.getElementById('placar-penalti-v').innerText = isPenaltisDecididos ? penaltisV : '0';
 
             const isFinalizado = jogoAtivo.status === 'Finalizado';
             renderizarLado(dados.elencoMandante, 'mandante', isFinalizado, jogoAtivo.mandanteId);
             renderizarLado(dados.elencoVisitante, 'visitante', isFinalizado, jogoAtivo.visitanteId);
 
-            const isMataMata = jogoAtivo.rodada && jogoAtivo.rodada.tipo === 'MATA_MATA';
-            if (isMataMata || penaltisM > 0 || penaltisV > 0) {
-                document.getElementById('penaltis-container').style.display = 'block';
+            const wrapper = document.getElementById('penaltis-wrapper');
+            const containerPen = document.getElementById('penaltis-container');
+            const toggleContainer = document.getElementById('toggle-penaltis-container');
+            const toggleCb = document.getElementById('toggle-penaltis');
+
+            if (isFinalizado) {
+                if (isPenaltisDecididos) {
+                    wrapper.style.display = 'block';
+                    toggleContainer.style.display = 'none'; // Esconde a chave, exibe só os valores
+                    containerPen.style.display = 'block';
+                } else {
+                    wrapper.style.display = 'none';
+                }
             } else {
-                document.getElementById('penaltis-container').style.display = 'none';
+                wrapper.style.display = 'block'; // Sempre mostrar o switch durante o andamento da súmula
+                toggleContainer.style.display = 'flex';
+                toggleCb.checked = isPenaltisDecididos;
+                containerPen.style.display = isPenaltisDecididos ? 'block' : 'none';
+                
+                // Reinicia em 0 caso fossem null e o usuário ligar a flag depois
+                penaltisM = penaltisM || 0;
+                penaltisV = penaltisV || 0;
             }
 
             const btnFinalizar = document.getElementById('btn-finalizar');
@@ -336,6 +366,11 @@
                 document.getElementById('btn-penalti-sub-v').disabled = false;
                 document.getElementById('btn-penalti-add-v').disabled = false;
             }
+        }
+        
+        function togglePenaltisView() {
+            const isChecked = document.getElementById('toggle-penaltis').checked;
+            document.getElementById('penaltis-container').style.display = isChecked ? 'block' : 'none';
         }
 
         function renderizarLado(atletas, lado, bloqueado, equipeId) {
@@ -447,13 +482,22 @@
 
                 console.log("[FRONTEND] Enviando estatísticas:", estatisticas);
 
+                let finalPenaltisM = null;
+                let finalPenaltisV = null;
+                const toggle = document.getElementById('toggle-penaltis');
+                // Se não foi finalizado e a flag de penaltis estiver ligada
+                if (toggle && toggle.checked) {
+                    finalPenaltisM = penaltisM;
+                    finalPenaltisV = penaltisV;
+                }
+
                 const envioData = { 
                     jogoId: jogoAtivo.id, 
                     golsM, 
                     golsV, 
                     estatisticas,
-                    penaltisM: penaltisM,
-                    penaltisV: penaltisV
+                    penaltisM: finalPenaltisM,
+                    penaltisV: finalPenaltisV
                 };
 
                 const res = await fetch(`${API}/jogos/finalizar`, {
