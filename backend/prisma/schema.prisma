@@ -52,6 +52,8 @@ model Campeonato {
   dataInicio    String
   dataFim       String
   status        String         @default("Inscrições Abertas")
+  regrasDesempate2Equipes   Json?
+  regrasDesempate3MaisEquipes Json?
   participacoes Participacao[]
   rodadas       Rodada[]
   classificadosPorChave Int        @default(4)
