@@ -1,6 +1,5 @@
-const API = (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://localhost:3001/api'
-    : 'https://placar-api-qvva.onrender.com/api';
+const isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.');
+const API = isLocal ? 'http://localhost:3001/api' : 'https://placar-api-qvva.onrender.com/api';
 
 // 1. Sidebar Toggle
 function toggleSidebar() {
