@@ -45,7 +45,7 @@ const resolveTiebreaker = (equipes: any[], regras: string[], jogos: any[]) => {
     });
 };
 
-const applyDynamicSorting = (tabelaResult: any[], regras2: string[], regras3: string[], jogos: any[]) => {
+const applyDynamicSorting = (tabelaResult: any[], regrasGeral: string[], regras2: string[], regras3: string[], jogos: any[], isGeral: boolean = false) => {
     const porPontos: Record<number, any[]> = {};
     tabelaResult.forEach(t => {
         porPontos[t.p] = porPontos[t.p] || [];
@@ -59,10 +59,14 @@ const applyDynamicSorting = (tabelaResult: any[], regras2: string[], regras3: st
         const grupo = porPontos[pts];
         if (grupo.length === 1) {
             finalLista.push(grupo[0]);
-        } else if (grupo.length === 2) {
-            finalLista.push(...resolveTiebreaker(grupo, regras2, jogos));
         } else {
-            finalLista.push(...resolveTiebreaker(grupo, regras3, jogos));
+            if (isGeral) {
+                finalLista.push(...resolveTiebreaker(grupo, regrasGeral, jogos));
+            } else if (grupo.length === 2) {
+                finalLista.push(...resolveTiebreaker(grupo, regras2, jogos));
+            } else {
+                finalLista.push(...resolveTiebreaker(grupo, regras3, jogos));
+            }
         }
     }
     return finalLista;
@@ -107,7 +111,7 @@ export const getCampeonatos = async (req: Request, res: Response) => {
 };
 
 export const createCampeonato = async (req: Request, res: Response) => {
-    const { nome, ano, formato, prefeituraId, descricao, dataInicio, dataFim, classificadosPorChave, regrasDesempate2Equipes, regrasDesempate3MaisEquipes } = req.body;
+    const { nome, ano, formato, prefeituraId, descricao, dataInicio, dataFim, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes } = req.body;
     try {
         const novo = await prisma.campeonato.create({
             data: {
@@ -119,6 +123,7 @@ export const createCampeonato = async (req: Request, res: Response) => {
                 dataFim: dataFim || "2024-12-31",
                 prefeituraId: parseInt(String(prefeituraId)) || 1,
                 classificadosPorChave: classificadosPorChave ? parseInt(String(classificadosPorChave)) : 4,
+                regrasDesempateGeral: regrasDesempateGeral || undefined,
                 regrasDesempate2Equipes: regrasDesempate2Equipes || undefined,
                 regrasDesempate3MaisEquipes: regrasDesempate3MaisEquipes || undefined
             }
@@ -131,7 +136,7 @@ export const createCampeonato = async (req: Request, res: Response) => {
 
 export const updateCampeonato = async (req: Request, res: Response) => {
     const id = parseInt(String(req.params.id));
-    const { nome, ano, formato, descricao, dataInicio, dataFim, status, classificadosPorChave, regrasDesempate2Equipes, regrasDesempate3MaisEquipes } = req.body;
+    const { nome, ano, formato, descricao, dataInicio, dataFim, status, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes } = req.body;
     try {
         const atualizado = await prisma.campeonato.update({
             where: { id },
@@ -144,6 +149,7 @@ export const updateCampeonato = async (req: Request, res: Response) => {
                 dataFim,
                 status,
                 classificadosPorChave: classificadosPorChave ? parseInt(String(classificadosPorChave)) : undefined,
+                regrasDesempateGeral: regrasDesempateGeral || undefined,
                 regrasDesempate2Equipes: regrasDesempate2Equipes || undefined,
                 regrasDesempate3MaisEquipes: regrasDesempate3MaisEquipes || undefined
             }
@@ -172,6 +178,10 @@ export const getClassificacao = async (req: Request, res: Response) => {
     try {
         const campeonato = await prisma.campeonato.findUnique({ where: { id: campeonatoId } });
         if (!campeonato) throw new Error("Campeonato não encontrado");
+
+        const regrasGeral = Array.isArray(campeonato.regrasDesempateGeral) && campeonato.regrasDesempateGeral.length > 0 
+            ? campeonato.regrasDesempateGeral 
+            : ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
 
         const regrasDesempate2 = Array.isArray(campeonato.regrasDesempate2Equipes) && campeonato.regrasDesempate2Equipes.length > 0 
             ? campeonato.regrasDesempate2Equipes 
@@ -248,7 +258,7 @@ export const getClassificacao = async (req: Request, res: Response) => {
             return item;
         });
 
-        const finalResultado = applyDynamicSorting(resultado, regrasDesempate2 as string[], regrasDesempate3 as string[], jogos);
+        const finalResultado = applyDynamicSorting(resultado, regrasGeral as string[], regrasDesempate2 as string[], regrasDesempate3 as string[], jogos, !chave);
 
         res.json(finalResultado);
     } catch (e) {
@@ -261,6 +271,10 @@ export const gerarChaveamento = async (req: Request, res: Response) => {
     try {
         const campeonato = await prisma.campeonato.findUnique({ where: { id: campeonatoId } });
         if (!campeonato) throw new Error("Campeonato não encontrado");
+
+        const regrasGeral = Array.isArray(campeonato.regrasDesempateGeral) && campeonato.regrasDesempateGeral.length > 0 
+            ? campeonato.regrasDesempateGeral 
+            : ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
 
         const regrasDesempate2 = Array.isArray(campeonato.regrasDesempate2Equipes) && campeonato.regrasDesempate2Equipes.length > 0 
             ? campeonato.regrasDesempate2Equipes 
@@ -328,7 +342,7 @@ export const gerarChaveamento = async (req: Request, res: Response) => {
             });
 
             const resultado = Object.values(tabela).map((item: any) => { item.sg = item.gp - item.gc; return item; });
-            const finalResultado = applyDynamicSorting(resultado, regrasDesempate2 as string[], regrasDesempate3 as string[], jogosGrupo);
+            const finalResultado = applyDynamicSorting(resultado, regrasGeral as string[], regrasDesempate2 as string[], regrasDesempate3 as string[], jogosGrupo, chave === null);
 
             if (chave !== null) {
                 rankingPorChave[chave] = finalResultado;

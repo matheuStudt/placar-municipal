@@ -1,4 +1,83 @@
 import { prisma } from '../prisma.js';
+const resolveTiebreaker = (equipes, regras, jogos) => {
+    return equipes.sort((a, b) => {
+        if (a.p !== b.p)
+            return b.p - a.p;
+        for (const regra of regras) {
+            switch (regra) {
+                case 'VITORIAS':
+                    if (a.v !== b.v)
+                        return b.v - a.v;
+                    break;
+                case 'SALDO_GOLS':
+                    if (a.sg !== b.sg)
+                        return b.sg - a.sg;
+                    break;
+                case 'GOLS_PRO':
+                    if (a.gp !== b.gp)
+                        return b.gp - a.gp;
+                    break;
+                case 'GOLS_SOFRIDOS':
+                    if (a.gc !== b.gc)
+                        return a.gc - b.gc;
+                    break;
+                case 'CONFRONTO_DIRETO':
+                    const jogoConfronto = jogos.find((j) => (j.mandanteId === a.id && j.visitanteId === b.id) || (j.mandanteId === b.id && j.visitanteId === a.id));
+                    if (jogoConfronto) {
+                        let goalsA = 0;
+                        let goalsB = 0;
+                        if (jogoConfronto.mandanteId === a.id) {
+                            goalsA += jogoConfronto.golsMandante || 0;
+                            goalsB += jogoConfronto.golsVisitante || 0;
+                        }
+                        else {
+                            goalsB += jogoConfronto.golsMandante || 0;
+                            goalsA += jogoConfronto.golsVisitante || 0;
+                        }
+                        if (goalsA !== goalsB)
+                            return goalsB - goalsA;
+                    }
+                    break;
+                case 'CARTAO_AMARELO':
+                    if (a.am !== b.am)
+                        return a.am - b.am;
+                    break;
+                case 'CARTAO_VERMELHO':
+                    if (a.vm !== b.vm)
+                        return a.vm - b.vm;
+                    break;
+            }
+        }
+        return 0;
+    });
+};
+const applyDynamicSorting = (tabelaResult, regrasGeral, regras2, regras3, jogos, isGeral = false) => {
+    const porPontos = {};
+    tabelaResult.forEach(t => {
+        porPontos[t.p] = porPontos[t.p] || [];
+        porPontos[t.p].push(t);
+    });
+    const finalLista = [];
+    const pontosUnicos = Object.keys(porPontos).map(Number).sort((a, b) => b - a);
+    for (const pts of pontosUnicos) {
+        const grupo = porPontos[pts];
+        if (grupo.length === 1) {
+            finalLista.push(grupo[0]);
+        }
+        else {
+            if (isGeral) {
+                finalLista.push(...resolveTiebreaker(grupo, regrasGeral, jogos));
+            }
+            else if (grupo.length === 2) {
+                finalLista.push(...resolveTiebreaker(grupo, regras2, jogos));
+            }
+            else {
+                finalLista.push(...resolveTiebreaker(grupo, regras3, jogos));
+            }
+        }
+    }
+    return finalLista;
+};
 export const getCampeonatos = async (req, res) => {
     const prefeituraId = req.query.prefeituraId ? parseInt(String(req.query.prefeituraId)) : undefined;
     try {
@@ -33,7 +112,7 @@ export const getCampeonatos = async (req, res) => {
     }
 };
 export const createCampeonato = async (req, res) => {
-    const { nome, ano, formato, prefeituraId, descricao, dataInicio, dataFim, classificadosPorChave } = req.body;
+    const { nome, ano, formato, prefeituraId, descricao, dataInicio, dataFim, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes } = req.body;
     try {
         const novo = await prisma.campeonato.create({
             data: {
@@ -44,7 +123,10 @@ export const createCampeonato = async (req, res) => {
                 dataInicio: dataInicio || "2024-01-01",
                 dataFim: dataFim || "2024-12-31",
                 prefeituraId: parseInt(String(prefeituraId)) || 1,
-                classificadosPorChave: classificadosPorChave ? parseInt(String(classificadosPorChave)) : 4
+                classificadosPorChave: classificadosPorChave ? parseInt(String(classificadosPorChave)) : 4,
+                regrasDesempateGeral: regrasDesempateGeral || undefined,
+                regrasDesempate2Equipes: regrasDesempate2Equipes || undefined,
+                regrasDesempate3MaisEquipes: regrasDesempate3MaisEquipes || undefined
             }
         });
         res.status(201).json(novo);
@@ -55,7 +137,7 @@ export const createCampeonato = async (req, res) => {
 };
 export const updateCampeonato = async (req, res) => {
     const id = parseInt(String(req.params.id));
-    const { nome, ano, formato, descricao, dataInicio, dataFim, status, classificadosPorChave } = req.body;
+    const { nome, ano, formato, descricao, dataInicio, dataFim, status, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes } = req.body;
     try {
         const atualizado = await prisma.campeonato.update({
             where: { id },
@@ -67,7 +149,10 @@ export const updateCampeonato = async (req, res) => {
                 dataInicio,
                 dataFim,
                 status,
-                classificadosPorChave: classificadosPorChave ? parseInt(String(classificadosPorChave)) : undefined
+                classificadosPorChave: classificadosPorChave ? parseInt(String(classificadosPorChave)) : undefined,
+                regrasDesempateGeral: regrasDesempateGeral || undefined,
+                regrasDesempate2Equipes: regrasDesempate2Equipes || undefined,
+                regrasDesempate3MaisEquipes: regrasDesempate3MaisEquipes || undefined
             }
         });
         res.json(atualizado);
@@ -92,6 +177,18 @@ export const getClassificacao = async (req, res) => {
     const campeonatoId = parseInt(String(req.params.id));
     const { chave } = req.query;
     try {
+        const campeonato = await prisma.campeonato.findUnique({ where: { id: campeonatoId } });
+        if (!campeonato)
+            throw new Error("Campeonato não encontrado");
+        const regrasGeral = Array.isArray(campeonato.regrasDesempateGeral) && campeonato.regrasDesempateGeral.length > 0
+            ? campeonato.regrasDesempateGeral
+            : ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
+        const regrasDesempate2 = Array.isArray(campeonato.regrasDesempate2Equipes) && campeonato.regrasDesempate2Equipes.length > 0
+            ? campeonato.regrasDesempate2Equipes
+            : ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
+        const regrasDesempate3 = Array.isArray(campeonato.regrasDesempate3MaisEquipes) && campeonato.regrasDesempate3MaisEquipes.length > 0
+            ? campeonato.regrasDesempate3MaisEquipes
+            : ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
         const participacoes = await prisma.participacao.findMany({
             where: {
                 campeonatoId,
@@ -108,10 +205,17 @@ export const getClassificacao = async (req, res) => {
                 status: 'Finalizado'
             }
         });
+        const eventos = await prisma.evento.findMany({
+            where: {
+                jogo: {
+                    rodada: { campeonatoId, tipo: 'GRUPO' }
+                }
+            }
+        });
         const tabela = {};
         participacoes.forEach(p => {
             if (p.equipe) {
-                tabela[p.equipe.id] = { id: p.equipe.id, nome: p.equipe.nome, p: 0, j: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0, sg: 0 };
+                tabela[p.equipe.id] = { id: p.equipe.id, nome: p.equipe.nome, p: 0, j: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0, sg: 0, am: 0, vm: 0 };
             }
         });
         jogos.forEach(j => {
@@ -154,20 +258,18 @@ export const getClassificacao = async (req, res) => {
                 }
             }
         });
+        eventos.forEach(e => {
+            if (e.equipeId && tabela[e.equipeId]) {
+                tabela[e.equipeId].am += e.am || 0;
+                tabela[e.equipeId].vm += e.vm || 0;
+            }
+        });
         const resultado = Object.values(tabela).map((item) => {
             item.sg = item.gp - item.gc;
             return item;
         });
-        resultado.sort((a, b) => {
-            if (b.p !== a.p)
-                return b.p - a.p;
-            if (b.v !== a.v)
-                return b.v - a.v;
-            if (a.gc !== b.gc)
-                return a.gc - b.gc;
-            return b.gp - a.gp;
-        });
-        res.json(resultado);
+        const finalResultado = applyDynamicSorting(resultado, regrasGeral, regrasDesempate2, regrasDesempate3, jogos, !chave);
+        res.json(finalResultado);
     }
     catch (e) {
         res.status(500).json({ error: "Erro ao gerar classificação" });
@@ -176,12 +278,31 @@ export const getClassificacao = async (req, res) => {
 export const gerarChaveamento = async (req, res) => {
     const campeonatoId = parseInt(String(req.params.id));
     try {
+        const campeonato = await prisma.campeonato.findUnique({ where: { id: campeonatoId } });
+        if (!campeonato)
+            throw new Error("Campeonato não encontrado");
+        const regrasGeral = Array.isArray(campeonato.regrasDesempateGeral) && campeonato.regrasDesempateGeral.length > 0
+            ? campeonato.regrasDesempateGeral
+            : ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
+        const regrasDesempate2 = Array.isArray(campeonato.regrasDesempate2Equipes) && campeonato.regrasDesempate2Equipes.length > 0
+            ? campeonato.regrasDesempate2Equipes
+            : ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
+        const regrasDesempate3 = Array.isArray(campeonato.regrasDesempate3MaisEquipes) && campeonato.regrasDesempate3MaisEquipes.length > 0
+            ? campeonato.regrasDesempate3MaisEquipes
+            : ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
         const participacoes = await prisma.participacao.findMany({
             where: { campeonatoId },
             include: { equipe: true }
         });
         const jogosGrupo = await prisma.jogo.findMany({
             where: { rodada: { campeonatoId, tipo: 'GRUPO' }, status: 'Finalizado' }
+        });
+        const eventos = await prisma.evento.findMany({
+            where: {
+                jogo: {
+                    rodada: { campeonatoId, tipo: 'GRUPO' }
+                }
+            }
         });
         const chavesUnicas = [...new Set(participacoes.map(p => p.chave))];
         const rankingPorChave = {};
@@ -190,7 +311,7 @@ export const gerarChaveamento = async (req, res) => {
             const tabela = {};
             equipesChave.forEach(p => {
                 if (p.equipe) {
-                    tabela[p.equipe.id] = { id: p.equipe.id, nome: p.equipe.nome, p: 0, v: 0, sg: 0, gp: 0, gc: 0 };
+                    tabela[p.equipe.id] = { id: p.equipe.id, nome: p.equipe.nome, p: 0, v: 0, sg: 0, gp: 0, gc: 0, am: 0, vm: 0 };
                 }
             });
             jogosGrupo.forEach(j => {
@@ -223,13 +344,19 @@ export const gerarChaveamento = async (req, res) => {
                     }
                 }
             });
+            eventos.forEach(e => {
+                if (e.equipeId && tabela[e.equipeId]) {
+                    tabela[e.equipeId].am += e.am || 0;
+                    tabela[e.equipeId].vm += e.vm || 0;
+                }
+            });
             const resultado = Object.values(tabela).map((item) => { item.sg = item.gp - item.gc; return item; });
-            resultado.sort((a, b) => (b.p - a.p) || (b.v - a.v) || (a.gc - b.gc) || (b.gp - a.gp));
+            const finalResultado = applyDynamicSorting(resultado, regrasGeral, regrasDesempate2, regrasDesempate3, jogosGrupo, chave === null);
             if (chave !== null) {
-                rankingPorChave[chave] = resultado;
+                rankingPorChave[chave] = finalResultado;
             }
             else {
-                rankingPorChave['GERAL'] = resultado;
+                rankingPorChave['GERAL'] = finalResultado;
             }
         }
         const jogosMataMata = await prisma.jogo.findMany({

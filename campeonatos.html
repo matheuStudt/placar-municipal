@@ -92,21 +92,36 @@
                             <h6 class="fw-bold mb-2 pb-1 border-bottom text-muted">Critérios de Desempate</h6>
                         </div>
                         <div class="col-12 mb-2">
+                            <label class="form-label small fw-bold text-primary mb-1">Critério Geral:</label>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <select id="rg_1" class="form-select form-select-sm" style="width: 140px"><option value="">1º critério</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo de Gols</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Gols Sofridos</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="rg_2" class="form-select form-select-sm" style="width: 140px"><option value="">2º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="rg_3" class="form-select form-select-sm" style="width: 140px"><option value="">3º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="rg_4" class="form-select form-select-sm" style="width: 140px"><option value="">4º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="rg_5" class="form-select form-select-sm" style="width: 140px"><option value="">5º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="rg_6" class="form-select form-select-sm" style="width: 140px"><option value="">6º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-2">
                             <label class="form-label small fw-bold text-primary mb-1">Para 2 equipes empatadas:</label>
-                            <div class="d-flex gap-2">
-                                <select id="r2_1" class="form-select form-select-sm"><option value="">1º critério</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo de Gols</option><option value="GOLS_PRO">Gols Pró</option><option value="CONFRONTO_DIRETO">Confronto Direto</option><option value="GOLS_SOFRIDOS">Gols Sofridos (Menos gols leva int.)</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
-                                <select id="r2_2" class="form-select form-select-sm"><option value="">2º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="CONFRONTO_DIRETO">Confronto Dir</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
-                                <select id="r2_3" class="form-select form-select-sm"><option value="">3º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="CONFRONTO_DIRETO">Confronto Dir</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
-                                <select id="r2_4" class="form-select form-select-sm"><option value="">4º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="CONFRONTO_DIRETO">Confronto Dir</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <select id="r2_1" class="form-select form-select-sm" style="width: 140px"><option value="">1º critério</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo de Gols</option><option value="GOLS_PRO">Gols Pró</option><option value="CONFRONTO_DIRETO">Confronto Direto</option><option value="GOLS_SOFRIDOS">Gols Sofridos (Menos gols leva int.)</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="r2_2" class="form-select form-select-sm" style="width: 140px"><option value="">2º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="CONFRONTO_DIRETO">Confronto Dir</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="r2_3" class="form-select form-select-sm" style="width: 140px"><option value="">3º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="CONFRONTO_DIRETO">Confronto Dir</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="r2_4" class="form-select form-select-sm" style="width: 140px"><option value="">4º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="CONFRONTO_DIRETO">Confronto Dir</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="r2_5" class="form-select form-select-sm" style="width: 140px"><option value="">5º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="CONFRONTO_DIRETO">Confronto Dir</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="r2_6" class="form-select form-select-sm" style="width: 140px"><option value="">6º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="CONFRONTO_DIRETO">Confronto Dir</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
                             </div>
                         </div>
                         <div class="col-12 mb-3">
                             <label class="form-label small fw-bold text-primary mb-1">Para 3 ou mais equipes empatadas:</label>
-                            <div class="d-flex gap-2">
-                                <select id="r3_1" class="form-select form-select-sm"><option value="">1º critério</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo de Gols</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Gols Sofridos (Menos gols leva int.)</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
-                                <select id="r3_2" class="form-select form-select-sm"><option value="">2º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
-                                <select id="r3_3" class="form-select form-select-sm"><option value="">3º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
-                                <select id="r3_4" class="form-select form-select-sm"><option value="">4º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <select id="r3_1" class="form-select form-select-sm" style="width: 140px"><option value="">1º critério</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo de Gols</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Gols Sofridos (Menos gols leva int.)</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="r3_2" class="form-select form-select-sm" style="width: 140px"><option value="">2º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="r3_3" class="form-select form-select-sm" style="width: 140px"><option value="">3º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="r3_4" class="form-select form-select-sm" style="width: 140px"><option value="">4º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="r3_5" class="form-select form-select-sm" style="width: 140px"><option value="">5º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
+                                <select id="r3_6" class="form-select form-select-sm" style="width: 140px"><option value="">6º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Menos Gols Sofrid.</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
                             </div>
                         </div>
                 </div>
@@ -411,7 +426,8 @@
             document.getElementById('campId').value = '';
             document.getElementById('classificadosPorChave').value = '4';
             const defaults = ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
-            for(let i=1; i<=4; i++) {
+            for(let i=1; i<=6; i++) {
+                document.getElementById(`rg_${i}`).value = defaults[i-1] || "";
                 document.getElementById(`r2_${i}`).value = defaults[i-1] || "";
                 document.getElementById(`r3_${i}`).value = defaults[i-1] || "";
             }
@@ -426,9 +442,11 @@
             document.getElementById('formato').value = c.formato;
             document.getElementById('classificadosPorChave').value = c.classificadosPorChave || 4;
 
+            const rg = c.regrasDesempateGeral || ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
             const r2 = c.regrasDesempate2Equipes || ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
             const r3 = c.regrasDesempate3MaisEquipes || ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
-            for(let i=1; i<=4; i++) {
+            for(let i=1; i<=6; i++) {
+                document.getElementById(`rg_${i}`).value = rg[i-1] || "";
                 document.getElementById(`r2_${i}`).value = r2[i-1] || "";
                 document.getElementById(`r3_${i}`).value = r3[i-1] || "";
             }
@@ -447,9 +465,12 @@
         document.getElementById('formCamp').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('campId').value;
+            const rg = [];
             const r2 = [];
             const r3 = [];
-            for (let i = 1; i <= 4; i++) {
+            for (let i = 1; i <= 6; i++) {
+                let vg = document.getElementById(`rg_${i}`).value;
+                if (vg) rg.push(vg);
                 let v2 = document.getElementById(`r2_${i}`).value;
                 if (v2) r2.push(v2);
                 let v3 = document.getElementById(`r3_${i}`).value;
@@ -461,6 +482,7 @@
                 formato: document.getElementById('formato').value,
                 classificadosPorChave: parseInt(document.getElementById('classificadosPorChave').value),
                 prefeituraId: prefeituraId,
+                regrasDesempateGeral: rg.length ? rg : undefined,
                 regrasDesempate2Equipes: r2.length ? r2 : undefined,
                 regrasDesempate3MaisEquipes: r3.length ? r3 : undefined
             };
