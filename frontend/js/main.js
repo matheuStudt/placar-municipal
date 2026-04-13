@@ -1,5 +1,4 @@
-// O sistema detecta sozinho se você está testando no PC ou se está no site oficial
-const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+const API = (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:3001/api'
     : 'https://placar-api-qvva.onrender.com/api';
 
