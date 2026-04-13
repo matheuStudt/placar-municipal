@@ -915,7 +915,10 @@
                             <i class="bi bi-geo-alt-fill text-danger me-1"></i>
                             <span class="text-muted small">${j.local || 'Local a definir'}</span>
                             <span class="mx-2 text-muted">|</span>
-                            <i class="bi bi-calendar-event me-1"></i>
+                            <i class="bi bi-calendar-date text-primary me-1"></i>
+                            <span class="text-muted small">${j.data ? j.data.split('-').reverse().join('/') : 'Data a definir'}</span>
+                            <span class="mx-2 text-muted">|</span>
+                            <i class="bi bi-clock me-1"></i>
                             <span class="text-muted small">${j.horario || 'Horário a definir'}</span>
                         </div>
                     </div>

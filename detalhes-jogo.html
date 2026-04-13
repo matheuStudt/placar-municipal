@@ -164,9 +164,9 @@
                     <span class="mx-3 opacity-50">|</span>
                     <span><i class="bi bi-geo-alt me-1"></i> <span id="local-jogo">--</span></span>
                     <span class="mx-3 opacity-50">|</span>
-                    <span><i class="bi bi-clock me-1"></i> <span id="horario-jogo">--</span></span>
+                    <span><i class="bi bi-calendar-event me-1"></i> <span id="data-jogo">--</span></span>
                     <span class="mx-3 opacity-50">|</span>
-                    <span id="status-jogo" class="badge bg-white text-primary rounded-pill px-3 py-2 shadow-sm" style="font-size: 0.8rem; letter-spacing: 0;">--</span>
+                    <span><i class="bi bi-clock me-1"></i> <span id="horario-jogo">--</span></span>
                 </p>
             </div>
         </div>
@@ -280,7 +280,6 @@
                     document.getElementById('penaltis-visitante').style.display = 'inline-block';
                 }
 
-                document.getElementById('status-jogo').textContent = jogo.status;
                 document.getElementById('jogo-numero').textContent = jogo.numero;
 
                 if (jogo.chave) {
@@ -291,8 +290,9 @@
                     document.getElementById('chave-container').style.display = 'none';
                 }
 
-                document.getElementById('local-jogo').textContent = jogo.local || 'Local não informado';
-                document.getElementById('horario-jogo').textContent = jogo.horario || 'Horário não informado';
+                document.getElementById('local-jogo').textContent = jogo.local || 'Local a definir';
+                document.getElementById('data-jogo').textContent = jogo.data ? jogo.data.split('-').reverse().join('/') : 'Data a definir';
+                document.getElementById('horario-jogo').textContent = jogo.horario || 'Horário a definir';
 
                 preencherTabela('corpo-mandante', data.elencoMandante);
                 preencherTabela('corpo-visitante', data.elencoVisitante);
