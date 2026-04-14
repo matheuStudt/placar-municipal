@@ -526,12 +526,12 @@
 
         async function excluirJogo(id) {
             if (confirm("Deseja realmente excluir este jogo? Esta ação é irreversível.")) {
-
-                const res = await fetch(`${API}/jogos/${id}`, { method: 'DELETE' });
-                if (res.ok) carregarJogos(campeonatoAtual);
-                else {
-                    const err = await res.json();
-                    showToast(err.error || 'Erro ao excluir.', 'danger');
+                const res = await fetch(`${API}/jogos/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+                if (res.ok) {
+                    carregarJogos(campeonatoAtual);
+                } else {
+                    const err = await res.json().catch(() => ({}));
+                    showToast(err.error || 'Erro ao excluir o jogo.', 'danger');
                 }
             }
         }
@@ -616,6 +616,18 @@
                     document.getElementById('select-visitante').value = '';
                     document.getElementById('input-mandante-placeholder').value = '';
                     document.getElementById('input-visitante-placeholder').value = '';
+
+                    // Atualiza o cache de jogos para que as opções de "Vencedor do Jogo X"
+                    // apareçam imediatamente ao adicionar o próximo jogo (sem precisar recarregar a página)
+                    try {
+                        const resJogos = await fetch(`${API}/jogos?campeonatoId=${campeonatoAtual}`);
+                        window.jogosExistentesCache = await resJogos.json();
+                    } catch (e) { console.warn('Falha ao atualizar cache de jogos:', e); }
+
+                    // Força a repopulação dos selects de placeholder (zera o innerHTML para contornar o guard de options.length)
+                    document.getElementById('input-mandante-placeholder').innerHTML = '';
+                    document.getElementById('input-visitante-placeholder').innerHTML = '';
+                    atualizarVisibilidadeEquipes();
                 }
             } else {
                 showToast('Erro ao salvar o jogo.', 'danger');

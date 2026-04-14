@@ -163,3 +163,16 @@ export const finalizarJogo = async (req, res) => {
         res.status(404).json({ error: "Erro ao finalizar jogo" });
     }
 };
+export const deleteJogo = async (req, res) => {
+    const id = parseInt(String(req.params.id));
+    try {
+        // Remove eventos (estatísticas) vinculados antes de excluir o jogo
+        await prisma.evento.deleteMany({ where: { jogoId: id } });
+        await prisma.jogo.delete({ where: { id } });
+        res.json({ message: 'Jogo excluído com sucesso.' });
+    }
+    catch (e) {
+        console.error('[DELETE] Erro ao excluir jogo:', e);
+        res.status(404).json({ error: 'Jogo não encontrado ou erro ao excluir.' });
+    }
+};
