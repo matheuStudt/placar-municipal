@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -54,16 +54,12 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">URL do Logo</label>
-                                <div class="input-group">
-                                    <input type="url" id="logoUrl" class="form-control"
-                                        placeholder="https://exemplo.com/logo.png">
-                                    <button type="button" class="btn btn-outline-secondary"
-                                        onclick="previewLogo()">Testar</button>
-                                </div>
+                                <label class="form-label">Logo / Brasão</label>
+                                <input type="file" id="logoFile" class="form-control" accept="image/*" onchange="previewLogo(this)">
+                                <input type="hidden" id="logoUrl">
                                 <div class="mt-2 text-center" id="logo-preview-container" style="display:none;">
                                     <img id="logo-preview" src="" alt="Preview" style="max-height: 80px;"
-                                        class="img-fluid rounded border p-2">
+                                        class="img-fluid rounded border p-2 bg-white">
                                 </div>
                             </div>
 
@@ -139,13 +135,19 @@
                 input.addEventListener('input', updateHex);
             });
 
-            function previewLogo() {
-                const url = document.getElementById('logoUrl').value;
+            function previewLogo(input) {
                 const container = document.getElementById('logo-preview-container');
                 const img = document.getElementById('logo-preview');
-
-                if (url) {
-                    img.src = url;
+                
+                if (input && input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        img.src = e.target.result;
+                        container.style.display = 'block';
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                } else if (document.getElementById('logoUrl').value) {
+                    img.src = document.getElementById('logoUrl').value;
                     container.style.display = 'block';
                 } else {
                     container.style.display = 'none';
@@ -154,16 +156,41 @@
 
             document.getElementById('form-config').addEventListener('submit', async (e) => {
                 e.preventDefault();
-
-                const data = {
-                    id: prefeituraId,
-                    nome: document.getElementById('nomePrefeitura').value,
-                    logoUrl: document.getElementById('logoUrl').value,
-                    corPrimaria: document.getElementById('corPrimaria').value,
-                    corSecundaria: document.getElementById('corSecundaria').value
-                };
+                
+                const btnSubmit = e.target.querySelector('button[type="submit"]');
+                const originalText = btnSubmit.innerHTML;
+                btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Salvando...';
+                btnSubmit.disabled = true;
 
                 try {
+                    let logoFinalUrl = document.getElementById('logoUrl').value || null;
+                    const logoFile = document.getElementById('logoFile').files[0];
+
+                    if (logoFile) {
+                        const formData = new FormData();
+                        formData.append('file', logoFile);
+                        
+                        const resUpload = await fetch(`${API}/upload`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (resUpload.ok) {
+                            const uploadData = await resUpload.json();
+                            logoFinalUrl = uploadData.url;
+                        } else {
+                            showToast('Erro ao fazer upload da imagem.', 'warning');
+                        }
+                    }
+
+                    const data = {
+                        id: prefeituraId,
+                        nome: document.getElementById('nomePrefeitura').value,
+                        logoUrl: logoFinalUrl,
+                        corPrimaria: document.getElementById('corPrimaria').value,
+                        corSecundaria: document.getElementById('corSecundaria').value
+                    };
+
                     const res = await fetch(`${API}/configuracao`, {
                         method: 'PUT',
                         headers: getAuthHeaders(),
@@ -174,7 +201,12 @@
                         showToast('Configurações salvas com sucesso!', 'success');
                         window.location.reload();
                     }
-                } catch (e) { showToast('Erro ao salvar', 'danger'); }
+                } catch (e) { 
+                    showToast('Erro ao salvar', 'danger'); 
+                } finally {
+                    btnSubmit.innerHTML = originalText;
+                    btnSubmit.disabled = false;
+                }
             });
         </script>
 </body>

@@ -197,8 +197,9 @@
             const urlParams = new URLSearchParams(window.location.search);
             const jogoId = urlParams.get('jogoId');
             if (jogoId) {
-                document.getElementById('lista-mandante').innerHTML = '<div class="text-center p-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted small fw-bold">Carregando informações...</p></div>';
-                document.getElementById('lista-visitante').innerHTML = '<div class="text-center p-4"><div class="spinner-border text-danger" role="status"></div><p class="mt-2 text-muted small fw-bold">Carregando informações...</p></div>';
+                const skelSml = Array(4).fill('<div class="p-3 d-flex justify-content-between align-items-center border-bottom"><div class="skeleton" style="height: 24px; width: 150px; border-radius: 4px;"></div><div class="d-flex gap-2">' + Array(4).fill('<div class="skeleton" style="height: 40px; width: 40px; border-radius: 4px;"></div>').join('') + '</div></div>').join('');
+                document.getElementById('lista-mandante').innerHTML = skelSml;
+                document.getElementById('lista-visitante').innerHTML = skelSml;
 
                 const resDetalhes = await fetch(`${API}/jogos/${jogoId}/detalhes`);
                 if (resDetalhes.ok) {
@@ -293,8 +294,9 @@
             const id = document.getElementById('select-jogo').value;
             if (!id) return;
 
-            document.getElementById('lista-mandante').innerHTML = '<div class="text-center p-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted small fw-bold">Buscando atletas...</p></div>';
-            document.getElementById('lista-visitante').innerHTML = '<div class="text-center p-4"><div class="spinner-border text-danger" role="status"></div><p class="mt-2 text-muted small fw-bold">Buscando atletas...</p></div>';
+            const skelSml = Array(4).fill('<div class="p-3 d-flex justify-content-between align-items-center border-bottom"><div class="skeleton" style="height: 24px; width: 150px; border-radius: 4px;"></div><div class="d-flex gap-2">' + Array(4).fill('<div class="skeleton" style="height: 40px; width: 40px; border-radius: 4px;"></div>').join('') + '</div></div>').join('');
+            document.getElementById('lista-mandante').innerHTML = skelSml;
+            document.getElementById('lista-visitante').innerHTML = skelSml;
 
             const res = await fetch(`${API}/jogos/${id}/detalhes`);
             const dados = await res.json();

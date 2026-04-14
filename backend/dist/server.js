@@ -13,6 +13,7 @@ import rodadasRoutes from './routes/rodadas.routes.js';
 import jogosRoutes from './routes/jogos.routes.js';
 import configuracaoRoutes from './routes/configuracao.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import uploadRoutes from './routes/upload.routes.js';
 dotenv.config({ path: new URL('../../.env', import.meta.url).pathname.replace(/^\/([A-Z]:)/, '$1') });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,6 +36,7 @@ app.use('/api/rodadas', rodadasRoutes);
 app.use('/api/jogos', jogosRoutes);
 app.use('/api/configuracao', configuracaoRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/upload', uploadRoutes);
 // O Render vai enviar a porta pela variável de ambiente PORT
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

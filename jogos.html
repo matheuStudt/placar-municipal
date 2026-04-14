@@ -257,7 +257,7 @@
         async function carregarJogos(campId) {
             const rodadaId = document.getElementById('select-rodada-filtro').value;
             const container = document.getElementById('lista-jogos');
-            container.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div></div>';
+            container.innerHTML = Array(4).fill('<div class="col-12 mb-3"><div class="skeleton" style="height: 120px; border-radius: 12px;"></div></div>').join('');
 
             try {
                 //let url = `${API_BASE}/jogos?campeonatoId=${campId}`;
