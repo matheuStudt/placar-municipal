@@ -88,8 +88,10 @@
                                 placeholder="Ex: Estádio Municipal ou Ginásio da Vila">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-muted">LOGO / BRASÃO (<span class="text-primary">opcional</span>)</label>
-                            <input type="file" id="logoFile" class="form-control form-control-lg" accept="image/*" onchange="previewImagemUpload(this)">
+                            <label class="form-label small fw-bold text-muted">LOGO / BRASÃO (<span
+                                    class="text-primary">opcional</span>)</label>
+                            <input type="file" id="logoFile" class="form-control form-control-lg" accept="image/*"
+                                onchange="previewImagemUpload(this)">
                             <input type="hidden" id="logoUrl">
                             <div class="mt-2 text-center" id="logo-preview-container" style="display:none;">
                                 <img id="logo-preview" src="" alt="Preview" style="max-height:60px; border-radius:8px;">
@@ -132,7 +134,10 @@
                         <!-- Lista de checkboxes -->
                         <div id="lista-atletas-check"
                             style="max-height:220px;overflow-y:auto;border:1px solid #dee2e6;border-radius:8px;background:#fff;">
-                            <div class="p-3"><div class="skeleton mb-2" style="height:20px; border-radius:4px;"></div><div class="skeleton" style="height:20px; border-radius:4px; width:70%;"></div></div>
+                            <div class="p-3">
+                                <div class="skeleton mb-2" style="height:20px; border-radius:4px;"></div>
+                                <div class="skeleton" style="height:20px; border-radius:4px; width:70%;"></div>
+                            </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mt-2">
                             <small class="text-muted" id="contador-selecionados">0 selecionados</small>
@@ -229,13 +234,13 @@
             const img = document.getElementById('logo-preview');
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     img.src = e.target.result;
                     container.style.display = 'block';
                 }
                 reader.readAsDataURL(input.files[0]);
             } else {
-                if(!document.getElementById('logoUrl').value) {
+                if (!document.getElementById('logoUrl').value) {
                     container.style.display = 'none';
                 } else {
                     img.src = document.getElementById('logoUrl').value;
@@ -281,6 +286,31 @@
         document.getElementById('form-equipe').addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            // 1. Função que limpa todos os campos (Texto, Imagem Oculta e Preview)
+            function limparModalEquipe() {
+                document.getElementById('formEquipe').reset();
+                document.getElementById('equipeId').value = '';
+                document.getElementById('logoUrl').value = '';
+
+                // Esconde o preview da imagem
+                const previewContainer = document.getElementById('logo-preview-container');
+                const previewImg = document.getElementById('logo-preview');
+                if (previewContainer && previewImg) {
+                    previewImg.src = '';
+                    previewContainer.style.display = 'none';
+                }
+            }
+
+            // 2. Garante que o modal seja limpo toda vez que o botão "Nova Equipe" for clicado
+            document.querySelector('button[data-bs-target="#modalEquipe"]').addEventListener('click', () => {
+                limparModalEquipe();
+                document.getElementById('modalEquipeLabel').innerText = 'Nova Equipe';
+            });
+
+            // 3. (Opcional, mas recomendado) Limpa o modal também quando ele é fechado no "X" ou botão "Cancelar"
+            const modalEquipeEl = document.getElementById('modalEquipe');
+            modalEquipeEl.addEventListener('hidden.bs.modal', limparModalEquipe);
+
             const btnSubmit = e.target.querySelector('button[type="submit"]');
             const originalText = btnSubmit.innerHTML;
             btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Salvando...';
@@ -293,12 +323,12 @@
                 if (logoFile) {
                     const formData = new FormData();
                     formData.append('file', logoFile);
-                    
+
                     const resUpload = await fetch(`${API}/upload`, {
                         method: 'POST',
                         body: formData
                     });
-                    
+
                     if (resUpload.ok) {
                         const uploadData = await resUpload.json();
                         logoFinalUrl = uploadData.url;
