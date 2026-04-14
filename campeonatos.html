@@ -406,18 +406,35 @@
         }
 
         async function gerarChaveamento(campId) {
-            if (confirm("Deseja gerar o chaveamento automático? Isso irá preencher os jogos de Mata-Mata com os classificados da Fase de Grupos.")) {
-                try {
-                    const res = await fetch(`${API}/campeonatos/${campId}/gerar-chaveamento`, { method: 'POST' });
-                    const data = await res.json();
-                    if (res.ok) {
-                        showToast(`Sucesso! ${data.jogosAtualizados} jogos foram atualizados com os times classificados.`, 'success');
-                    } else {
-                        showToast(data.error || 'Erro ao gerar chaveamento.', 'danger');
-                    }
-                } catch (e) {
-                    console.error("Erro ao gerar chaveamento", e);
-                    showToast('Erro de conexão.', 'danger');
+            if (!confirm("Deseja gerar o chaveamento automático? Isso irá preencher os jogos de Mata-Mata com os classificados da Fase de Grupos.")) return;
+
+            // Encontra o botão que disparou a ação e aplica o estado de carregamento
+            const btn = document.querySelector(`button[onclick="gerarChaveamento(${campId})"]`);
+            const originalHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Gerando...';
+            }
+
+            try {
+                const res = await fetch(`${API}/campeonatos/${campId}/gerar-chaveamento`, {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+                const data = await res.json().catch(() => ({}));
+
+                if (res.ok) {
+                    showToast(`✅ Sucesso! ${data.jogosAtualizados ?? '?'} jogo(s) atualizado(s) com os times classificados.`, 'success');
+                } else {
+                    showToast(data.error || 'Erro ao gerar chaveamento.', 'danger');
+                }
+            } catch (e) {
+                console.error("Erro ao gerar chaveamento", e);
+                showToast('Erro de conexão ao tentar gerar o chaveamento.', 'danger');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
                 }
             }
         }
