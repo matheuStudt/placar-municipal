@@ -436,6 +436,10 @@
             const inVisitante = document.getElementById('input-visitante-placeholder');
 
             if (tipoRodada === 'MATA_MATA') {
+                // Mata-Mata não pertence a uma chave específica — limpa automaticamente
+                document.getElementById('jogo-chave').value = '';
+                atualizarEquipesPorChave();
+
                 selMandante.classList.add('d-none');
                 inMandante.classList.remove('d-none');
                 selVisitante.classList.add('d-none');
