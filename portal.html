@@ -680,7 +680,7 @@
         // ── CONFIG / TEMA ────────────────────────────────────────
         async function loadConfig() {
             const urlParams = new URLSearchParams(window.location.search);
-            const slug = urlParams.get('p') || 'principal';
+            const slug = urlParams.get('slug') || urlParams.get('p') || 'principal';
             try {
                 const res = await fetch(`${API}/configuracao?slug=${slug}`);
                 if (!res.ok) throw new Error('Prefeitura não encontrada');
@@ -860,7 +860,7 @@
                     return;
                 }
 
-                const slug = new URLSearchParams(window.location.search).get('p') || '';
+                const slug = new URLSearchParams(window.location.search).get('slug') || new URLSearchParams(window.location.search).get('p') || '';
                 jogos.forEach(j => {
                     const statusClass = j.status === 'Finalizado' ? 'status-finalizado' : 'status-agendado';
                     const statusIcon = j.status === 'Finalizado' ? 'lock-fill' : 'clock';
