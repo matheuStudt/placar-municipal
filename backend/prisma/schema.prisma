@@ -35,6 +35,7 @@ model Equipe {
   telefone      String
   local         String?
   logoUrl       String?
+  categoria     String?
   participacoes Participacao[]
   vinculos      Vinculo[]
   prefeitura    Prefeitura?    @relation(fields: [prefeituraId], references: [id])
@@ -50,6 +51,7 @@ model Campeonato {
   descricao     String?
   ano           Int?
   formato       String?
+  categoria     String?
   dataInicio    String
   dataFim       String
   status        String         @default("Inscrições Abertas")

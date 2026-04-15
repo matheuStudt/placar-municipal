@@ -14,7 +14,7 @@ export const getEquipes = async (req: Request, res: Response) => {
 };
 
 export const createEquipe = async (req: Request, res: Response) => {
-    const { nome, responsavel, telefone, local, prefeituraId, logoUrl } = req.body;
+    const { nome, responsavel, telefone, local, prefeituraId, logoUrl, categoria } = req.body;
     try {
         const nova = await prisma.equipe.create({
             data: {
@@ -23,6 +23,7 @@ export const createEquipe = async (req: Request, res: Response) => {
                 telefone,
                 local,
                 logoUrl: logoUrl || null,
+                categoria: categoria || null,
                 prefeituraId: parseInt(String(prefeituraId)) || 1
             }
         });
@@ -45,11 +46,11 @@ export const getEquipeById = async (req: Request, res: Response) => {
 
 export const updateEquipe = async (req: Request, res: Response) => {
     const id = parseInt(String(req.params.id));
-    const { nome, responsavel, telefone, local, logoUrl } = req.body;
+    const { nome, responsavel, telefone, local, logoUrl, categoria } = req.body;
     try {
         const atualizada = await prisma.equipe.update({
             where: { id },
-            data: { nome, responsavel, telefone, local, logoUrl: logoUrl || null }
+            data: { nome, responsavel, telefone, local, logoUrl: logoUrl || null, categoria: categoria || null }
         });
         res.json(atualizada);
     } catch (e) {

@@ -45,6 +45,7 @@
                             <th>Nome do Campeonato</th>
                             <th>Ano</th>
                             <th>Formato</th>
+                            <th>Categoria</th>
                             <th class="text-end px-4">Ações</th>
                         </tr>
                     </thead>
@@ -116,7 +117,7 @@
                             </div>
                         </div>
                         <div class="col-12 mb-3">
-                            <label class="form-label small fw-bold text-primary mb-1">Para 3 ou mais equipes empatadas:</label>
+                            <label class="form-label small fw-bold text-muted">Para 3 ou mais equipes empatadas:</label>
                             <div class="d-flex gap-2 flex-wrap">
                                 <select id="r3_1" class="form-select form-select-sm" style="width: 140px"><option value="">1º critério</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo de Gols</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Gols Contra</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
                                 <select id="r3_2" class="form-select form-select-sm" style="width: 140px"><option value="">2º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Gols Contra</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
@@ -125,6 +126,18 @@
                                 <select id="r3_5" class="form-select form-select-sm" style="width: 140px"><option value="">5º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Gols Contra</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
                                 <select id="r3_6" class="form-select form-select-sm" style="width: 140px"><option value="">6º</option><option value="VITORIAS">Vitórias</option><option value="SALDO_GOLS">Saldo</option><option value="GOLS_PRO">Gols Pró</option><option value="GOLS_SOFRIDOS">Gols Contra</option><option value="CARTAO_AMARELO">Menos Amarelos</option><option value="CARTAO_VERMELHO">Menos Vermelhos</option></select>
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">CATEGORIA</label>
+                            <select id="campCategoria" class="form-select">
+                                <option value="">Sem categoria específica</option>
+                                <option value="Masculino Livre">Masculino Livre</option>
+                                <option value="Feminino Livre">Feminino Livre</option>
+                                <option value="Sub-15">Sub-15</option>
+                                <option value="Sub-18">Sub-18</option>
+                                <option value="Veteranos">Veteranos</option>
+                                <option value="Misto">Misto</option>
+                            </select>
                         </div>
                 </div>
                 <button type="submit" class="btn btn-success w-100 py-3 fw-bold">SALVAR CAMPEONATO</button>
@@ -228,6 +241,7 @@
                         <td class="fw-bold">${c.nome}</td>
                         <td>${c.ano}</td>
                         <td><span class="badge bg-info-subtle text-info border border-info-subtle">${c.formato}</span></td>
+                        <td>${c.categoria ? `<span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle">${c.categoria}</span>` : '<span class="text-muted small">-</span>'}</td>
                         <td class="text-end px-4">
                             <div class="btn-group shadow-sm">
                                 <button class="btn btn-sm btn-outline-success" onclick="abrirModalInscricao(${c.id}, '${c.nome}')" title="Inscrições">
@@ -459,6 +473,7 @@
             document.getElementById('nome').value = c.nome;
             document.getElementById('ano').value = c.ano;
             document.getElementById('formato').value = c.formato;
+            document.getElementById('campCategoria').value = c.categoria || '';
             document.getElementById('classificadosPorChave').value = c.classificadosPorChave || 4;
 
             const rg = c.regrasDesempateGeral || ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
@@ -499,6 +514,7 @@
                 nome: document.getElementById('nome').value,
                 ano: parseInt(document.getElementById('ano').value),
                 formato: document.getElementById('formato').value,
+                categoria: document.getElementById('campCategoria').value || null,
                 classificadosPorChave: parseInt(document.getElementById('classificadosPorChave').value),
                 prefeituraId: prefeituraId,
                 regrasDesempateGeral: rg.length ? rg : undefined,

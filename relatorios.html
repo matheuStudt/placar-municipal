@@ -28,6 +28,7 @@
             .bg-primary { background-color: #fff !important; color: #000 !important; }
             .bg-light { background-color: #f8f9fa !important; }
             .container, .print-container { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
+            .badge-categoria-print { display: inline-block !important; font-size: 0.65rem !important; border: 1px solid #000 !important; border-radius: 99px !important; padding: 1px 6px !important; background: #eee !important; color: #000 !important; }
         }
     </style>
 </head>
@@ -240,11 +241,15 @@
                         const gV = j.status === 'Finalizado' ? j.golsVisitante : '&nbsp;&nbsp;';
                         const nJ = j.numero || '-';
                         const ch = j.chave || '-';
+                        const catJogo = j.rodada?.campeonato?.categoria || null;
+                        const catBadge = catJogo
+                            ? `<span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle badge-categoria-print" style="font-size:0.65rem;display:block;margin-top:2px;">${catJogo}</span>`
+                            : '';
 
                         tbody.innerHTML += `
                             <tr>
                                 <td class="text-center text-muted fw-bold">#${nJ}</td>
-                                <td class="text-center fw-bold text-secondary">${hr}</td>
+                                <td class="text-center fw-bold text-secondary">${hr}${catBadge}</td>
                                 <td class="text-end fw-bold text-dark">${j.mandanteNome}</td>
                                 <td class="text-center bg-light fw-bold fs-6">${gM} X ${gV}</td>
                                 <td class="text-start fw-bold text-dark">${j.visitanteNome}</td>
