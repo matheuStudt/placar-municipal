@@ -3,9 +3,14 @@ export const getConfiguracao = async (req, res) => {
     const slug = req.query.slug;
     const prefeituraId = req.query.prefeituraId ? parseInt(String(req.query.prefeituraId)) : 1;
     try {
-        const pref = await prisma.prefeitura.findFirst({
+        let pref = await prisma.prefeitura.findFirst({
             where: slug ? { slug: String(slug) } : { id: prefeituraId }
         });
+        // Fallback: se não encontrou pelo slug (ex: slug='principal' que não existe),
+        // retorna a primeira prefeitura cadastrada para não quebrar o portal
+        if (!pref && slug) {
+            pref = await prisma.prefeitura.findFirst({ orderBy: { id: 'asc' } });
+        }
         if (!pref)
             return res.status(404).json({ error: "Prefeitura não encontrada" });
         res.json(pref);
