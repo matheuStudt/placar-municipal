@@ -460,22 +460,27 @@
 
         window.onload = init;
 
-        // LIMPEZA AUTOMÁTICA DO MODAL (À Prova de Balas)
-        // Só é ativado quando o modal termina de fechar (hidden.bs.modal)
+        // LIMPEZA AUTOMÁTICA DO MODAL (À Prova de Balas e com IDs Corretos)
         const modalEquipeEl = document.getElementById('modalEquipe');
 
         if (modalEquipeEl) {
             modalEquipeEl.addEventListener('hidden.bs.modal', () => {
-                // Limpa os textos
-                const form = document.getElementById('formEquipe');
+                // 1. Limpa o formulário (ID corrigido)
+                const form = document.getElementById('form-equipe');
                 if (form) form.reset();
 
-                document.getElementById('equipeId').value = '';
+                // 2. Limpa o ID Oculto (ID corrigido e protegido)
+                const inputId = document.getElementById('equipe-id');
+                if (inputId) inputId.value = '';
 
+                // 3. Limpa as URLs e Arquivos
                 const logoUrlInput = document.getElementById('logoUrl');
                 if (logoUrlInput) logoUrlInput.value = '';
 
-                // Esconde a prévia da imagem
+                const fileInput = document.getElementById('logoFile');
+                if (fileInput) fileInput.value = '';
+
+                // 4. Esconde a prévia da imagem
                 const previewContainer = document.getElementById('logo-preview-container');
                 const previewImg = document.getElementById('logo-preview');
 
@@ -484,11 +489,12 @@
                     previewContainer.style.display = 'none';
                 }
 
-                // Volta o título para o padrão
-                const tituloModal = document.getElementById('modalEquipeLabel');
-                if (tituloModal) tituloModal.innerText = 'Nova Equipe';
+                // 5. Volta o título para o padrão (ID corrigido)
+                const tituloModal = document.getElementById('modalTitulo');
+                if (tituloModal) tituloModal.innerText = 'Cadastrar Equipe';
             });
         }
+
     </script>
 </body>
 
