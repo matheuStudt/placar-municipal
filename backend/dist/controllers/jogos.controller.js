@@ -15,7 +15,7 @@ export const getJogos = async (req, res) => {
             where,
             orderBy: { numero: 'asc' },
             include: {
-                rodada: true,
+                rodada: { include: { campeonato: { select: { categoria: true } } } },
                 mandante: { select: { id: true, logoUrl: true } },
                 visitante: { select: { id: true, logoUrl: true } }
             }

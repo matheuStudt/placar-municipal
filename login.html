@@ -191,37 +191,39 @@
         });
 
         // --- MODAL DO PORTAL PÚBLICO ---
-        const modalPortalEl = document.getElementById('modalPortal');
+        document.addEventListener('DOMContentLoaded', () => {
+            const modalPortalEl = document.getElementById('modalPortal');
+            if (!modalPortalEl) return;
 
-        modalPortalEl.addEventListener('show.bs.modal', async () => {
-            const select = document.getElementById('select-prefeituras-portal');
-            const btnAcessar = document.getElementById('btn-acessar-portal');
-            select.innerHTML = '<option value="">Carregando municípios...</option>';
-            btnAcessar.disabled = true;
+            modalPortalEl.addEventListener('show.bs.modal', async () => {
+                const select = document.getElementById('select-prefeituras-portal');
+                const btnAcessar = document.getElementById('btn-acessar-portal');
+                select.innerHTML = '<option value="">Carregando municípios...</option>';
+                btnAcessar.disabled = true;
 
-            try {
-                const res = await fetch(`${API}/prefeituras`);
-                if (!res.ok) throw new Error('Falha ao buscar.');
-                const prefeituras = await res.json();
+                try {
+                    const res = await fetch(`${API}/prefeituras`);
+                    if (!res.ok) throw new Error('Falha ao buscar.');
+                    const prefeituras = await res.json();
 
-                if (!prefeituras.length) {
-                    select.innerHTML = '<option value="">Nenhum município cadastrado.</option>';
-                    return;
+                    if (!prefeituras.length) {
+                        select.innerHTML = '<option value="">Nenhum município cadastrado.</option>';
+                        return;
+                    }
+
+                    select.innerHTML = '<option value="">Selecione um município...</option>';
+                    prefeituras.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.slug;
+                        opt.textContent = p.nome;
+                        select.appendChild(opt);
+                    });
+                    btnAcessar.disabled = false;
+                } catch (e) {
+                    select.innerHTML = '<option value="">Erro ao carregar. Tente novamente.</option>';
+                    console.error('[Portal Modal] Erro ao buscar prefeituras:', e);
                 }
-
-                select.innerHTML = '<option value="">Selecione um município...</option>';
-                // Já chega ordenado por nome via ORDER BY no backend
-                prefeituras.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.slug;
-                    opt.textContent = p.nome;
-                    select.appendChild(opt);
-                });
-                btnAcessar.disabled = false;
-            } catch (e) {
-                select.innerHTML = '<option value="">Erro ao carregar. Tente novamente.</option>';
-                console.error(e);
-            }
+            });
         });
 
         function irParaPortal() {
@@ -234,6 +236,7 @@
         }
 
     </script>
+
     <!-- Modal de Seleção de Município — Portal Público -->
     <div class="modal fade" id="modalPortal" tabindex="-1" aria-labelledby="modalPortalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

@@ -112,7 +112,7 @@ export const getCampeonatos = async (req, res) => {
     }
 };
 export const createCampeonato = async (req, res) => {
-    const { nome, ano, formato, prefeituraId, descricao, dataInicio, dataFim, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes } = req.body;
+    const { nome, ano, formato, prefeituraId, descricao, dataInicio, dataFim, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes, categoria } = req.body;
     try {
         const novo = await prisma.campeonato.create({
             data: {
@@ -120,6 +120,7 @@ export const createCampeonato = async (req, res) => {
                 ano: parseInt(String(ano)) || new Date().getFullYear(),
                 formato,
                 descricao,
+                categoria: categoria || null,
                 dataInicio: dataInicio || "2024-01-01",
                 dataFim: dataFim || "2024-12-31",
                 prefeituraId: parseInt(String(prefeituraId)) || 1,
@@ -137,7 +138,7 @@ export const createCampeonato = async (req, res) => {
 };
 export const updateCampeonato = async (req, res) => {
     const id = parseInt(String(req.params.id));
-    const { nome, ano, formato, descricao, dataInicio, dataFim, status, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes } = req.body;
+    const { nome, ano, formato, descricao, dataInicio, dataFim, status, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes, categoria } = req.body;
     try {
         const atualizado = await prisma.campeonato.update({
             where: { id },
@@ -146,6 +147,7 @@ export const updateCampeonato = async (req, res) => {
                 ano: parseInt(String(ano)),
                 formato,
                 descricao,
+                categoria: categoria || null,
                 dataInicio,
                 dataFim,
                 status,
