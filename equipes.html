@@ -286,31 +286,6 @@
         document.getElementById('form-equipe').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // 1. Função que limpa todos os campos (Texto, Imagem Oculta e Preview)
-            function limparModalEquipe() {
-                document.getElementById('formEquipe').reset();
-                document.getElementById('equipeId').value = '';
-                document.getElementById('logoUrl').value = '';
-
-                // Esconde o preview da imagem
-                const previewContainer = document.getElementById('logo-preview-container');
-                const previewImg = document.getElementById('logo-preview');
-                if (previewContainer && previewImg) {
-                    previewImg.src = '';
-                    previewContainer.style.display = 'none';
-                }
-            }
-
-            // 2. Garante que o modal seja limpo toda vez que o botão "Nova Equipe" for clicado
-            document.querySelector('button[data-bs-target="#modalEquipe"]').addEventListener('click', () => {
-                limparModalEquipe();
-                document.getElementById('modalEquipeLabel').innerText = 'Nova Equipe';
-            });
-
-            // 3. (Opcional, mas recomendado) Limpa o modal também quando ele é fechado no "X" ou botão "Cancelar"
-            const modalEquipeEl = document.getElementById('modalEquipe');
-            modalEquipeEl.addEventListener('hidden.bs.modal', limparModalEquipe);
-
             const btnSubmit = e.target.querySelector('button[type="submit"]');
             const originalText = btnSubmit.innerHTML;
             btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Salvando...';
@@ -484,6 +459,36 @@
         }
 
         window.onload = init;
+
+        // LIMPEZA AUTOMÁTICA DO MODAL (À Prova de Balas)
+        // Só é ativado quando o modal termina de fechar (hidden.bs.modal)
+        const modalEquipeEl = document.getElementById('modalEquipe');
+
+        if (modalEquipeEl) {
+            modalEquipeEl.addEventListener('hidden.bs.modal', () => {
+                // Limpa os textos
+                const form = document.getElementById('formEquipe');
+                if (form) form.reset();
+
+                document.getElementById('equipeId').value = '';
+
+                const logoUrlInput = document.getElementById('logoUrl');
+                if (logoUrlInput) logoUrlInput.value = '';
+
+                // Esconde a prévia da imagem
+                const previewContainer = document.getElementById('logo-preview-container');
+                const previewImg = document.getElementById('logo-preview');
+
+                if (previewContainer && previewImg) {
+                    previewImg.src = '';
+                    previewContainer.style.display = 'none';
+                }
+
+                // Volta o título para o padrão
+                const tituloModal = document.getElementById('modalEquipeLabel');
+                if (tituloModal) tituloModal.innerText = 'Nova Equipe';
+            });
+        }
     </script>
 </body>
 
