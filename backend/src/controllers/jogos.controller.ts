@@ -89,7 +89,11 @@ export const getJogoDetalhes = async (req: Request, res: Response) => {
 };
 
 export const createJogo = async (req: Request, res: Response) => {
-    const { rodadaId, numero, mandanteId, visitanteId, mandanteNome, visitanteNome, mandantePlaceholder, visitantePlaceholder, data, horario, local, chave, sumulaUrl } = req.body;
+    const { 
+        rodadaId, numero, mandanteId, visitanteId, mandanteNome, visitanteNome, 
+        mandantePlaceholder, visitantePlaceholder, data, horario, local, chave, 
+        sumulaUrl 
+    } = req.body;
     try {
         const novo = await prisma.jogo.create({
             data: {
@@ -102,7 +106,7 @@ export const createJogo = async (req: Request, res: Response) => {
                 mandanteNome: mandanteNome || mandantePlaceholder || "A Definir",
                 visitanteNome: visitanteNome || visitantePlaceholder || "A Definir",
                 data, horario, local, chave,
-                sumulaUrl,
+                sumulaUrl: sumulaUrl || null,
                 status: 'Agendado'
             }
         });
@@ -115,7 +119,11 @@ export const createJogo = async (req: Request, res: Response) => {
 
 export const updateJogo = async (req: Request, res: Response) => {
     const id = parseInt(String(req.params.id));
-    const { numero, horario, local, mandanteId, visitanteId, mandanteNome, visitanteNome, mandantePlaceholder, visitantePlaceholder, data, status, chave, penaltisMandante, penaltisVisitante, sumulaUrl } = req.body;
+    const { 
+        numero, horario, local, mandanteId, visitanteId, mandanteNome, 
+        visitanteNome, mandantePlaceholder, visitantePlaceholder, data, 
+        status, chave, penaltisMandante, penaltisVisitante, sumulaUrl 
+    } = req.body;
     try {
         const atualizado = await prisma.jogo.update({
             where: { id },
@@ -131,7 +139,7 @@ export const updateJogo = async (req: Request, res: Response) => {
                 data, status, chave,
                 penaltisMandante: penaltisMandante !== undefined && penaltisMandante !== null && penaltisMandante !== '' ? Number(penaltisMandante) : null,
                 penaltisVisitante: penaltisVisitante !== undefined && penaltisVisitante !== null && penaltisVisitante !== '' ? Number(penaltisVisitante) : null,
-                sumulaUrl
+                sumulaUrl: sumulaUrl || null
             }
         });
         res.json(atualizado);
@@ -142,7 +150,9 @@ export const updateJogo = async (req: Request, res: Response) => {
 };
 
 export const finalizarJogo = async (req: Request, res: Response) => {
-    const { jogoId, golsM, golsV, estatisticas, penaltisM, penaltisV, sumulaUrl } = req.body;
+    const { 
+        jogoId, golsM, golsV, estatisticas, penaltisM, penaltisV, sumulaUrl 
+    } = req.body;
     const idProcurado = parseInt(String(jogoId));
     try {
         const jogoAtualizado = await prisma.jogo.update({
@@ -152,7 +162,7 @@ export const finalizarJogo = async (req: Request, res: Response) => {
                 golsVisitante: Number(golsV),
                 penaltisMandante: penaltisM !== undefined && penaltisM !== null && penaltisM !== '' ? Number(penaltisM) : null,
                 penaltisVisitante: penaltisV !== undefined && penaltisV !== null && penaltisV !== '' ? Number(penaltisV) : null,
-                sumulaUrl,
+                sumulaUrl: sumulaUrl || null,
                 status: "Finalizado"
             }
         });

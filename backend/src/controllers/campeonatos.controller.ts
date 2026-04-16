@@ -111,7 +111,11 @@ export const getCampeonatos = async (req: Request, res: Response) => {
 };
 
 export const createCampeonato = async (req: Request, res: Response) => {
-    const { nome, ano, formato, prefeituraId, descricao, dataInicio, dataFim, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes, categoria, regulamentoUrl } = req.body;
+    const { 
+        nome, ano, formato, prefeituraId, descricao, dataInicio, dataFim, 
+        classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, 
+        regrasDesempate3MaisEquipes, categoria, regulamentoUrl 
+    } = req.body;
     try {
         const novo = await prisma.campeonato.create({
             data: {
@@ -124,7 +128,7 @@ export const createCampeonato = async (req: Request, res: Response) => {
                 dataFim: dataFim || "2024-12-31",
                 prefeituraId: parseInt(String(prefeituraId)) || 1,
                 classificadosPorChave: classificadosPorChave ? parseInt(String(classificadosPorChave)) : 4,
-                regulamentoUrl,
+                regulamentoUrl: regulamentoUrl || null,
                 regrasDesempateGeral: regrasDesempateGeral || undefined,
                 regrasDesempate2Equipes: regrasDesempate2Equipes || undefined,
                 regrasDesempate3MaisEquipes: regrasDesempate3MaisEquipes || undefined
@@ -138,7 +142,11 @@ export const createCampeonato = async (req: Request, res: Response) => {
 
 export const updateCampeonato = async (req: Request, res: Response) => {
     const id = parseInt(String(req.params.id));
-    const { nome, ano, formato, descricao, dataInicio, dataFim, status, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes, categoria, regulamentoUrl } = req.body;
+    const { 
+        nome, ano, formato, descricao, dataInicio, dataFim, status, 
+        classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, 
+        regrasDesempate3MaisEquipes, categoria, regulamentoUrl 
+    } = req.body;
     try {
         const atualizado = await prisma.campeonato.update({
             where: { id },
@@ -155,7 +163,7 @@ export const updateCampeonato = async (req: Request, res: Response) => {
                 regrasDesempateGeral: regrasDesempateGeral || undefined,
                 regrasDesempate2Equipes: regrasDesempate2Equipes || undefined,
                 regrasDesempate3MaisEquipes: regrasDesempate3MaisEquipes || undefined,
-                regulamentoUrl
+                regulamentoUrl: regulamentoUrl || null
             }
         });
         res.json(atualizado);

@@ -478,7 +478,8 @@
                 btnFinalizar.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> SALVANDO RESULTADO...';
 
                 // Upload da Foto da Súmula se houver
-                let sumulaUrl = null;
+                // Usa a URL existente se já houver, ou null se for novo
+                let sumulaUrl = jogoAtivo.sumulaUrl || null;
                 const fileInput = document.getElementById('input-foto-sumula');
                 if (fileInput.files.length > 0) {
                     const formData = new FormData();
