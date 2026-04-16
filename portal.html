@@ -996,6 +996,7 @@
 
             const campObj = campsCache.find(c => c.id == id);
             const classificados = campObj ? (campObj.classificadosPorChave || 4) : 4;
+            const slug = new URLSearchParams(window.location.search).get('slug') || new URLSearchParams(window.location.search).get('p') || '';
 
             try {
                 const resEq = await fetch(`${API}/campeonatos/${id}/equipes`);
@@ -1220,6 +1221,7 @@
         </tr>`;
         }
         function renderLinhaDef(d, i) {
+            const slug = new URLSearchParams(window.location.search).get('slug') || new URLSearchParams(window.location.search).get('p') || '';
             return `<tr>
             <td class="ps-4 fw-bold text-success">${i + 1}º</td>
             <td>
