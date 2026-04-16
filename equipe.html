@@ -383,7 +383,7 @@
                             <div class="elenco-avatar">
                                 <i class="bi bi-person-fill"></i>
                             </div>
-                            <a href="atleta.html?id=${at.id}&slug=${slug}" class="elenco-nome text-truncate">
+                            <a href="atleta.html?id=${at.id || at.atletaId}&slug=${slug}" class="elenco-nome text-truncate">
                                 ${at.nome}
                             </a>
                         </div>
