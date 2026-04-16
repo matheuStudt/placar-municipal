@@ -318,7 +318,11 @@
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                     <td>
-                        <div class="atleta-nome">${at.nome}</div>
+                        <div class="atleta-nome">
+                            <a href="atleta.html?id=${at.id}&slug=${slug}" class="text-decoration-none text-dark">
+                                ${at.nome}
+                            </a>
+                        </div>
                         ${at.posicao ? `<small class="text-muted">${at.posicao}</small>` : ''}
                     </td>
                     <td class="text-center">

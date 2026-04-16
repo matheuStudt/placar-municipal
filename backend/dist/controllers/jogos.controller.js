@@ -3,6 +3,7 @@ export const getJogos = async (req, res) => {
     const campIdRaw = req.query.campeonatoId;
     const rodadaIdRaw = req.query.rodadaId;
     const chaveRaw = req.query.chave;
+    const equipeIdRaw = req.query.equipeId;
     const where = {};
     if (campIdRaw)
         where.rodada = { campeonatoId: parseInt(String(campIdRaw)) };
@@ -10,6 +11,13 @@ export const getJogos = async (req, res) => {
         where.rodadaId = parseInt(String(rodadaIdRaw));
     if (chaveRaw)
         where.chave = String(chaveRaw);
+    if (equipeIdRaw) {
+        const eqId = parseInt(String(equipeIdRaw));
+        where.OR = [
+            { mandanteId: eqId },
+            { visitanteId: eqId }
+        ];
+    }
     try {
         const jogos = await prisma.jogo.findMany({
             where,

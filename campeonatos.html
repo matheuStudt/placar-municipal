@@ -128,16 +128,23 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-muted">CATEGORIA</label>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label small fw-bold text-muted mb-0">CATEGORIA</label>
+                                <button type="button" class="btn btn-link btn-sm text-primary p-0 text-decoration-none fw-bold" onclick="abrirModalCategorias()">
+                                    <i class="bi bi-gear-fill me-1"></i> Gerenciar
+                                </button>
+                            </div>
                             <select id="campCategoria" class="form-select">
                                 <option value="">Sem categoria específica</option>
-                                <option value="Masculino Livre">Masculino Livre</option>
-                                <option value="Feminino Livre">Feminino Livre</option>
-                                <option value="Sub-15">Sub-15</option>
-                                <option value="Sub-18">Sub-18</option>
-                                <option value="Veteranos">Veteranos</option>
-                                <option value="Misto">Misto</option>
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">REGULAMENTO (PDF)</label>
+                            <input type="file" id="campRegulamento" class="form-control" accept="application/pdf">
+                            <input type="hidden" id="campRegulamentoUrl">
+                            <div id="regulamento-atual" class="small mt-1 d-none">
+                                <i class="bi bi-file-earmark-pdf text-danger"></i> <a href="#" target="_blank" id="link-regulamento">Ver arquivo atual</a>
+                            </div>
                         </div>
                 </div>
                 <button type="submit" class="btn btn-success w-100 py-3 fw-bold">SALVAR CAMPEONATO</button>
@@ -209,11 +216,38 @@
         </div>
     </div>
 
+    <!-- Modal Gerenciar Categorias -->
+    <div class="modal fade" id="modalCategorias" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered shadow-lg">
+            <div class="modal-content border-0">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold">Gerenciar Categorias</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="form-nova-categoria" class="mb-4">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Nova Categoria</label>
+                        <div class="input-group">
+                            <input type="text" id="novo-nome-categoria" class="form-control" placeholder="Ex: Sub-13, Amador..." required>
+                            <button type="submit" class="btn btn-primary fw-bold">ADICIONAR</button>
+                        </div>
+                    </form>
+
+                    <h6 class="fw-bold mb-3 text-muted text-uppercase small">Categorias Cadastradas</h6>
+                    <div id="lista-categorias" class="list-group list-group-flush border rounded-3 overflow-hidden">
+                        <!-- Carregado via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="components/sidebar.js"></script>
     <script src="frontend/js/main.js"></script>
     <script>
         let prefeituraId = null;
+        let modalCategoriasBS = null;
 
         async function init() {
             const user = checkSession();
@@ -223,7 +257,73 @@
                 console.error("prefeituraId não encontrado no usuário logado");
                 return;
             }
+            modalCategoriasBS = new bootstrap.Modal(document.getElementById('modalCategorias'));
+            await carregarCategorias();
             carregarCampeonatos();
+        }
+
+        async function carregarCategorias() {
+            try {
+                const res = await fetch(`${API}/categorias?prefeituraId=${prefeituraId}`);
+                const categorias = await res.json();
+                
+                const select = document.getElementById('campCategoria');
+                const valorAtual = select.value;
+                
+                select.innerHTML = '<option value="">Sem categoria específica</option>';
+                categorias.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat.nome;
+                    opt.textContent = cat.nome;
+                    select.appendChild(opt);
+                });
+                select.value = valorAtual;
+
+                const lista = document.getElementById('lista-categorias');
+                if (categorias.length === 0) {
+                    lista.innerHTML = '<div class="list-group-item text-center text-muted py-3">Nenhuma categoria cadastrada</div>';
+                } else {
+                    lista.innerHTML = categorias.map(cat => `
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="fw-bold text-uppercase small">${cat.nome}</span>
+                            <button class="btn btn-sm btn-outline-danger border-0" onclick="excluirCategoria(${cat.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) { console.error("Erro ao carregar categorias:", e); }
+        }
+
+        function abrirModalCategorias() { modalCategoriasBS.show(); }
+
+        document.getElementById('form-nova-categoria').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nome = document.getElementById('novo-nome-categoria').value.trim();
+            if (!nome) return;
+            try {
+                const res = await fetch(`${API}/categorias`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, prefeituraId })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert(err.error || "Erro ao salvar categoria");
+                    return;
+                }
+                document.getElementById('novo-nome-categoria').value = '';
+                await carregarCategorias();
+            } catch (e) { alert("Erro de conexão"); }
+        });
+
+        async function excluirCategoria(id) {
+            if (!confirm("Excluir esta categoria?")) return;
+            try {
+                const res = await fetch(`${API}/categorias/${id}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error();
+                await carregarCategorias();
+            } catch (e) { alert("Erro ao excluir categoria"); }
         }
 
         async function carregarCampeonatos() {
@@ -458,6 +558,8 @@
             document.getElementById('formCamp').reset();
             document.getElementById('campId').value = '';
             document.getElementById('classificadosPorChave').value = '4';
+            document.getElementById('campRegulamentoUrl').value = '';
+            document.getElementById('regulamento-atual').classList.add('d-none');
             const defaults = ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
             for(let i=1; i<=6; i++) {
                 document.getElementById(`rg_${i}`).value = defaults[i-1] || "";
@@ -475,6 +577,16 @@
             document.getElementById('formato').value = c.formato;
             document.getElementById('campCategoria').value = c.categoria || '';
             document.getElementById('classificadosPorChave').value = c.classificadosPorChave || 4;
+            
+            document.getElementById('campRegulamentoUrl').value = c.regulamentoUrl || '';
+            const link = document.getElementById('link-regulamento');
+            const div = document.getElementById('regulamento-atual');
+            if (c.regulamentoUrl) {
+                link.href = c.regulamentoUrl;
+                div.classList.remove('d-none');
+            } else {
+                div.classList.add('d-none');
+            }
 
             const rg = c.regrasDesempateGeral || ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
             const r2 = c.regrasDesempate2Equipes || ["VITORIAS", "SALDO_GOLS", "GOLS_PRO", "GOLS_SOFRIDOS"];
@@ -499,35 +611,62 @@
         document.getElementById('formCamp').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('campId').value;
-            const rg = [];
-            const r2 = [];
-            const r3 = [];
-            for (let i = 1; i <= 6; i++) {
-                let vg = document.getElementById(`rg_${i}`).value;
-                if (vg) rg.push(vg);
-                let v2 = document.getElementById(`r2_${i}`).value;
-                if (v2) r2.push(v2);
-                let v3 = document.getElementById(`r3_${i}`).value;
-                if (v3) r3.push(v3);
+            
+            // Upload de Regulamento se houver novo arquivo
+            const fileInput = document.getElementById('campRegulamento');
+            let regulamentoUrl = document.getElementById('campRegulamentoUrl').value;
+
+            if (fileInput.files.length > 0) {
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                formData.append('bucket', 'documentos');
+
+                try {
+                    const resUpload = await fetch(`${API}/upload`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                        body: formData
+                    });
+                    if (resUpload.ok) {
+                        const dataUpload = await resUpload.json();
+                        regulamentoUrl = dataUpload.url;
+                    }
+                } catch (e) { console.error("Erro no upload do regulamento:", e); }
             }
-            const dados = {
+
+            const rg = Array.from({ length: 6 }, (_, i) => document.getElementById(`rg_${i + 1}`).value).filter(v => !!v);
+            const r2 = Array.from({ length: 6 }, (_, i) => document.getElementById(`r2_${i + 1}`).value).filter(v => !!v);
+            const r3 = Array.from({ length: 6 }, (_, i) => document.getElementById(`r3_${i + 1}`).value).filter(v => !!v);
+
+            const payload = {
                 nome: document.getElementById('nome').value,
-                ano: parseInt(document.getElementById('ano').value),
+                ano: document.getElementById('ano').value,
                 formato: document.getElementById('formato').value,
                 categoria: document.getElementById('campCategoria').value || null,
                 classificadosPorChave: parseInt(document.getElementById('classificadosPorChave').value),
+                regulamentoUrl,
                 prefeituraId: prefeituraId,
                 regrasDesempateGeral: rg.length ? rg : undefined,
                 regrasDesempate2Equipes: r2.length ? r2 : undefined,
                 regrasDesempate3MaisEquipes: r3.length ? r3 : undefined
             };
-            await fetch(id ? `${API}/campeonatos/${id}` : `${API}/campeonatos`, {
-                method: id ? 'PUT' : 'POST',
+
+            const url = id ? `${API}/campeonatos/${id}` : `${API}/campeonatos`;
+            const method = id ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method,
                 headers: getAuthHeaders(),
-                body: JSON.stringify(dados)
+                body: JSON.stringify(payload)
             });
-            document.getElementById('btn-fechar').click();
-            carregarCampeonatos();
+
+            if (res.ok) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalCamp'));
+                modal.hide();
+                carregarCampeonatos();
+            } else {
+                showToast('Erro ao salvar campeonato.', 'danger');
+            }
         });
 
         window.onload = init;

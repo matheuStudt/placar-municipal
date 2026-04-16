@@ -54,3 +54,37 @@ export const deleteAtleta = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Erro ao excluir atleta. Verifique dependências." });
     }
 };
+
+export const getAtletaHistorico = async (req: Request, res: Response) => {
+    const id = parseInt(String(req.params.id));
+    try {
+        const atleta = await prisma.atleta.findUnique({
+            where: { id },
+            include: {
+                vinculos: {
+                    include: {
+                        equipe: {
+                            include: { prefeitura: true }
+                        }
+                    },
+                    orderBy: { id: 'desc' }
+                }
+            }
+        });
+
+        if (!atleta) return res.status(404).json({ error: "Atleta não encontrado" });
+
+        const totalGols = await prisma.evento.aggregate({
+            where: { atletaId: id },
+            _sum: { gols: true }
+        });
+
+        res.json({
+            ...atleta,
+            totalGols: totalGols._sum.gols || 0
+        });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: "Erro ao buscar histórico do atleta" });
+    }
+};

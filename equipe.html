@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Perfil da Equipe - Placar Municipal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #3b82f6;
+            --surface: #ffffff;
+            --bg: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            z-index: 1000;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #0f172a 100%);
+            color: white;
+            padding: 80px 0 100px;
+            border-radius: 0 0 48px 48px;
+            margin-bottom: -48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: -10%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        }
+
+        .team-logo-hero {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            background: white;
+            padding: 15px;
+            border-radius: 30px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-pills-custom {
+            background: white;
+            padding: 8px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: inline-flex;
+        }
+
+        .nav-pills-custom .nav-link {
+            border-radius: 14px;
+            padding: 10px 24px;
+            font-weight: 600;
+            color: var(--primary);
+            transition: all 0.2s;
+        }
+
+        .nav-pills-custom .nav-link.active {
+            background-color: var(--accent) !important;
+            color: white !important;
+        }
+
+        .card-custom {
+            border: none;
+            border-radius: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            transition: transform 0.2s;
+        }
+
+        .atleta-card {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            height: 100%;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .atleta-icon {
+            width: 60px;
+            height: 60px;
+            background: #f8fafc;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            font-size: 1.5rem;
+            margin: 0 auto 15px;
+        }
+
+        .game-card-minimal {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        
+        .game-card-minimal:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .placar {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .footer {
+            background: white;
+            padding: 40px 0;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            margin-top: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a href="#" id="btn-voltar" class="btn btn-outline-dark rounded-pill px-4 fw-bold">
+                <i class="bi bi-arrow-left me-2"></i>Voltar ao Portal
+            </a>
+            <span class="navbar-brand ms-auto" id="nav-brand">PLACAR MUNICIPAL</span>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container text-center">
+            <div id="hero-content">
+                <div class="skeleton mx-auto mb-3" style="width: 120px; height: 120px; border-radius: 30px;"></div>
+                <div class="skeleton mx-auto mb-2" style="width: 250px; height: 40px;"></div>
+                <div class="skeleton mx-auto" style="width: 150px; height: 24px;"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" style="position: relative; z-index: 10;">
+        <div class="text-center mb-5">
+            <div class="nav nav-pills nav-pills-custom" id="pills-tab" role="tablist">
+                <button class="nav-link active" id="pills-elenco-tab" data-bs-toggle="pill" data-bs-target="#pills-elenco" type="button" role="tab">ELENCO</button>
+                <button class="nav-link" id="pills-agenda-tab" data-bs-toggle="pill" data-bs-target="#pills-agenda" type="button" role="tab">AGENDA</button>
+                <button class="nav-link" id="pills-resultados-tab" data-bs-toggle="pill" data-bs-target="#pills-resultados" type="button" role="tab">RESULTADOS</button>
+            </div>
+        </div>
+
+        <div class="tab-content" id="pills-tabContent">
+            <!-- Elenco -->
+            <div class="tab-pane fade show active" id="pills-elenco" role="tabpanel">
+                <div class="row g-4" id="container-elenco">
+                    <!-- Skeletons -->
+                    <div class="col-md-3"><div class="skeleton" style="height: 180px; border-radius: 20px;"></div></div>
+                    <div class="col-md-3"><div class="skeleton" style="height: 180px; border-radius: 20px;"></div></div>
+                    <div class="col-md-3"><div class="skeleton" style="height: 180px; border-radius: 20px;"></div></div>
+                    <div class="col-md-3"><div class="skeleton" style="height: 180px; border-radius: 20px;"></div></div>
+                </div>
+            </div>
+
+            <!-- Agenda -->
+            <div class="tab-pane fade" id="pills-agenda" role="tabpanel">
+                <div id="container-agenda"></div>
+            </div>
+
+            <!-- Resultados -->
+            <div class="tab-pane fade" id="pills-resultados" role="tabpanel">
+                <div id="container-resultados"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto">
+        <div class="container text-center">
+            <p class="text-muted small mb-0">&copy; 2026 Placar Municipal - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="frontend/js/main.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const equipeId = urlParams.get('id');
+        const slug = urlParams.get('slug') || urlParams.get('p') || 'principal';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!equipeId) {
+                window.location.href = 'portal.html';
+                return;
+            }
+
+            document.getElementById('btn-voltar').href = `portal.html?slug=${slug}`;
+            
+            await loadConfig();
+            await loadEquipeDetails();
+            await loadElenco();
+            await loadJogos();
+        });
+
+        async function loadConfig() {
+            try {
+                const res = await fetch(`${API}/configuracao?slug=${slug}`);
+                if (!res.ok) return;
+                const config = await res.json();
+
+                document.getElementById('nav-brand').innerHTML = `<i class="bi bi-trophy-fill text-warning me-2"></i>${config.nome.toUpperCase()}`;
+
+                if (config.corPrimaria) {
+                    const s = document.createElement('style');
+                    s.innerHTML = `
+                        :root { 
+                            --primary: #0f172a; 
+                            --accent: ${config.corPrimaria}; 
+                        }
+                        .hero { background: linear-gradient(135deg, ${config.corPrimaria} 0%, #0f172a 100%) !important; }
+                        .nav-pills-custom .nav-link.active { background-color: ${config.corPrimaria} !important; }
+                    `;
+                    document.head.appendChild(s);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadEquipeDetails() {
+            try {
+                const res = await fetch(`${API}/equipes/${equipeId}`);
+                if (!res.ok) throw new Error();
+                const eq = await res.json();
+
+                document.title = `${eq.nome} - Placar Municipal`;
+                
+                const hero = document.getElementById('hero-content');
+                hero.innerHTML = `
+                    <img src="${eq.logoUrl || 'https://via.placeholder.com/120?text=ESCUDO'}" class="team-logo-hero mb-4" alt="${eq.nome}">
+                    <h1 class="display-4 fw-800 mb-2">${eq.nome.toUpperCase()}</h1>
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge bg-white text-dark rounded-pill px-3 py-2 border shadow-sm fw-bold">
+                            <i class="bi bi-tag-fill me-1 text-primary"></i> ${eq.categoria || 'Sem Categoria'}
+                        </span>
+                        ${eq.local ? `
+                        <span class="badge bg-white text-dark rounded-pill px-3 py-2 border shadow-sm fw-bold">
+                            <i class="bi bi-geo-alt-fill me-1 text-danger"></i> ${eq.local}
+                        </span>` : ''}
+                    </div>
+                `;
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadElenco() {
+            const container = document.getElementById('container-elenco');
+            try {
+                const res = await fetch(`${API}/equipes/${equipeId}/elenco`);
+                const elenco = await res.json();
+                
+                if (elenco.length === 0) {
+                    container.innerHTML = '<div class="col-12 text-center py-5 text-muted"><p class="fs-5">Nenhum atleta cadastrado nesta equipe.</p></div>';
+                    return;
+                }
+
+                container.innerHTML = elenco.map(at => `
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="atleta-card shadow-sm">
+                            <div class="atleta-icon">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <div class="fw-bold mb-1">
+                                <a href="atleta.html?id=${at.id}&slug=${slug}" class="text-decoration-none text-dark">
+                                    ${at.nome.toUpperCase()}
+                                </a>
+                            </div>
+                            <div class="small text-muted fw-semibold">${at.tipo || 'Atleta'}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadJogos() {
+            const agenda = document.getElementById('container-agenda');
+            const resultados = document.getElementById('container-resultados');
+            
+            try {
+                const res = await fetch(`${API}/jogos?equipeId=${equipeId}`);
+                const jogos = await res.json();
+                
+                const futuras = jogos.filter(j => j.status === 'Agendado');
+                const passadas = jogos.filter(j => j.status === 'Finalizado').reverse();
+
+                const renderJogo = (j) => {
+                    const isMandante = String(j.mandanteId) === String(equipeId);
+                    const adversario = isMandante ? j.visitanteNome : j.mandanteNome;
+                    const logoAdversario = isMandante ? (j.visitante?.logoUrl || '') : (j.mandante?.logoUrl || '');
+                    
+                    return `
+                        <div class="game-card-minimal shadow-sm d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="text-center" style="min-width: 80px;">
+                                    <div class="fw-800 text-primary small">${j.data ? j.data.split('-').reverse().join('/') : 'A definir'}</div>
+                                    <div class="small text-muted fw-bold">${j.horario || '--:--'}</div>
+                                </div>
+                                <div class="vr mx-2 bg-secondary opacity-25"></div>
+                                <div class="d-flex align-items-center gap-2">
+                                    ${logoAdversario ? `<img src="${logoAdversario}" style="width:32px;height:32px;object-fit:contain;">` : '<i class="bi bi-shield-shaded text-muted fs-4"></i>'}
+                                    <div>
+                                        <div class="small text-muted fw-bold" style="font-size:0.7rem;">ADVERSÁRIO</div>
+                                        <div class="fw-bold">${adversario.toUpperCase()}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                ${j.status === 'Finalizado' ? `
+                                    <div class="placar">
+                                        <span class="${isMandante && j.golsMandante > j.golsVisitante ? 'text-success' : (!isMandante && j.golsVisitante > j.golsMandante ? 'text-success' : '')}">
+                                            ${isMandante ? j.golsMandante : j.golsVisitante}
+                                        </span>
+                                        <span class="mx-1 text-muted">:</span>
+                                        <span>
+                                            ${isMandante ? j.golsVisitante : j.golsMandante}
+                                        </span>
+                                    </div>
+                                ` : `
+                                    <span class="badge bg-light text-muted border px-3">AGENDADO</span>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                };
+
+                agenda.innerHTML = futuras.length > 0 ? futuras.map(renderJogo).join('') : '<p class="text-center py-5 text-muted">Nenhum jogo agendado.</p>';
+                resultados.innerHTML = passadas.length > 0 ? passadas.map(renderJogo).join('') : '<p class="text-center py-5 text-muted">Nenhum resultado registrado.</p>';
+
+            } catch (e) { console.error(e); }
+        }
+    </script>
+</body>
+
+</html>
