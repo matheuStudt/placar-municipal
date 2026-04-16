@@ -24,35 +24,22 @@
             overflow-x: hidden;
         }
 
-        /* Navbar */
-        .navbar {
-            background: rgba(255, 255, 255, 0.85) !important;
-            backdrop-filter: blur(14px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-            padding: 0.85rem 0;
-        }
-
-        /* Botão Voltar - padrão portal */
+        /* Botão Voltar */
         .btn-voltar {
+            color: white;
+            text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 10px 22px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            color: var(--primary);
-            cursor: pointer;
-            transition: all 0.22s;
-            text-decoration: none;
+            gap: 10px;
+            margin-bottom: 30px;
+            opacity: 0.8;
+            transition: 0.3s;
         }
 
         .btn-voltar:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.15);
+            opacity: 1;
+            transform: translateX(-5px);
+            color: white;
         }
 
         /* Hero */
@@ -219,21 +206,14 @@
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg sticky-top">
-        <div class="container">
-            <a href="#" id="btn-voltar" class="btn-voltar">
-                <i class="bi bi-arrow-left"></i> Voltar ao Portal
-            </a>
-            <span class="navbar-brand ms-auto fw-bold" id="nav-brand">
-                <i class="bi bi-trophy-fill text-warning me-2"></i>PLACAR MUNICIPAL
-            </span>
-        </div>
-    </nav>
-
     <!-- Hero -->
     <header class="hero">
         <div class="container text-center">
+            <div class="text-start">
+                <a href="#" id="btn-voltar" class="btn-voltar">
+                    <i class="bi bi-arrow-left"></i> Voltar ao Portal
+                </a>
+            </div>
             <div id="hero-content">
                 <div class="skeleton mx-auto mb-3" style="width: 110px; height: 110px; border-radius: 28px;"></div>
                 <div class="skeleton mx-auto mb-2" style="width: 240px; height: 36px;"></div>
@@ -341,8 +321,6 @@
                 if (!res.ok) return;
                 const config = await res.json();
 
-                document.getElementById('nav-brand').innerHTML = `<i class="bi bi-trophy-fill text-warning me-2"></i>${config.nome.toUpperCase()}`;
-
                 if (config.corPrimaria) {
                     const s = document.createElement('style');
                     s.innerHTML = `
@@ -351,7 +329,6 @@
                         .nav-pills-custom .nav-link.active { background-color: ${config.corPrimaria} !important; }
                         .bg-primary { background-color: ${config.corPrimaria} !important; }
                         .text-primary { color: ${config.corPrimaria} !important; }
-                        .btn-voltar:hover { border-color: ${config.corPrimaria}; color: ${config.corPrimaria}; }
                     `;
                     document.head.appendChild(s);
                 }
@@ -367,13 +344,17 @@
                 document.title = `${eq.nome} - Placar Municipal`;
 
                 const hero = document.getElementById('hero-content');
-                hero.innerHTML = `
-                    <img src="${eq.logoUrl || ''}" class="team-logo-hero mb-4" alt="${eq.nome}"
-                        onerror="this.style.display='none'; document.getElementById('hero-icon-fallback').style.display='flex';"
-                        ${!eq.logoUrl ? 'style="display:none;"' : ''}>
-                    <div id="hero-icon-fallback" class="d-inline-flex align-items-center justify-content-center bg-white bg-opacity-10 rounded-4 mb-4 mx-auto" style="width:110px;height:110px;${eq.logoUrl ? 'display:none;' : ''}">
+                let logoHtml = '';
+                if (eq.logoUrl) {
+                    logoHtml = `<img src="${eq.logoUrl}" class="team-logo-hero mb-4" alt="${eq.nome}">`;
+                } else {
+                    logoHtml = `<div class="d-inline-flex align-items-center justify-content-center bg-white bg-opacity-10 rounded-4 mb-4 mx-auto" style="width:110px;height:110px;">
                         <i class="bi bi-shield-shaded fs-1 text-white opacity-75"></i>
-                    </div>
+                    </div>`;
+                }
+
+                hero.innerHTML = `
+                    ${logoHtml}
                     <h1 class="display-5 fw-bold mb-2 text-white">${eq.nome.toUpperCase()}</h1>
                     <div class="d-flex justify-content-center gap-2 flex-wrap">
                         <span class="badge bg-white text-dark rounded-pill px-3 py-2 border shadow-sm fw-bold">
