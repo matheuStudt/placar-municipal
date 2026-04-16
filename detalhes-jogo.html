@@ -132,17 +132,19 @@
                             <a id="link-logo-mandante" href="#">
                                 <i id="icon-mandante" class="bi bi-shield-shaded fs-1 fs-md-1 opacity-50"></i>
                                 <img id="img-logo-mandante" src="" alt=""
-                                    style="max-height:80px;max-width:100%;object-fit:contain;display:none;">
+                                    style="width: 60px; height: 60px; object-fit: contain; display: none;">
                             </a>
                         </div>
-                        <h2 id="nome-mandante" class="fw-bold text-uppercase fs-6 fs-md-2 text-wrap text-break lh-sm mb-0">--</h2>
+                        <h2 id="nome-mandante" class="fw-bold text-uppercase small fs-md-2 text-wrap lh-sm mb-0">--</h2>
                     </div>
                     <div class="col-4 px-1 px-md-3">
                         <div class="d-flex justify-content-center align-items-center gap-1 gap-md-3 flex-wrap flex-md-nowrap">
                             <span id="penaltis-mandante" class="text-white-50 fw-bold fs-6 fs-md-4 mb-0 mb-md-4" style="display:none;">(0)</span>
-                            <span id="gols-mandante" class="gols-display">0</span>
-                            <span class="sep">X</span>
-                            <span id="gols-visitante" class="gols-display">0</span>
+                            <div class="d-flex flex-row justify-content-center align-items-center flex-nowrap gap-2">
+                                <span id="gols-mandante" class="gols-display">0</span>
+                                <span class="sep">X</span>
+                                <span id="gols-visitante" class="gols-display">0</span>
+                            </div>
                             <span id="penaltis-visitante" class="text-white-50 fw-bold fs-6 fs-md-4 mb-0 mb-md-4" style="display:none;">(0)</span>
                         </div>
                     </div>
@@ -151,26 +153,26 @@
                             <a id="link-logo-visitante" href="#">
                                 <i id="icon-visitante" class="bi bi-shield-shaded fs-1 fs-md-1 opacity-50"></i>
                                 <img id="img-logo-visitante" src="" alt=""
-                                    style="max-height:80px;max-width:100%;object-fit:contain;display:none;">
+                                    style="width: 60px; height: 60px; object-fit: contain; display: none;">
                             </a>
                         </div>
-                        <h2 id="nome-visitante" class="fw-bold text-uppercase fs-6 fs-md-2 text-wrap text-break lh-sm mb-0">--</h2>
+                        <h2 id="nome-visitante" class="fw-bold text-uppercase small fs-md-2 text-wrap lh-sm mb-0">--</h2>
                     </div>
                 </div>
             </div>
 
             <div class="text-center mt-4">
-                <p class="mb-0 opacity-100 d-flex justify-content-center align-items-center flex-wrap gap-2 fw-semibold text-uppercase" style="letter-spacing: 0.5px; font-size: 0.95rem;">
-                    <span id="chave-container" style="display:none;">
-                        <span id="chave-texto">--</span> <span class="mx-3 opacity-50">|</span>
+                <p class="mb-0 opacity-100 d-flex flex-wrap justify-content-center gap-2 fw-semibold text-uppercase" style="letter-spacing: 0.5px; font-size: 0.95rem;">
+                    <span id="chave-container" style="display:none;" class="text-nowrap">
+                        <span id="chave-texto">--</span> <span class="mx-md-3 mx-1 opacity-50">|</span>
                     </span>
-                    <span>JOGO <span id="jogo-numero">--</span></span>
-                    <span class="mx-3 opacity-50">|</span>
-                    <span><i class="bi bi-geo-alt me-1"></i> <span id="local-jogo">--</span></span>
-                    <span class="mx-3 opacity-50">|</span>
-                    <span><i class="bi bi-calendar-event me-1"></i> <span id="data-jogo">--</span></span>
-                    <span class="mx-3 opacity-50">|</span>
-                    <span><i class="bi bi-clock me-1"></i> <span id="horario-jogo">--</span></span>
+                    <span class="text-nowrap">JOGO <span id="jogo-numero">--</span></span>
+                    <span class="mx-md-3 mx-1 opacity-50 d-none d-md-inline">|</span>
+                    <span class="text-nowrap"><i class="bi bi-geo-alt me-1"></i> <span id="local-jogo">--</span></span>
+                    <span class="mx-md-3 mx-1 opacity-50 d-none d-md-inline">|</span>
+                    <span class="text-nowrap"><i class="bi bi-calendar-event me-1"></i> <span id="data-jogo">--</span></span>
+                    <span class="mx-md-3 mx-1 opacity-50 d-none d-md-inline">|</span>
+                    <span class="text-nowrap"><i class="bi bi-clock me-1"></i> <span id="horario-jogo">--</span></span>
                 </p>
             </div>
         </div>
