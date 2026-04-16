@@ -477,13 +477,15 @@ export const getEstatisticas = async (req: Request, res: Response) => {
             const nomeAtleta = e.atleta.nome;
             const nomeEquipe = e.equipe?.nome || e.atleta.vinculos[0]?.equipe?.nome || "Time";
 
+            const equipeId = e.equipeId || e.atleta.vinculos[0]?.equipeId;
+
             if (e.gols > 0) {
-                if (!artilhariaMap[atletaId]) artilhariaMap[atletaId] = { nome: nomeAtleta, equipeNome: nomeEquipe, gols: 0 };
+                if (!artilhariaMap[atletaId]) artilhariaMap[atletaId] = { id: atletaId, nome: nomeAtleta, equipeNome: nomeEquipe, gols: 0 };
                 artilhariaMap[atletaId].gols += e.gols;
             }
 
             if (e.am > 0 || e.vm > 0) {
-                if (!disciplinaMap[nomeEquipe]) disciplinaMap[nomeEquipe] = { nome: nomeEquipe, amarelos: 0, vermelhos: 0, peso: 0 };
+                if (!disciplinaMap[nomeEquipe]) disciplinaMap[nomeEquipe] = { id: equipeId, nome: nomeEquipe, amarelos: 0, vermelhos: 0, peso: 0 };
                 disciplinaMap[nomeEquipe].amarelos += e.am;
                 disciplinaMap[nomeEquipe].vermelhos += e.vm;
                 disciplinaMap[nomeEquipe].peso += (e.am * 1) + (e.vm * 3);
@@ -498,20 +500,20 @@ export const getEstatisticas = async (req: Request, res: Response) => {
         jogosConcluidos.forEach(j => {
             if (j.mandanteId !== null) {
                 const mId = j.mandanteId as number;
-                if (!defesaMap[mId]) defesaMap[mId] = { nome: j.mandanteNome, golsSofridos: 0, jogos: 0 };
+                if (!defesaMap[mId]) defesaMap[mId] = { id: mId, nome: j.mandanteNome, golsSofridos: 0, jogos: 0 };
                 defesaMap[mId].golsSofridos += j.golsVisitante;
                 defesaMap[mId].jogos++;
                 
-                if (!disciplinaMap[j.mandanteNome]) disciplinaMap[j.mandanteNome] = { nome: j.mandanteNome, amarelos: 0, vermelhos: 0, peso: 0 };
+                if (!disciplinaMap[j.mandanteNome]) disciplinaMap[j.mandanteNome] = { id: mId, nome: j.mandanteNome, amarelos: 0, vermelhos: 0, peso: 0 };
             }
 
             if (j.visitanteId !== null) {
                 const vId = j.visitanteId as number;
-                if (!defesaMap[vId]) defesaMap[vId] = { nome: j.visitanteNome, golsSofridos: 0, jogos: 0 };
+                if (!defesaMap[vId]) defesaMap[vId] = { id: vId, nome: j.visitanteNome, golsSofridos: 0, jogos: 0 };
                 defesaMap[vId].golsSofridos += j.golsMandante;
                 defesaMap[vId].jogos++;
                 
-                if (!disciplinaMap[j.visitanteNome]) disciplinaMap[j.visitanteNome] = { nome: j.visitanteNome, amarelos: 0, vermelhos: 0, peso: 0 };
+                if (!disciplinaMap[j.visitanteNome]) disciplinaMap[j.visitanteNome] = { id: vId, nome: j.visitanteNome, amarelos: 0, vermelhos: 0, peso: 0 };
             }
         });
 

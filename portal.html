@@ -431,10 +431,7 @@
     <!-- ════════════════════════════════════════ -->
     <div id="view-lista">
         <div class="container section-cards">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <h1 class="display-5 fw-800 mb-0" id="camp-nome-display">---</h1>
-                <div id="regulamento-container"></div>
-            </div>
+
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h2 class="fw-bold fs-4 mb-0">
                     <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Campeonatos
@@ -481,10 +478,11 @@
                     <div class="detalhe-header-icon">
                         <i class="bi bi-trophy-fill"></i>
                     </div>
-                    <div>
+                    <div class="flex-grow-1">
                         <h2 class="detalhe-header-title" id="detalhe-nome">—</h2>
                         <p class="detalhe-header-sub" id="detalhe-meta">—</p>
                     </div>
+                    <div id="regulamento-container" class="ms-auto"></div>
                 </div>
             </div>
 
@@ -706,18 +704,7 @@
                 document.title = config.nome + ' - Portal de Esportes';
                 const navBrand = document.getElementById('nav-brand');
                 if (navBrand) navBrand.innerHTML = `<i class="bi bi-trophy-fill text-warning me-2"></i>${config.nome.toUpperCase()}`;
-                document.getElementById('camp-nome-display').innerText = camp.nome.toUpperCase();
-                
-                const regContainer = document.getElementById('regulamento-container');
-                if (camp.regulamentoUrl) {
-                    regContainer.innerHTML = `
-                        <a href="${camp.regulamentoUrl}" target="_blank" class="btn btn-outline-danger rounded-pill fw-bold">
-                            <i class="bi bi-file-earmark-pdf me-2"></i>Regulamento
-                        </a>
-                    `;
-                } else {
-                    regContainer.innerHTML = '';
-                }
+                document.getElementById('hero-title').textContent = config.nome;
                 document.getElementById('footer-nome').textContent = config.nome;
 
                 if (config.logoUrl) {
@@ -835,6 +822,17 @@
             document.getElementById('detalhe-nome').textContent = camp.nome;
             document.getElementById('detalhe-meta').textContent =
                 [camp.ano, camp.modalidade, camp.status].filter(Boolean).join(' · ');
+
+            // Regulamento
+            const regContainer = document.getElementById('regulamento-container');
+            if (camp.regulamentoUrl) {
+                regContainer.innerHTML = `
+                    <a href="${camp.regulamentoUrl}" target="_blank" class="btn btn-outline-danger rounded-pill fw-bold">
+                        <i class="bi bi-file-earmark-pdf me-2"></i>Regulamento
+                    </a>`;
+            } else {
+                regContainer.innerHTML = '';
+            }
 
             // Alterna views
             document.getElementById('view-lista').style.display = 'none';
@@ -1213,7 +1211,7 @@
             return `<tr>
             <td class="ps-4 fw-bold text-warning">${i + 1}º</td>
             <td>
-                <a href="atleta.html?id=${d.id}&slug=${slug}" class="text-decoration-none text-dark fw-bold">
+                <a href="equipe.html?id=${d.id}&slug=${slug}" class="text-decoration-none text-dark fw-bold">
                     ${d.nome}
                 </a>
             </td>
@@ -1224,7 +1222,11 @@
         function renderLinhaDef(d, i) {
             return `<tr>
             <td class="ps-4 fw-bold text-success">${i + 1}º</td>
-            <td class="fw-bold text-uppercase">${d.nome}</td>
+            <td>
+                <a href="equipe.html?id=${d.id}&slug=${slug}" class="text-decoration-none text-dark fw-bold text-uppercase">
+                    ${d.nome}
+                </a>
+            </td>
             <td class="text-center fw-bold">${d.golsSofridos}</td>
             <td class="text-center text-muted">${d.jogos}</td>
             <td class="text-center"><span class="badge bg-success px-3">${d.media}</span></td>

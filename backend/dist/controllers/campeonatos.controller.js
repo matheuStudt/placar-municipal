@@ -112,7 +112,7 @@ export const getCampeonatos = async (req, res) => {
     }
 };
 export const createCampeonato = async (req, res) => {
-    const { nome, ano, formato, prefeituraId, descricao, dataInicio, dataFim, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes, categoria } = req.body;
+    const { nome, ano, formato, prefeituraId, descricao, dataInicio, dataFim, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes, categoria, regulamentoUrl } = req.body;
     try {
         const novo = await prisma.campeonato.create({
             data: {
@@ -125,6 +125,7 @@ export const createCampeonato = async (req, res) => {
                 dataFim: dataFim || "2024-12-31",
                 prefeituraId: parseInt(String(prefeituraId)) || 1,
                 classificadosPorChave: classificadosPorChave ? parseInt(String(classificadosPorChave)) : 4,
+                regulamentoUrl: regulamentoUrl || null,
                 regrasDesempateGeral: regrasDesempateGeral || undefined,
                 regrasDesempate2Equipes: regrasDesempate2Equipes || undefined,
                 regrasDesempate3MaisEquipes: regrasDesempate3MaisEquipes || undefined
@@ -138,7 +139,7 @@ export const createCampeonato = async (req, res) => {
 };
 export const updateCampeonato = async (req, res) => {
     const id = parseInt(String(req.params.id));
-    const { nome, ano, formato, descricao, dataInicio, dataFim, status, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes, categoria } = req.body;
+    const { nome, ano, formato, descricao, dataInicio, dataFim, status, classificadosPorChave, regrasDesempateGeral, regrasDesempate2Equipes, regrasDesempate3MaisEquipes, categoria, regulamentoUrl } = req.body;
     try {
         const atualizado = await prisma.campeonato.update({
             where: { id },
@@ -154,7 +155,8 @@ export const updateCampeonato = async (req, res) => {
                 classificadosPorChave: classificadosPorChave ? parseInt(String(classificadosPorChave)) : undefined,
                 regrasDesempateGeral: regrasDesempateGeral || undefined,
                 regrasDesempate2Equipes: regrasDesempate2Equipes || undefined,
-                regrasDesempate3MaisEquipes: regrasDesempate3MaisEquipes || undefined
+                regrasDesempate3MaisEquipes: regrasDesempate3MaisEquipes || undefined,
+                regulamentoUrl: regulamentoUrl || null
             }
         });
         res.json(atualizado);
@@ -466,14 +468,15 @@ export const getEstatisticas = async (req, res) => {
             const atletaId = e.atletaId;
             const nomeAtleta = e.atleta.nome;
             const nomeEquipe = e.equipe?.nome || e.atleta.vinculos[0]?.equipe?.nome || "Time";
+            const equipeId = e.equipeId || e.atleta.vinculos[0]?.equipeId;
             if (e.gols > 0) {
                 if (!artilhariaMap[atletaId])
-                    artilhariaMap[atletaId] = { nome: nomeAtleta, equipeNome: nomeEquipe, gols: 0 };
+                    artilhariaMap[atletaId] = { id: atletaId, nome: nomeAtleta, equipeNome: nomeEquipe, gols: 0 };
                 artilhariaMap[atletaId].gols += e.gols;
             }
             if (e.am > 0 || e.vm > 0) {
                 if (!disciplinaMap[nomeEquipe])
-                    disciplinaMap[nomeEquipe] = { nome: nomeEquipe, amarelos: 0, vermelhos: 0, peso: 0 };
+                    disciplinaMap[nomeEquipe] = { id: equipeId, nome: nomeEquipe, amarelos: 0, vermelhos: 0, peso: 0 };
                 disciplinaMap[nomeEquipe].amarelos += e.am;
                 disciplinaMap[nomeEquipe].vermelhos += e.vm;
                 disciplinaMap[nomeEquipe].peso += (e.am * 1) + (e.vm * 3);
@@ -487,20 +490,20 @@ export const getEstatisticas = async (req, res) => {
             if (j.mandanteId !== null) {
                 const mId = j.mandanteId;
                 if (!defesaMap[mId])
-                    defesaMap[mId] = { nome: j.mandanteNome, golsSofridos: 0, jogos: 0 };
+                    defesaMap[mId] = { id: mId, nome: j.mandanteNome, golsSofridos: 0, jogos: 0 };
                 defesaMap[mId].golsSofridos += j.golsVisitante;
                 defesaMap[mId].jogos++;
                 if (!disciplinaMap[j.mandanteNome])
-                    disciplinaMap[j.mandanteNome] = { nome: j.mandanteNome, amarelos: 0, vermelhos: 0, peso: 0 };
+                    disciplinaMap[j.mandanteNome] = { id: mId, nome: j.mandanteNome, amarelos: 0, vermelhos: 0, peso: 0 };
             }
             if (j.visitanteId !== null) {
                 const vId = j.visitanteId;
                 if (!defesaMap[vId])
-                    defesaMap[vId] = { nome: j.visitanteNome, golsSofridos: 0, jogos: 0 };
+                    defesaMap[vId] = { id: vId, nome: j.visitanteNome, golsSofridos: 0, jogos: 0 };
                 defesaMap[vId].golsSofridos += j.golsMandante;
                 defesaMap[vId].jogos++;
                 if (!disciplinaMap[j.visitanteNome])
-                    disciplinaMap[j.visitanteNome] = { nome: j.visitanteNome, amarelos: 0, vermelhos: 0, peso: 0 };
+                    disciplinaMap[j.visitanteNome] = { id: vId, nome: j.visitanteNome, amarelos: 0, vermelhos: 0, peso: 0 };
             }
         });
         const artilharia = Object.values(artilhariaMap).sort((a, b) => b.gols - a.gols);

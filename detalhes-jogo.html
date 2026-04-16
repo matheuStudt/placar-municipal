@@ -128,10 +128,12 @@
             <div class="placar-box">
                 <div class="row align-items-center text-center">
                     <div class="col-md-4">
-                        <div id="logo-mandante-container" class="mb-3">
-                            <i id="icon-mandante" class="bi bi-shield-shaded fs-1 opacity-50"></i>
-                            <img id="img-logo-mandante" src="" alt=""
-                                style="max-height:80px;max-width:80px;object-fit:contain;display:none;">
+                        <div id="logo-mandante-container" class="mb-3" id="logo-mandante-container">
+                            <a id="link-logo-mandante" href="#">
+                                <i id="icon-mandante" class="bi bi-shield-shaded fs-1 opacity-50"></i>
+                                <img id="img-logo-mandante" src="" alt=""
+                                    style="max-height:80px;max-width:80px;object-fit:contain;display:none;">
+                            </a>
                         </div>
                         <h2 id="nome-mandante" class="fw-bold text-uppercase">--</h2>
                     </div>
@@ -146,9 +148,11 @@
                     </div>
                     <div class="col-md-4">
                         <div id="logo-visitante-container" class="mb-3">
-                            <i id="icon-visitante" class="bi bi-shield-shaded fs-1 opacity-50"></i>
-                            <img id="img-logo-visitante" src="" alt=""
-                                style="max-height:80px;max-width:80px;object-fit:contain;display:none;">
+                            <a id="link-logo-visitante" href="#">
+                                <i id="icon-visitante" class="bi bi-shield-shaded fs-1 opacity-50"></i>
+                                <img id="img-logo-visitante" src="" alt=""
+                                    style="max-height:80px;max-width:80px;object-fit:contain;display:none;">
+                            </a>
                         </div>
                         <h2 id="nome-visitante" class="fw-bold text-uppercase">--</h2>
                     </div>
@@ -269,6 +273,13 @@
                 }
                 aplicarLogo('img-logo-mandante', 'icon-mandante', 'label-img-mandante', 'label-icon-mandante', jogo.mandante?.logoUrl);
                 aplicarLogo('img-logo-visitante', 'icon-visitante', 'label-img-visitante', 'label-icon-visitante', jogo.visitante?.logoUrl);
+
+                // Configura links dos logos para as páginas de equipe
+                const slugParam = slug ? `&slug=${slug}` : '';
+                const linkMandante = document.getElementById('link-logo-mandante');
+                if (linkMandante && jogo.mandanteId) linkMandante.href = `equipe.html?id=${jogo.mandanteId}${slugParam}`;
+                const linkVisitante = document.getElementById('link-logo-visitante');
+                if (linkVisitante && jogo.visitanteId) linkVisitante.href = `equipe.html?id=${jogo.visitanteId}${slugParam}`;
 
                 document.getElementById('gols-mandante').textContent = jogo.golsMandante;
                 document.getElementById('gols-visitante').textContent = jogo.golsVisitante;

@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
-const BUCKET_NAME = 'logos';
-const MAX_FILE_SIZE_MB = 5;
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
+const ALLOWED_TYPES = [
+    'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml',
+    'application/pdf'
+];
 // Lazy initialization: lê as vars no momento da chamada (após dotenv.config rodar)
 function getClient() {
     const url = process.env.SUPABASE_URL || '';
@@ -19,32 +20,36 @@ export async function initStorage() {
         return;
     }
     try {
+        const requiredBuckets = ['logos', 'documentos', 'sumulas'];
         const { data: buckets, error: listError } = await client.storage.listBuckets();
         if (listError)
             throw listError;
-        const exists = buckets?.some(b => b.name === BUCKET_NAME);
-        if (!exists) {
-            const { error } = await client.storage.createBucket(BUCKET_NAME, { public: true });
-            if (error) {
-                console.error(`[UPLOAD] Falha ao criar bucket "${BUCKET_NAME}":`, error.message);
+        for (const bName of requiredBuckets) {
+            const exists = buckets?.some(b => b.name === bName);
+            if (!exists) {
+                const { error } = await client.storage.createBucket(bName, { public: true });
+                if (error) {
+                    console.error(`[UPLOAD] Falha ao criar bucket "${bName}":`, error.message);
+                }
+                else {
+                    console.log(`[UPLOAD] ✅ Bucket "${bName}" criado e definido como público.`);
+                }
             }
             else {
-                console.log(`[UPLOAD] ✅ Bucket "${BUCKET_NAME}" criado e definido como público.`);
+                console.log(`[UPLOAD] ✅ Bucket "${bName}" já existe.`);
             }
-        }
-        else {
-            console.log(`[UPLOAD] ✅ Bucket "${BUCKET_NAME}" já existe.`);
         }
     }
     catch (e) {
         console.error('[UPLOAD] Erro ao inicializar Storage:', e?.message || e);
     }
 }
-export const uploadLogo = async (req, res) => {
+export const uploadFile = async (req, res) => {
     const supabase = getClient();
+    const bucket = String(req.body.bucket || 'logos');
     try {
         if (!supabase) {
-            res.status(500).json({ error: 'Upload não configurado no servidor. Contate o administrador.' });
+            res.status(500).json({ error: 'Upload não configurado no servidor.' });
             return;
         }
         if (!req.file) {
@@ -53,33 +58,29 @@ export const uploadLogo = async (req, res) => {
         }
         const file = req.file;
         if (!ALLOWED_TYPES.includes(file.mimetype)) {
-            res.status(400).json({ error: 'Tipo de arquivo não permitido. Use: JPG, PNG, WEBP, GIF ou SVG.' });
+            res.status(400).json({ error: 'Tipo de arquivo não permitido.' });
             return;
         }
-        if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-            res.status(400).json({ error: `Arquivo muito grande. Tamanho máximo: ${MAX_FILE_SIZE_MB}MB.` });
-            return;
-        }
-        const fileExt = file.originalname.split('.').pop() || 'png';
+        const fileExt = file.originalname.split('.').pop() || 'tmp';
         const fileName = `${uuidv4()}.${fileExt}`;
         const { error } = await supabase.storage
-            .from(BUCKET_NAME)
+            .from(bucket)
             .upload(fileName, file.buffer, {
             contentType: file.mimetype,
             upsert: false
         });
         if (error) {
             console.error('[UPLOAD] Erro no Supabase Storage:', error);
-            res.status(500).json({ error: 'Erro ao salvar imagem. Tente novamente.' });
+            res.status(500).json({ error: 'Erro ao salvar arquivo.' });
             return;
         }
         const { data: publicUrlData } = supabase.storage
-            .from(BUCKET_NAME)
+            .from(bucket)
             .getPublicUrl(fileName);
         res.json({ url: publicUrlData.publicUrl });
     }
     catch (e) {
-        console.error('[UPLOAD] Erro interno:', e?.message || e);
+        console.error('[UPLOAD] Erro interno:', e);
         res.status(500).json({ error: 'Erro interno ao processar upload.' });
     }
 };
