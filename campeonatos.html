@@ -73,17 +73,17 @@
                             <input type="text" id="nome" class="form-control" placeholder="Ex: Copa da Cidade" required>
                         </div>
                         <div class="row g-2 mb-3">
-                            <div class="col-3">
+                            <div class="col-12 col-md-3">
                                 <label class="form-label small fw-bold text-muted">ANO</label>
                                 <input type="number" id="ano" class="form-control" value="2026" required>
                             </div>
-                            <div class="col-4">
+                            <div class="col-12 col-md-4">
                                 <label class="form-label small fw-bold text-muted"
                                     title="Número de equipes que se classificam por chave na fase de grupos">CLASSIFICADOS</label>
                                 <input type="number" id="classificadosPorChave" class="form-control" value="4" min="1"
                                     max="10" required>
                             </div>
-                            <div class="col-5">
+                            <div class="col-12 col-md-5">
                                 <label class="form-label small fw-bold text-muted">FORMATO</label>
                                 <select id="formato" class="form-select" required>
                                     <option value="Pontos Corridos">Pontos Corridos</option>
@@ -166,11 +166,11 @@
                     <form id="form-inscricao" class="mb-4">
                         <input type="hidden" id="inscricao-camp-id">
                         <div class="row g-2">
-                            <div class="col-7">
+                            <div class="col-12 col-md-7">
                                 <label class="form-label small fw-bold text-muted">EQUIPE</label>
                                 <select id="select-equipes-inscricao" class="form-select" required></select>
                             </div>
-                            <div class="col-5">
+                            <div class="col-12 col-md-5">
                                 <label class="form-label small fw-bold text-muted">CHAVE (GRUPO)</label>
                                 <input type="text" id="inscricao-chave" class="form-control" placeholder="Ex: Chave A">
                             </div>
@@ -196,11 +196,11 @@
                     <form id="form-rodada" class="mb-4">
                         <input type="hidden" id="rodada-camp-id">
                         <div class="row g-2 mb-2">
-                            <div class="col-8">
+                            <div class="col-12 col-md-8">
                                 <input type="text" id="nome-rodada" class="form-control"
                                     placeholder="Ex: 1ª Rodada, Semi-Final, Final" required>
                             </div>
-                            <div class="col-4">
+                            <div class="col-12 col-md-4">
                                 <select id="tipo-rodada" class="form-select" required>
                                     <option value="GRUPO">Fase de Grupos</option>
                                     <option value="MATA_MATA">Mata-Mata</option>

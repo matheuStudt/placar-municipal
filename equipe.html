@@ -114,12 +114,9 @@
             gap: 12px;
             padding: 10px 16px;
             background: white;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
             transition: background 0.15s;
-        }
-
-        .elenco-item:last-child {
-            border-bottom: none;
         }
 
         .elenco-item:hover {
@@ -250,12 +247,12 @@
                         <div class="card-header bg-white border-bottom py-3 px-4">
                             <h5 class="mb-0 fw-bold"><i class="bi bi-people-fill text-primary me-2"></i>Elenco</h5>
                         </div>
-                        <div id="container-elenco">
+                        <div id="container-elenco" class="row g-2 p-3">
                             <!-- Skeletons -->
-                            <div class="elenco-item"><div class="skeleton" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;"></div><div class="skeleton flex-grow-1" style="height:18px;"></div></div>
-                            <div class="elenco-item"><div class="skeleton" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;"></div><div class="skeleton flex-grow-1" style="height:18px;"></div></div>
-                            <div class="elenco-item"><div class="skeleton" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;"></div><div class="skeleton flex-grow-1" style="height:18px;"></div></div>
-                            <div class="elenco-item"><div class="skeleton" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;"></div><div class="skeleton flex-grow-1" style="height:18px;"></div></div>
+                            <div class="col-12 col-sm-6 col-md-4 col-lg-3"><div class="elenco-item"><div class="skeleton" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;"></div><div class="skeleton flex-grow-1" style="height:18px;"></div></div></div>
+                            <div class="col-12 col-sm-6 col-md-4 col-lg-3"><div class="elenco-item"><div class="skeleton" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;"></div><div class="skeleton flex-grow-1" style="height:18px;"></div></div></div>
+                            <div class="col-12 col-sm-6 col-md-4 col-lg-3"><div class="elenco-item"><div class="skeleton" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;"></div><div class="skeleton flex-grow-1" style="height:18px;"></div></div></div>
+                            <div class="col-12 col-sm-6 col-md-4 col-lg-3"><div class="elenco-item"><div class="skeleton" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;"></div><div class="skeleton flex-grow-1" style="height:18px;"></div></div></div>
                         </div>
                     </div>
                 </div>
@@ -381,13 +378,15 @@
                 }
 
                 container.innerHTML = elenco.map(at => `
-                    <div class="elenco-item">
-                        <div class="elenco-avatar">
-                            <i class="bi bi-person-fill"></i>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="elenco-item h-100">
+                            <div class="elenco-avatar">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <a href="atleta.html?id=${at.id}&slug=${slug}" class="elenco-nome text-truncate">
+                                ${at.nome}
+                            </a>
                         </div>
-                        <a href="atleta.html?id=${at.id}&slug=${slug}" class="elenco-nome">
-                            ${at.nome}
-                        </a>
                     </div>
                 `).join('');
             } catch (e) {
