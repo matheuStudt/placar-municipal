@@ -897,7 +897,7 @@
 
                     container.innerHTML += `
                 <div class="col-lg-6">
-                    <div class="card card-jogo h-100 p-4" onclick="location.href='detalhes-jogo.html?jogoId=${j.id}&p=${slug}&campId=${campId}'" style="cursor:pointer">
+                    <div class="card card-jogo h-100 p-4" onclick="if(!event.target.closest('a')) location.href='detalhes-jogo.html?jogoId=${j.id}&p=${slug}&campId=${campId}'" style="cursor:pointer">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <span class="status-badge ${statusClass}">
                                 <i class="bi bi-${statusIcon} me-1"></i>${j.status}

@@ -128,19 +128,13 @@
                         <h6 class="fw-bold mb-3 small">VINCULAR ATLETAS</h6>
                         <input type="hidden" id="equipe-id-vinculo">
                         <div class="row g-2 mb-2">
-                            <div class="col-md-8">
+                            <div class="col-md-12">
                                 <div class="input-group">
                                     <span class="input-group-text bg-white"><i
                                             class="bi bi-search text-muted"></i></span>
                                     <input type="text" id="busca-atletas-vinculo" class="form-control"
                                         placeholder="Buscar atleta por nome..." oninput="filtrarListaVinculo()">
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <select id="tipo-vinculo" class="form-select">
-                                    <option value="Jogador de Linha">Jogador de Linha</option>
-                                    <option value="Goleiro">Goleiro</option>
-                                </select>
                             </div>
                         </div>
                         <!-- Lista de checkboxes -->
@@ -514,7 +508,7 @@
 
         async function adicionarSelecionados() {
             const equipeId = document.getElementById('equipe-id-vinculo').value;
-            const tipo = document.getElementById('tipo-vinculo').value;
+            const tipo = 'Atleta';
             const selecionados = [...document.querySelectorAll('.check-atleta:checked')].map(c => c.value);
 
             if (selecionados.length === 0) {
@@ -557,7 +551,6 @@
                 <div class="list-group-item d-flex justify-content-between align-items-center">
                     <div><i class="bi bi-person me-2 text-secondary"></i><span class="fw-bold">${at.nome}</span></div>
                     <div class="d-flex align-items-center gap-2">
-                        <span class="badge rounded-pill bg-info-subtle text-info border border-info-subtle">${at.tipo}</span>
                         <button class="btn btn-sm btn-outline-danger" title="Remover" onclick="removerAtleta(${at.vinculoId}, ${equipeId})"><i class="bi bi-trash"></i></button>
                     </div>
                 </div>`;
