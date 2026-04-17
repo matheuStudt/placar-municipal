@@ -945,15 +945,10 @@
                                 <div class="team-name text-uppercase text-wrap text-break" style="font-size: 0.85rem; font-weight: 700; line-height: 1.2;">${j.visitanteNome}</div>
                             </div>
                         </div>
-                        <div class="mt-4 pt-3 border-top text-center">
-                            <i class="bi bi-geo-alt-fill text-danger me-1"></i>
-                            <span class="text-muted small">${j.local || 'Local a definir'}</span>
-                            <span class="mx-2 text-muted">|</span>
-                            <i class="bi bi-calendar-date text-primary me-1"></i>
-                            <span class="text-muted small">${j.data ? j.data.split('-').reverse().join('/') : 'Data a definir'}</span>
-                            <span class="mx-2 text-muted">|</span>
-                            <i class="bi bi-clock me-1"></i>
-                            <span class="text-muted small">${j.horario || 'Horário a definir'}</span>
+                        <div class="mt-4 pt-3 border-top d-flex flex-wrap justify-content-center gap-2 gap-md-3">
+                            <span class="text-nowrap"><i class="bi bi-geo-alt-fill text-danger me-1"></i><span class="text-muted small">${j.local || 'Local a definir'}</span></span>
+                            <span class="text-nowrap"><i class="bi bi-calendar-date text-primary me-1"></i><span class="text-muted small">${j.data ? j.data.split('-').reverse().join('/') : 'Data a definir'}</span></span>
+                            <span class="text-nowrap"><i class="bi bi-clock me-1"></i><span class="text-muted small">${j.horario || 'Horário a definir'}</span></span>
                         </div>
                     </div>
                 </div>`;
