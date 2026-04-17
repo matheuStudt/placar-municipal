@@ -142,3 +142,14 @@ function showToast(mensagem, tipo = 'success') {
     toast.show();
     toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
 }
+
+// 5. Retorno Inteligente Publico
+function voltarPaginaAnterior() {
+    if (window.history.length > 1 && document.referrer.includes(window.location.hostname)) {
+        window.history.back();
+    } else {
+        const params = new URLSearchParams(window.location.search);
+        const slug = params.get('slug') || params.get('p');
+        window.location.href = slug ? `portal.html?slug=${slug}` : 'portal.html';
+    }
+}

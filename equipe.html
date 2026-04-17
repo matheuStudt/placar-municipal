@@ -207,8 +207,8 @@
     <header class="hero">
         <div class="container text-center">
             <div class="text-start">
-                <a href="#" id="btn-voltar" class="btn-voltar">
-                    <i class="bi bi-arrow-left"></i> Voltar ao Portal
+                <a href="javascript:void(0)" onclick="voltarPaginaAnterior()" id="btn-voltar" class="btn-voltar">
+                    <i class="bi bi-arrow-left"></i> Voltar
                 </a>
             </div>
             <div id="hero-content">
@@ -304,7 +304,7 @@
                 return;
             }
 
-            document.getElementById('btn-voltar').href = `portal.html?slug=${slug}`;
+            // document.getElementById('btn-voltar').href = `portal.html?slug=${slug}`;
 
             await loadConfig();
             await loadEquipeDetails();

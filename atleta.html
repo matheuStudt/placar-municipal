@@ -183,8 +183,8 @@
     <header class="hero">
         <div class="container text-center">
             <div class="text-start">
-                <a href="#" id="btn-voltar" class="btn-voltar">
-                    <i class="bi bi-arrow-left"></i> Voltar ao Portal
+                <a href="javascript:void(0)" onclick="voltarPaginaAnterior()" id="btn-voltar" class="btn-voltar">
+                    <i class="bi bi-arrow-left"></i> Voltar
                 </a>
             </div>
             <div class="d-inline-flex align-items-center justify-content-center bg-white bg-opacity-10 rounded-circle mb-3" style="width: 88px; height: 88px;">
@@ -248,7 +248,7 @@
                 return;
             }
 
-            document.getElementById('btn-voltar').href = `portal.html?slug=${slug}`;
+            // document.getElementById('btn-voltar').href = `portal.html?slug=${slug}`;
 
             await loadConfig();
             await loadAtletaData();
