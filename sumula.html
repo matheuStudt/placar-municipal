@@ -76,22 +76,22 @@
             </div>
         </header>
 
-        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div class="d-flex flex-column mb-4 gap-3">
             <h2 class="fw-bold mb-0">Súmula de Jogo</h2>
-            <div class="d-flex gap-2 flex-grow-1 justify-content-end">
-                <div style="min-width: 200px;">
-                    <select class="form-select border-info fw-bold" id="select-campeonato" onchange="carregarRodadas()">
+            <div class="row g-2 w-100 mx-0">
+                <div class="col-12 col-md-4 px-1">
+                    <select class="form-select border-info fw-bold w-100" id="select-campeonato" onchange="carregarRodadas()">
                         <option value="">Selecione o Campeonato...</option>
                     </select>
                 </div>
-                <div style="min-width: 200px;">
-                    <select class="form-select border-warning fw-bold" id="select-rodada" onchange="carregarJogos()"
+                <div class="col-12 col-md-4 px-1">
+                    <select class="form-select border-warning fw-bold w-100" id="select-rodada" onchange="carregarJogos()"
                         disabled>
                         <option value="">Selecione a Rodada...</option>
                     </select>
                 </div>
-                <div style="min-width: 250px;">
-                    <select class="form-select border-primary fw-bold" id="select-jogo" onchange="carregarDadosDoJogo()"
+                <div class="col-12 col-md-4 px-1">
+                    <select class="form-select border-primary fw-bold w-100" id="select-jogo" onchange="carregarDadosDoJogo()"
                         disabled>
                         <option value="">Selecione o Jogo...</option>
                     </select>
@@ -99,7 +99,7 @@
             </div>
         </div>
 
-        <div class="card placar-card shadow-sm mb-4">
+        <div class="card placar-card shadow-sm mb-5">
             <div class="card-body py-5">
                 <div class="row align-items-center justify-content-center mx-0 w-100 text-center">
                     <div class="col-5 px-1">
@@ -123,18 +123,22 @@
                     <div id="penaltis-container" style="display: none;">
                         <h5 class="text-center text-muted fw-bold mb-3 d-none d-md-block">CONFRONTO NOS PÊNALTIS</h5>
                         <div class="row align-items-center text-center justify-content-center mx-0 w-100">
-                            <div class="col-5 px-1 d-flex justify-content-end align-items-center gap-1">
-                                <button class="btn btn-outline-secondary p-1 rounded-circle" style="width: 28px; height: 28px; line-height: 1;" onclick="atualizarPenalti(-1, 'mandante')" id="btn-penalti-sub-m">-</button>
-                                <div class="score-number fs-3 text-secondary w-100" id="placar-penalti-m">0</div>
-                                <button class="btn btn-outline-secondary p-1 rounded-circle" style="width: 28px; height: 28px; line-height: 1;" onclick="atualizarPenalti(1, 'mandante')" id="btn-penalti-add-m">+</button>
+                            <div class="col-5 px-1 d-flex justify-content-center align-items-center">
+                                <div class="input-group flex-nowrap border rounded bg-white shadow-sm w-100" style="max-width: 140px;">
+                                    <button class="btn btn-outline-secondary px-3 py-2 fw-bold border-0 bg-light" type="button" onclick="atualizarPenalti(-1, 'mandante')" id="btn-penalti-sub-m">-</button>
+                                    <span class="input-group-text px-2 fw-bold bg-white border-0 flex-grow-1 justify-content-center fs-4 text-secondary" id="placar-penalti-m">0</span>
+                                    <button class="btn btn-outline-secondary px-3 py-2 fw-bold border-0 bg-light" type="button" onclick="atualizarPenalti(1, 'mandante')" id="btn-penalti-add-m">+</button>
+                                </div>
                             </div>
                             <div class="col-2 px-0">
                                 <span class="fs-5 fw-light text-muted">X</span>
                             </div>
-                            <div class="col-5 px-1 d-flex justify-content-start align-items-center gap-1">
-                                <button class="btn btn-outline-secondary p-1 rounded-circle" style="width: 28px; height: 28px; line-height: 1;" onclick="atualizarPenalti(-1, 'visitante')" id="btn-penalti-sub-v">-</button>
-                                <div class="score-number fs-3 text-secondary w-100" id="placar-penalti-v">0</div>
-                                <button class="btn btn-outline-secondary p-1 rounded-circle" style="width: 28px; height: 28px; line-height: 1;" onclick="atualizarPenalti(1, 'visitante')" id="btn-penalti-add-v">+</button>
+                            <div class="col-5 px-1 d-flex justify-content-center align-items-center">
+                                <div class="input-group flex-nowrap border rounded bg-white shadow-sm w-100" style="max-width: 140px;">
+                                    <button class="btn btn-outline-secondary px-3 py-2 fw-bold border-0 bg-light" type="button" onclick="atualizarPenalti(-1, 'visitante')" id="btn-penalti-sub-v">-</button>
+                                    <span class="input-group-text px-2 fw-bold bg-white border-0 flex-grow-1 justify-content-center fs-4 text-secondary" id="placar-penalti-v">0</span>
+                                    <button class="btn btn-outline-secondary px-3 py-2 fw-bold border-0 bg-light" type="button" onclick="atualizarPenalti(1, 'visitante')" id="btn-penalti-add-v">+</button>
+                                </div>
                             </div>
                         </div>
                     </div>
