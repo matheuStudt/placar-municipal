@@ -383,9 +383,9 @@
                             <div class="elenco-avatar">
                                 <i class="bi bi-person-fill"></i>
                             </div>
-                            <a href="atleta.html?id=${at.id || at.atletaId}&slug=${slug}" class="elenco-nome text-truncate">
+                            <span class="elenco-nome text-truncate text-dark">
                                 ${at.nome}
-                            </a>
+                            </span>
                         </div>
                     </div>
                 `).join('');
@@ -417,31 +417,33 @@
                     const venceu = meuGol > delGol;
                     const empatou = meuGol === delGol;
 
+                    const dataFormatada = j.data ? j.data.split('-').reverse().join('/') : 'A definir';
+                    const horarioFormatado = j.horario || '--:--';
+                    const localFormatado = j.local || 'Local a definir';
+
                     return `
-                        <a href="detalhes-jogo.html?jogoId=${j.id}&p=${slug}" class="game-card-minimal d-flex align-items-center justify-content-between flex-wrap gap-2 text-decoration-none">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="text-center" style="min-width: 72px;">
-                                    <div class="fw-bold text-primary small">${j.data ? j.data.split('-').reverse().join('/') : 'A definir'}</div>
-                                    <div class="small text-muted fw-bold">${j.horario || '--:--'}</div>
+                        <a href="detalhes-jogo.html?jogoId=${j.id}&p=${slug}" class="game-card-minimal d-block text-decoration-none">
+                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom text-muted small">
+                                <div class="text-nowrap">
+                                    <i class="bi bi-calendar-event me-1"></i>${dataFormatada} - ${horarioFormatado}
                                 </div>
-                                <div class="vr mx-1 bg-secondary opacity-25"></div>
-                                <div class="d-flex align-items-center gap-2 text-dark">
-                                    ${logoAdversario ? `<img src="${logoAdversario}" style="width:32px;height:32px;object-fit:contain;">` : '<i class="bi bi-shield-shaded text-muted fs-4"></i>'}
-                                    <div>
-                                        <div class="small text-muted fw-bold" style="font-size:0.68rem;">ADVERSÁRIO</div>
-                                        <div class="fw-bold">${adversario.toUpperCase()}</div>
-                                    </div>
+                                <div class="text-truncate text-end" style="max-width: 50%;">
+                                    <i class="bi bi-geo-alt me-1"></i>${localFormatado}
                                 </div>
                             </div>
-                            <div class="text-end">
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <div class="d-flex align-items-center gap-2 text-dark" style="max-width: 70%;">
+                                    ${logoAdversario ? `<img src="${logoAdversario}" style="width:40px;height:40px;object-fit:contain;flex-shrink:0;">` : '<i class="bi bi-shield-shaded text-muted" style="font-size: 2.2rem; line-height: 40px; width: 40px; text-align: center;"></i>'}
+                                    <div class="fw-bold text-wrap lh-sm">${adversario.toUpperCase()}</div>
+                                </div>
                                 ${j.status === 'Finalizado' ? `
+                                <div class="text-end" style="max-width: 30%;">
                                     <div class="placar-inline ${venceu ? 'text-success' : (empatou ? 'text-secondary' : 'text-danger')}">
                                         ${meuGol} <span class="text-muted fw-light mx-1">:</span> ${delGol}
                                     </div>
                                     <div class="small fw-bold ${venceu ? 'text-success' : (empatou ? 'text-secondary' : 'text-danger')}">${venceu ? 'VITÓRIA' : (empatou ? 'EMPATE' : 'DERROTA')}</div>
-                                ` : `
-                                    <span class="badge bg-warning-subtle text-warning border px-3 py-2 fw-bold">AGENDADO</span>
-                                `}
+                                </div>
+                                ` : ''}
                             </div>
                         </a>
                     `;
