@@ -281,58 +281,56 @@
                     container.innerHTML += `
                     <div class="col-12 mb-3" style="${opacityStyle}">
                         <div class="card card-jogo shadow-sm border-start border-4 ${isFinalizado ? 'border-success' : 'border-warning'}">
-                            <div class="card-body py-3">
-                                <div class="row align-items-center">
-                                    <div class="col-md-1 text-center border-end">
-                                        <span class="text-muted small fw-bold d-block">JOGO</span>
-                                        <div class="h5 mb-0 fw-bold text-primary">
-                                            ${j.numero}
-                                        </div>
-                                        <span class="badge bg-secondary-subtle text-secondary border mt-1 text-wrap lh-sm" style="font-size: 0.65rem; width: 100%;">
-    ${j.rodada?.tipo === 'MATA_MATA' ? (j.rodada.nome || 'Mata-Mata') : (j.chave ? (j.chave.includes('Chave') ? j.chave : 'Chave ' + j.chave) : 'Fase de Grupos')}
-</span>
-                                    </div>
-                                    <div class="col-md-3 text-end pe-2">
-                                        <div class="d-flex align-items-center justify-content-end gap-2">
-                                            ${j.mandante?.logoUrl ? `<img src="${j.mandante.logoUrl}" alt="" style="width:32px;height:32px;object-fit:contain;">` : ''}
-                                            <span class="fw-bold fs-5">${j.mandanteNome}</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2 text-center px-0">
-                                        <div class="d-flex justify-content-center align-items-center gap-2">
-                                            ${j.penaltisMandante !== null && j.penaltisMandante !== undefined ? `<span class="text-muted small fw-bold">(${j.penaltisMandante})</span>` : ''}
-                                            <span class="placar-badge shadow-sm">${j.golsMandante}</span>
-                                            <span class="text-muted fw-bold">X</span>
-                                            <span class="placar-badge shadow-sm">${j.golsVisitante}</span>
-                                            ${j.penaltisVisitante !== null && j.penaltisVisitante !== undefined ? `<span class="text-muted small fw-bold">(${j.penaltisVisitante})</span>` : ''}
-                                        </div>
-                                        <span class="badge ${badgeClass} badge-status mt-2">${j.status}</span>
-                                    </div>
-                                    <div class="col-md-3 text-start ps-2">
-                                        <div class="d-flex align-items-center gap-2">
-                                            ${j.visitante?.logoUrl ? `<img src="${j.visitante.logoUrl}" alt="" style="width:32px;height:32px;object-fit:contain;">` : ''}
-                                            <span class="fw-bold fs-5">${j.visitanteNome}</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 text-end border-start">
-                                        <div class="mb-2">
-                                            <small class="text-muted d-block"><i class="bi bi-calendar me-1"></i>${j.data ? j.data.split('-').reverse().join('/') : '--/--/----'} às ${j.horario || '--:--'}</small>
-                                            <small class="text-muted d-block text-truncate"><i class="bi bi-geo-alt me-1"></i>${j.local || 'Local não definido'}</small>
+                            <div class="card-body p-3">
+                                <!-- Cabeçalho do Card -->
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                    <span class="fw-bold small text-muted">JOGO ${j.numero} • ${j.rodada?.tipo === 'MATA_MATA' ? (j.rodada.nome || 'Mata-Mata') : (j.chave ? (j.chave.includes('Chave') ? j.chave : 'Chave ' + j.chave) : 'Fase de Grupos')}</span>
+                                    <span class="badge ${badgeClass} badge-status">${j.status}</span>
+                                </div>
 
+                                <!-- Corpo do Card -->
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-2" style="max-width: 70%;">
+                                            ${j.mandante?.logoUrl ? `<img src="${j.mandante.logoUrl}" alt="" style="width:30px;height:30px;object-fit:contain;">` : `<div style="width:30px;height:30px;" class="bg-light rounded-circle border d-flex align-items-center justify-content-center flex-shrink-0"><i class="bi bi-shield-fill text-secondary" style="font-size: 0.8rem;"></i></div>`}
+                                            <span class="text-wrap lh-sm fw-bold">${j.mandanteNome}</span>
                                         </div>
-                                        <div class="btn-group shadow-sm">
-                                            <button class="btn btn-sm btn-outline-primary" onclick="abrirSumula(this, ${j.id})" title="Súmula">
-                                                <i class="bi bi-file-earmark-text"></i>
+                                        <div class="d-flex align-items-center gap-2">
+                                            ${j.penaltisMandante !== null && j.penaltisMandante !== undefined ? `<span class="text-muted small fw-bold">(${j.penaltisMandante})</span>` : ''}
+                                            <div class="bg-light border rounded px-3 py-1 fw-bold fs-5 text-center" style="min-width: 45px;">${j.golsMandante !== null && j.golsMandante !== undefined ? j.golsMandante : ''}</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-2" style="max-width: 70%;">
+                                            ${j.visitante?.logoUrl ? `<img src="${j.visitante.logoUrl}" alt="" style="width:30px;height:30px;object-fit:contain;">` : `<div style="width:30px;height:30px;" class="bg-light rounded-circle border d-flex align-items-center justify-content-center flex-shrink-0"><i class="bi bi-shield-fill text-secondary" style="font-size: 0.8rem;"></i></div>`}
+                                            <span class="text-wrap lh-sm fw-bold">${j.visitanteNome}</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            ${j.penaltisVisitante !== null && j.penaltisVisitante !== undefined ? `<span class="text-muted small fw-bold">(${j.penaltisVisitante})</span>` : ''}
+                                            <div class="bg-light border rounded px-3 py-1 fw-bold fs-5 text-center" style="min-width: 45px;">${j.golsVisitante !== null && j.golsVisitante !== undefined ? j.golsVisitante : ''}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Rodapé do Card -->
+                                <div class="d-flex justify-content-between align-items-end mt-3 pt-3 border-top">
+                                    <div class="text-muted small d-flex flex-column gap-1">
+                                        <span><i class="bi bi-calendar me-1"></i>${j.data ? j.data.split('-').reverse().join('/') : '--/--/----'} às ${j.horario || '--:--'}</span>
+                                        <span><i class="bi bi-geo-alt me-1"></i>${j.local || 'Local não definido'}</span>
+                                    </div>
+                                    <div class="btn-group shadow-sm">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="abrirSumula(this, ${j.id})" title="Súmula">
+                                            <i class="bi bi-file-earmark-text"></i>
+                                        </button>
+                                        ${!isFinalizado ? `
+                                            <button class="btn btn-sm btn-outline-secondary" onclick='editarJogo(${JSON.stringify(j)})' title="Ajustar">
+                                                <i class="bi bi-pencil"></i>
                                             </button>
-                                            ${!isFinalizado ? `
-                                                <button class="btn btn-sm btn-outline-secondary" onclick='editarJogo(${JSON.stringify(j)})' title="Ajustar">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-danger" onclick="excluirJogo(${j.id})" title="Excluir">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            ` : ''}
-                                        </div>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="excluirJogo(${j.id})" title="Excluir">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        ` : ''}
                                     </div>
                                 </div>
                             </div>
