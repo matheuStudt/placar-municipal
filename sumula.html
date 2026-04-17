@@ -60,7 +60,7 @@
     </style>
 </head>
 
-<body data-bs-theme="light">
+<body data-bs-theme="light" class="overflow-x-hidden">
 
     <div class="main-content-overlay" onclick="toggleSidebar()"></div>
     <div id="menu-container"></div>
@@ -101,17 +101,17 @@
 
         <div class="card placar-card shadow-sm mb-4">
             <div class="card-body py-5">
-                <div class="row align-items-center text-center">
-                    <div class="col">
-                        <h3 class="fw-bold mb-3 text-uppercase" id="nome-mandante-display">MANDANTE</h3>
-                        <div class="score-number" id="placar-m">0</div>
+                <div class="row align-items-center justify-content-center mx-0 w-100 text-center">
+                    <div class="col-5 px-1">
+                        <h3 class="fw-bold mb-3 text-uppercase text-wrap lh-sm fs-6" id="nome-mandante-display">MANDANTE</h3>
+                        <div class="score-number w-100" id="placar-m">0</div>
                     </div>
-                    <div class="col-auto">
-                        <span class="fs-1 fw-light text-muted">VS</span>
+                    <div class="col-2 px-0 text-center">
+                        <span class="fs-3 fw-light text-muted">VS</span>
                     </div>
-                    <div class="col">
-                        <h3 class="fw-bold mb-3 text-uppercase" id="nome-visitante-display">VISITANTE</h3>
-                        <div class="score-number" id="placar-v">0</div>
+                    <div class="col-5 px-1">
+                        <h3 class="fw-bold mb-3 text-uppercase text-wrap lh-sm fs-6" id="nome-visitante-display">VISITANTE</h3>
+                        <div class="score-number w-100" id="placar-v">0</div>
                     </div>
                 </div>
 
@@ -122,19 +122,19 @@
                     </div>
                     <div id="penaltis-container" style="display: none;">
                         <h5 class="text-center text-muted fw-bold mb-3 d-none d-md-block">CONFRONTO NOS PÊNALTIS</h5>
-                        <div class="row align-items-center text-center justify-content-center">
-                            <div class="col-4 d-flex justify-content-end align-items-center gap-2">
-                                <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(-1, 'mandante')" id="btn-penalti-sub-m">-</button>
-                                <div class="score-number fs-1 text-secondary" id="placar-penalti-m">0</div>
-                                <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(1, 'mandante')" id="btn-penalti-add-m">+</button>
+                        <div class="row align-items-center text-center justify-content-center mx-0 w-100">
+                            <div class="col-5 px-1 d-flex justify-content-end align-items-center gap-1">
+                                <button class="btn btn-outline-secondary p-1 rounded-circle" style="width: 28px; height: 28px; line-height: 1;" onclick="atualizarPenalti(-1, 'mandante')" id="btn-penalti-sub-m">-</button>
+                                <div class="score-number fs-3 text-secondary w-100" id="placar-penalti-m">0</div>
+                                <button class="btn btn-outline-secondary p-1 rounded-circle" style="width: 28px; height: 28px; line-height: 1;" onclick="atualizarPenalti(1, 'mandante')" id="btn-penalti-add-m">+</button>
                             </div>
-                            <div class="col-auto">
-                                <span class="fs-4 fw-light text-muted">X</span>
+                            <div class="col-2 px-0">
+                                <span class="fs-5 fw-light text-muted">X</span>
                             </div>
-                            <div class="col-4 d-flex justify-content-start align-items-center gap-2">
-                                <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(-1, 'visitante')" id="btn-penalti-sub-v">-</button>
-                                <div class="score-number fs-1 text-secondary" id="placar-penalti-v">0</div>
-                                <button class="btn btn-outline-secondary btn-counter fs-5" onclick="atualizarPenalti(1, 'visitante')" id="btn-penalti-add-v">+</button>
+                            <div class="col-5 px-1 d-flex justify-content-start align-items-center gap-1">
+                                <button class="btn btn-outline-secondary p-1 rounded-circle" style="width: 28px; height: 28px; line-height: 1;" onclick="atualizarPenalti(-1, 'visitante')" id="btn-penalti-sub-v">-</button>
+                                <div class="score-number fs-3 text-secondary w-100" id="placar-penalti-v">0</div>
+                                <button class="btn btn-outline-secondary p-1 rounded-circle" style="width: 28px; height: 28px; line-height: 1;" onclick="atualizarPenalti(1, 'visitante')" id="btn-penalti-add-v">+</button>
                             </div>
                         </div>
                     </div>
@@ -391,41 +391,41 @@
 
             atletas.forEach(a => {
                 container.innerHTML += `
-                <div class="card-atleta p-3 d-flex justify-content-between align-items-center" data-atleta-id="${a.id}" data-equipe-id="${equipeId || ''}">
-                    <div>
-                        <span class="fw-bold">${a.nome}</span>
+                <div class="card-atleta p-3 row mx-0 align-items-center" data-atleta-id="${a.id}" data-equipe-id="${equipeId || ''}">
+                    <div class="col-12 fw-bold text-truncate mb-2 px-0 fs-6">
+                        ${a.nome}
                     </div>
-                    <div class="d-flex gap-2">
+                    <div class="col-12 px-0 d-flex flex-wrap gap-2 justify-content-start">
                         <div class="text-center">
-                            <small class="d-block text-muted" style="font-size:0.6rem">GOLS</small>
-                            <div class="d-flex align-items-center bg-light rounded border">
-                                <button class="btn btn-counter" onclick="atualizar(this, -1, '${lado}', 'gol')" ${attr}>-</button>
-                                <span class="val-display gol-count">${a.gols || 0}</span>
-                                <button class="btn btn-counter" onclick="atualizar(this, 1, '${lado}', 'gol')" ${attr}>+</button>
+                            <small class="d-block text-muted fw-bold mb-1" style="font-size: 0.65rem;">GOLS</small>
+                            <div class="input-group input-group-sm flex-nowrap border rounded bg-white shadow-sm">
+                                <button class="btn btn-outline-secondary px-2 border-0 bg-light" type="button" onclick="atualizar(this, -1, '${lado}', 'gol')" ${attr}>-</button>
+                                <span class="input-group-text px-2 fw-bold val-display gol-count bg-white border-0" style="min-width: 30px; justify-content: center;">${a.gols || 0}</span>
+                                <button class="btn btn-outline-secondary px-2 border-0 bg-light" type="button" onclick="atualizar(this, 1, '${lado}', 'gol')" ${attr}>+</button>
                             </div>
                         </div>
                         <div class="text-center">
-                            <small class="d-block text-muted" style="font-size:0.6rem">GC</small>
-                            <div class="d-flex align-items-center bg-light rounded border border-info">
-                                <button class="btn btn-counter text-info" onclick="atualizar(this, -1, '${lado}', 'gc')" ${attr}>-</button>
-                                <span class="val-display gc-count">${a.gc || 0}</span>
-                                <button class="btn btn-counter text-info" onclick="atualizar(this, 1, '${lado}', 'gc')" ${attr}>+</button>
+                            <small class="d-block text-muted fw-bold mb-1" style="font-size: 0.65rem;">GC</small>
+                            <div class="input-group input-group-sm flex-nowrap border border-info rounded bg-white shadow-sm">
+                                <button class="btn btn-outline-info px-2 border-0 bg-light" type="button" onclick="atualizar(this, -1, '${lado}', 'gc')" ${attr}>-</button>
+                                <span class="input-group-text px-2 fw-bold val-display gc-count bg-white text-info border-0" style="min-width: 30px; justify-content: center;">${a.gc || 0}</span>
+                                <button class="btn btn-outline-info px-2 border-0 bg-light" type="button" onclick="atualizar(this, 1, '${lado}', 'gc')" ${attr}>+</button>
                             </div>
                         </div>
                         <div class="text-center">
-                            <small class="d-block text-muted" style="font-size:0.6rem">AM</small>
-                            <div class="d-flex align-items-center bg-light rounded border border-warning">
-                                <button class="btn btn-counter text-warning" onclick="atualizar(this, -1, '${lado}', 'am')" ${attr}>-</button>
-                                <span class="val-display am-count">${a.am || 0}</span>
-                                <button class="btn btn-counter text-warning" onclick="atualizar(this, 1, '${lado}', 'am')" ${attr}>+</button>
+                            <small class="d-block text-muted fw-bold mb-1" style="font-size: 0.65rem;">AM</small>
+                            <div class="input-group input-group-sm flex-nowrap border border-warning rounded bg-white shadow-sm">
+                                <button class="btn btn-outline-warning px-2 text-dark border-0 bg-light" type="button" onclick="atualizar(this, -1, '${lado}', 'am')" ${attr}>-</button>
+                                <span class="input-group-text px-2 fw-bold val-display am-count bg-white text-warning border-0" style="min-width: 30px; justify-content: center;">${a.am || 0}</span>
+                                <button class="btn btn-outline-warning px-2 text-dark border-0 bg-light" type="button" onclick="atualizar(this, 1, '${lado}', 'am')" ${attr}>+</button>
                             </div>
                         </div>
                         <div class="text-center">
-                            <small class="d-block text-muted" style="font-size:0.6rem">VM</small>
-                            <div class="d-flex align-items-center bg-light rounded border border-danger">
-                                <button class="btn btn-counter text-danger" onclick="atualizar(this, -1, '${lado}', 'vm')" ${attr}>-</button>
-                                <span class="val-display vm-count">${a.vm || 0}</span>
-                                <button class="btn btn-counter text-danger" onclick="atualizar(this, 1, '${lado}', 'vm')" ${attr}>+</button>
+                            <small class="d-block text-muted fw-bold mb-1" style="font-size: 0.65rem;">VM</small>
+                            <div class="input-group input-group-sm flex-nowrap border border-danger rounded bg-white shadow-sm">
+                                <button class="btn btn-outline-danger px-2 border-0 bg-light" type="button" onclick="atualizar(this, -1, '${lado}', 'vm')" ${attr}>-</button>
+                                <span class="input-group-text px-2 fw-bold val-display vm-count bg-white text-danger border-0" style="min-width: 30px; justify-content: center;">${a.vm || 0}</span>
+                                <button class="btn btn-outline-danger px-2 border-0 bg-light" type="button" onclick="atualizar(this, 1, '${lado}', 'vm')" ${attr}>+</button>
                             </div>
                         </div>
                     </div>
