@@ -121,8 +121,8 @@
 
     <section class="header-partida">
         <div class="container">
-            <a href="portal.html" class="btn-voltar" id="link-voltar">
-                <i class="bi bi-arrow-left"></i> Voltar ao Portal
+            <a href="javascript:void(0)" onclick="voltarPaginaAnterior()" class="btn-voltar" id="link-voltar">
+                <i class="bi bi-arrow-left"></i> Voltar
             </a>
 
             <div class="placar-box">
@@ -230,7 +230,7 @@
         </div>
     </div>
 
-    <script src="frontend/js/main.js"></script>
+    <script src="frontend/js/main.js?v=1.1"></script>
 
     <script>
 
@@ -240,12 +240,7 @@
 
         const campId = params.get('campId');
 
-        // Monta o link de voltar incluindo o hash do campeonato para retornar à tela correta
-        const linkVoltar = document.getElementById('link-voltar');
-        let portalUrl = 'portal.html';
-        if (slug) portalUrl += `?p=${slug}`;
-        if (campId) portalUrl += `#camp-${campId}`;
-        linkVoltar.href = portalUrl;
+        // O botão agora utiliza histórico natural do navegador pelo voltarPaginaAnterior()
 
         async function carregarDetalhes() {
             if (!jogoId) return;
