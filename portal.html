@@ -395,8 +395,8 @@
 
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
-            <a class="navbar-brand text-primary fw-bold" href="#" id="nav-brand" onclick="voltarParaLista()">
-                <i class="bi bi-trophy-fill text-warning me-2"></i>PLACAR MUNICIPAL
+            <a class="navbar-brand text-primary fw-bold d-flex align-items-center" style="max-width: 75%;" href="#" id="nav-brand" onclick="voltarParaLista()">
+                <i class="bi bi-trophy-fill text-warning me-2"></i><span class="text-wrap lh-sm fs-6 fs-md-5 d-block text-center text-md-start" style="white-space: normal; max-width: 100%;">PLACAR MUNICIPAL</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -703,7 +703,7 @@
 
                 document.title = config.nome + ' - Portal de Esportes';
                 const navBrand = document.getElementById('nav-brand');
-                if (navBrand) navBrand.innerHTML = `<i class="bi bi-trophy-fill text-warning me-2"></i>${config.nome.toUpperCase()}`;
+                if (navBrand) navBrand.innerHTML = `<i class="bi bi-trophy-fill text-warning me-2"></i><span class="text-wrap lh-sm fs-6 fs-md-5 d-block text-center text-md-start" style="white-space: normal; max-width: 100%;">${config.nome.toUpperCase()}</span>`;
                 document.getElementById('hero-title').textContent = config.nome;
                 document.getElementById('footer-nome').textContent = config.nome;
 

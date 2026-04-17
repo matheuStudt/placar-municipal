@@ -85,16 +85,6 @@
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-muted small text-uppercase">
-                        <tr>
-                            <th class="text-center" style="width: 8%">Jogo</th>
-                            <th class="text-center" style="width: 12%">Hora</th>
-                            <th class="text-end" style="width: 25%">Mandante</th>
-                            <th class="text-center" style="width: 15%">Placar</th>
-                            <th class="text-start" style="width: 25%">Visitante</th>
-                            <th class="text-center" style="width: 15%">Chave</th>
-                        </tr>
-                    </thead>
                     <tbody id="tabela-jogos-relatorio">
                         <tr><td colspan="6" class="text-center text-muted p-4">Selecione o campeonato e a rodada para exibir.</td></tr>
                     </tbody>
@@ -206,20 +196,20 @@
 
                 tbody.innerHTML = '';
 
-                // Agrupando por Data e Local
+                // Agrupando por Rodada, Data e Local
                 const grupos = {};
                 jogos.forEach(j => {
                     const localStr = j.local || 'Local a Definir';
                     const dataStr = j.data ? new Date(j.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data Indefinida';
                     const rodadaLabel = j.rodada?.nome || (j.rodada?.numero ? `Rodada ${j.rodada.numero}` : '');
-                    const key = `${localStr}||${dataStr}||${rodadaLabel}`;
+                    const key = `${rodadaLabel}||${dataStr}||${localStr}`;
                     if(!grupos[key]) grupos[key] = [];
                     grupos[key].push(j);
                 });
 
                 let isPrimeiro = true;
                 Object.keys(grupos).forEach(key => {
-                    const [localStr, dataStr, rodadaLabel] = key.split('||');
+                    const [rodadaLabel, dataStr, localStr] = key.split('||');
                     
                     if (!isPrimeiro) {
                         tbody.innerHTML += `
@@ -230,45 +220,61 @@
                     }
                     isPrimeiro = false;
 
-                    // Linha de Cabeçalho
+                    // Título em destaque para o bloco
                     tbody.innerHTML += `
-                        <tr class="table-secondary">
-                            <td colspan="6" class="fw-bold text-dark fs-6 py-2" style="background-color: #f1f5f9 !important; border-top: 2px solid #ccc !important;">
-                                <div class="d-flex justify-content-between align-items-center px-1">
-                                    <span><i class="bi bi-geo-alt-fill me-1"></i>${localStr}</span>
-                                    <span class="text-muted small">
-                                        <i class="bi bi-calendar3 me-1"></i>${dataStr}
-                                        ${rodadaLabel ? `&nbsp;|&nbsp;<i class="bi bi-flag me-1"></i>${rodadaLabel}` : ''}
-                                    </span>
-                                </div>
+                        <tr>
+                            <td colspan="6" class="text-center border-0 pt-3 pb-2" style="background-color: transparent !important;">
+                                <h4 class="mb-0 fw-bold border-bottom border-dark pb-2">${rodadaLabel} | ${dataStr} | ${localStr}</h4>
                             </td>
                         </tr>
                     `;
 
-                    // Linhas de Jogo
+                    // Sub-agrupamento por Chave
+                    const subGrupos = {};
                     grupos[key].forEach(j => {
-                        const hr = j.horario || '--:--';
-                        const gM = j.status === 'Finalizado' ? j.golsMandante : '&nbsp;&nbsp;';
-                        const gV = j.status === 'Finalizado' ? j.golsVisitante : '&nbsp;&nbsp;';
-                        const nJ = j.numero || '-';
                         const ch = j.chave || '-';
-                        const catJogo = j.rodada?.campeonato?.categoria || null;
-                        const catBadge = catJogo
-                            ? `<span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle badge-categoria-print" style="font-size:0.65rem;display:block;margin-top:2px;">${catJogo}</span>`
-                            : '';
+                        if(!subGrupos[ch]) subGrupos[ch] = [];
+                        subGrupos[ch].push(j);
+                    });
 
+                    Object.keys(subGrupos).forEach(chave => {
+                        // Repetição Obrigatória do Cabeçalho
                         tbody.innerHTML += `
-                            <tr>
-                                <td class="text-center text-muted fw-bold">#${nJ}</td>
-                                <td class="text-center fw-bold text-secondary">${hr}${catBadge}</td>
-                                <td class="text-end fw-bold text-dark">${j.mandanteNome}</td>
-                                <td class="text-center bg-light fw-bold fs-6">${gM} X ${gV}</td>
-                                <td class="text-start fw-bold text-dark">${j.visitanteNome}</td>
-                                <td class="text-center small fw-bold border-start">
-                                    <span class="badge bg-secondary-subtle text-secondary px-2">${ch}</span>
-                                </td>
+                            <tr class="table-light text-muted small text-uppercase" style="border-bottom: 2px solid #ccc;">
+                                <th class="text-center" style="width: 8%">Jogo</th>
+                                <th class="text-center" style="width: 12%">Hora</th>
+                                <th class="text-end" style="width: 25%">Mandante</th>
+                                <th class="text-center" style="width: 15%">Placar</th>
+                                <th class="text-start" style="width: 25%">Visitante</th>
+                                <th class="text-center" style="width: 15%">Chave</th>
                             </tr>
                         `;
+
+                        // Linhas de Jogo
+                        subGrupos[chave].forEach(j => {
+                            const hr = j.horario || '--:--';
+                            const gM = j.status === 'Finalizado' ? j.golsMandante : '&nbsp;&nbsp;';
+                            const gV = j.status === 'Finalizado' ? j.golsVisitante : '&nbsp;&nbsp;';
+                            const nJ = j.numero || '-';
+                            const chDesc = j.chave || '-';
+                            const catJogo = j.rodada?.campeonato?.categoria || null;
+                            const catBadge = catJogo
+                                ? `<span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle badge-categoria-print" style="font-size:0.65rem;display:block;margin-top:2px;">${catJogo}</span>`
+                                : '';
+
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td class="text-center text-muted fw-bold">#${nJ}</td>
+                                    <td class="text-center fw-bold text-secondary">${hr}${catBadge}</td>
+                                    <td class="text-end fw-bold text-dark">${j.mandanteNome}</td>
+                                    <td class="text-center bg-light fw-bold fs-6">${gM} X ${gV}</td>
+                                    <td class="text-start fw-bold text-dark">${j.visitanteNome}</td>
+                                    <td class="text-center small fw-bold border-start">
+                                        <span class="badge bg-secondary-subtle text-secondary px-2">${chDesc}</span>
+                                    </td>
+                                </tr>
+                            `;
+                        });
                     });
                 });
             } catch (e) {
