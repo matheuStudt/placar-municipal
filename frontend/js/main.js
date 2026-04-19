@@ -28,8 +28,12 @@ function checkSession() {
     const session = localStorage.getItem('usuario');
     const token = localStorage.getItem('authToken');
 
+    const publicPages = ['login.html', 'portal.html', 'equipe.html', 'detalhes-jogo.html', 'atleta.html', 'atletas.html'];
+    const currentUrl = window.location.href;
+    const isPublic = publicPages.some(page => currentUrl.includes(page));
+
     if (!session || !token) {
-        if (!window.location.href.includes('login.html')) {
+        if (!isPublic) {
             window.location.href = 'login.html';
         }
         return null;
@@ -85,24 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.setAttribute('data-bs-theme', 'light');
     document.body.setAttribute('data-bs-theme', 'light');
 
-    // Sessão - NÃO exige login nas telas de login e portal
-    const currentUrl = window.location.href;
-    if (!currentUrl.includes('login.html') && !currentUrl.includes('portal.html')) {
-        checkSession();
-    }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.documentElement.setAttribute('data-bs-theme', 'light');
-    document.body.setAttribute('data-bs-theme', 'light');
-
-    const currentUrl = window.location.href;
-    // Adicionamos 'detalhes-jogo.html' na lista de exceções
-    if (!currentUrl.includes('login.html') &&
-        !currentUrl.includes('portal.html') &&
-        !currentUrl.includes('detalhes-jogo.html')) {
-        checkSession();
-    }
+    // Sessão - verifica login para telas protegidas
+    checkSession();
 });
 
 /**
