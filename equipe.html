@@ -21,7 +21,7 @@
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg);
-            color: var(--primary);
+            color: var(--bs-body-color);
             overflow-x: hidden;
         }
 
@@ -93,7 +93,7 @@
             border-radius: 14px;
             padding: 10px 24px;
             font-weight: 600;
-            color: var(--primary);
+            color: var(--bs-body-color);
             transition: all 0.2s;
         }
 
@@ -141,7 +141,7 @@
         .elenco-nome {
             font-weight: 700;
             font-size: 0.9rem;
-            color: var(--primary);
+            color: var(--bs-body-color);
             text-decoration: none;
             transition: color 0.2s;
         }
@@ -178,7 +178,7 @@
         .placar-inline {
             font-size: 1.4rem;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--bs-body-color);
         }
 
         /* Skeleton */
@@ -388,7 +388,7 @@
                             <div class="elenco-avatar">
                                 <i class="bi bi-person-fill"></i>
                             </div>
-                            <span class="elenco-nome text-truncate text-dark">
+                            <span class="elenco-nome text-truncate">
                                 ${at.nome}
                             </span>
                         </div>
@@ -437,7 +437,7 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
-                                <div class="d-flex align-items-center gap-2 text-dark" style="max-width: 70%;">
+                                <div class="d-flex align-items-center gap-2" style="max-width: 70%;">
                                     ${logoAdversario ? `<img src="${logoAdversario}" style="width:40px;height:40px;object-fit:contain;flex-shrink:0;">` : '<i class="bi bi-shield-shaded text-muted" style="font-size: 2.2rem; line-height: 40px; width: 40px; text-align: center;"></i>'}
                                     <div class="fw-bold text-wrap lh-sm">${adversario.toUpperCase()}</div>
                                 </div>

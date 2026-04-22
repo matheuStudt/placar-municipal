@@ -29,7 +29,7 @@
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg);
-            color: var(--primary);
+            color: var(--bs-body-color);
             overflow-x: hidden;
         }
 
@@ -348,7 +348,7 @@
         .placar-grande {
             font-size: 2.5rem;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--bs-body-color);
             width: 60px;
             text-align: center;
         }
@@ -981,9 +981,9 @@
                         </div>
                         <div class="mt-4 pt-3 border-top d-flex flex-wrap justify-content-center align-items-center gap-2">
                             <span class="text-nowrap"><i class="bi bi-geo-alt-fill text-danger me-1"></i><span class="text-muted small">${j.local || 'Local a definir'}</span></span>
-                            <span class="text-black-50 mx-1">|</span>
+                            <span class="text-body-secondary mx-1">|</span>
                             <span class="text-nowrap"><i class="bi bi-calendar-date text-primary me-1"></i><span class="text-muted small">${j.data ? j.data.split('-').reverse().join('/') : 'Data a definir'}</span></span>
-                            <span class="text-black-50 mx-1">|</span>
+                            <span class="text-body-secondary mx-1">|</span>
                             <span class="text-nowrap"><i class="bi bi-clock me-1"></i><span class="text-muted small">${j.horario || 'Horário a definir'}</span></span>
                         </div>
                     </div>
@@ -1072,7 +1072,7 @@
                         <tr class="${rowClass}">
                             <td class="ps-4 fw-bold">${index + 1}º</td>
                             <td class="fw-bold">
-                                <a href="equipe.html?id=${item.id}&slug=${slug}" class="text-decoration-none text-dark team-logo-link">
+                                <a href="equipe.html?id=${item.id}&slug=${slug}" class="text-decoration-none text-body team-logo-link">
                                     ${item.nome}
                                 </a>
                             </td>
@@ -1229,9 +1229,7 @@
             <td class="ps-4 fw-bold text-primary">${i + 1}º</td>
             <td>
                 <div class="fw-bold">
-                    <span class="text-dark">
-                        ${a.nome}
-                    </span>
+                    ${a.nome}
                 </div>
             </td>
             <td class="text-muted small">${a.equipeNome}</td>
@@ -1243,7 +1241,7 @@
             return `<tr>
             <td class="ps-4 fw-bold text-warning">${i + 1}º</td>
             <td>
-                <a href="equipe.html?id=${d.id}&slug=${slug}" class="text-decoration-none text-dark fw-bold">
+                <a href="equipe.html?id=${d.id}&slug=${slug}" class="text-decoration-none text-body fw-bold">
                     ${d.nome}
                 </a>
             </td>
@@ -1256,7 +1254,7 @@
             return `<tr>
             <td class="ps-4 fw-bold text-success">${i + 1}º</td>
             <td>
-                <a href="equipe.html?id=${d.id}&slug=${slug}" class="text-decoration-none text-dark fw-bold text-uppercase">
+                <a href="equipe.html?id=${d.id}&slug=${slug}" class="text-decoration-none text-body fw-bold text-uppercase">
                     ${d.nome}
                 </a>
             </td>
