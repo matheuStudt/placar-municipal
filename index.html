@@ -153,12 +153,24 @@
 
         async function fetchData(endpoint) {
             try {
-
                 const res = await fetch(`${API}/${endpoint}?prefeituraId=${prefeituraId}`);
-                if (!res.ok) throw new Error(`Erro ao buscar ${endpoint}`);
-                return await res.json();
+                if (!res.ok) throw new Error(`Erro HTTP ${res.status} ao buscar ${endpoint}`);
+
+                const dados = await res.json();
+                console.log(`Resposta da API [${endpoint}]:`, dados);
+
+                // A rota /campeonatos retorna { campeonatos: [...] }, as demais retornam array direto
+                if (Array.isArray(dados)) return dados;
+                if (dados && Array.isArray(dados.campeonatos)) return dados.campeonatos;
+                if (dados && Array.isArray(dados.equipes)) return dados.equipes;
+                if (dados && Array.isArray(dados.atletas)) return dados.atletas;
+
+                // Fallback: tenta extrair o primeiro valor array encontrado no objeto
+                const primeiroArray = Object.values(dados || {}).find(v => Array.isArray(v));
+                return primeiroArray ?? [];
+
             } catch (error) {
-                console.error(error);
+                console.error(`Erro ao buscar ${endpoint}:`, error);
                 return [];
             }
         }
@@ -170,12 +182,11 @@
                 fetchData('campeonatos')
             ]);
 
-            document.getElementById('total-atletas').innerText =
-                atletas.length.toString().padStart(2, '0');
-            document.getElementById('total-equipes').innerText =
-                equipes.length.toString().padStart(2, '0');
-            document.getElementById('total-campeonatos').innerText =
-                camps.length.toString().padStart(2, '0');
+            const fmt = (arr) => (arr?.length ?? 0).toString().padStart(2, '0');
+
+            document.getElementById('total-atletas').innerText   = fmt(atletas);
+            document.getElementById('total-equipes').innerText   = fmt(equipes);
+            document.getElementById('total-campeonatos').innerText = fmt(camps);
         }
 
         window.onload = init;
