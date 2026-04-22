@@ -274,15 +274,17 @@
 
                 select.innerHTML = '<option value="">Selecione...</option>';
 
-                // VERIFICAÇÃO DE SEGURANÇA: Checa se 'camps' é realmente um Array (Lista)
+                // VERIFICAÇÃO DE SEGURANÇA AJUSTADA
                 if (Array.isArray(camps)) {
                     camps.forEach(c => select.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
                 }
-                // Alguns backends mandam a lista dentro de uma propriedade "data" ou "campeonatos"
+                // O NOSSO NOVO CENÁRIO: O backend mandou o limite junto, então a lista está em "camps.campeonatos"
+                else if (camps && Array.isArray(camps.campeonatos)) {
+                    camps.campeonatos.forEach(c => select.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+                }
                 else if (camps && Array.isArray(camps.data)) {
                     camps.data.forEach(c => select.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
                 }
-                // Se não for nenhum dos dois, a API mandou um erro. Vamos mostrar no console para investigar.
                 else {
                     console.error("A API não retornou uma lista válida de campeonatos. Resposta do servidor:", camps);
                     select.innerHTML = '<option value="">Erro ao carregar (Verifique o console)</option>';
