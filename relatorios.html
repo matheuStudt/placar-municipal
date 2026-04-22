@@ -4,32 +4,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatórios - Placar Municipal</title>
+    <title>Relatórios - Súmula Digital</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
     <link rel="stylesheet" href="frontend/css/main.css">
     <style>
-        /* CSS Ocultação Nativa de Impressão (PDF) */
+        /* ══════════════════════════════════════════════════════
+           RESET AGRESSIVO DE IMPRESSÃO / PDF
+           ══════════════════════════════════════════════════════ */
         @media print {
-            @page { margin: 0; size: A4 portrait; }
-            html, body { height: auto !important; min-height: 0 !important; }
-            body { font-size: 12pt; background-color: #fff !important; padding: 1.5cm !important; color: #000 !important; }
-            .sidebar, .top-navbar, .btn-print-hide, .main-content-overlay {
+
+            /* 1 ── Margem física da impressora (separada do padding do body) */
+            @page {
+                size: A4 portrait;
+                margin: 1cm;
+            }
+
+            /* 2 ── Reset de altura e margens no html/body */
+            html, body {
+                height: auto !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                /* Evita que scrollbar invisível ocupe espaço */
+                overflow: visible !important;
+                font-size: 12pt;
+                background-color: #fff !important;
+                color: #000 !important;
+            }
+
+            /* 3 ── Ocultar TODOS os elementos de UI com display:none
+                     (opacity/visibility ainda ocupam espaço físico) */
+            .sidebar,
+            .top-navbar,
+            .btn-print-hide,
+            .main-content-overlay,
+            .modal,
+            .modal-backdrop,
+            footer,
+            nav,
+            [data-bs-toggle],
+            #menu-container {
                 display: none !important;
             }
-            .main-content { margin-left: 0 !important; width: 100% !important; padding: 0 !important; margin-bottom: 0 !important; }
-            .card { border: none !important; box-shadow: none !important; margin-bottom: 0 !important; padding-bottom: 0 !important; }
-            .card-header { background-color: #fff !important; color: #000 !important; border-bottom: 2px solid #000 !important; }
-            #pdf-titulo-campeonato, #pdf-subtitulo-rodada { color: #000 !important; font-weight: bold !important; }
-            table { width: 100% !important; border-collapse: collapse !important; color: #000 !important; }
-            th, td { border: 1px solid #ccc !important; padding: 8px !important; text-align: center !important; color: #000 !important; }
-            .text-muted, .text-secondary { color: #000 !important; }
+
+            /* 4 ── Área de conteúdo principal */
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin-bottom: 0 !important;
+            }
+
+            /* 5 ── Área de impressão (card do relatório) */
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+                margin-bottom: 0 !important;
+                padding-bottom: 0 !important;
+            }
+
+            /* 6 ── Anulação de quebra de página no ÚLTIMO elemento
+                     Evita a folha em branco extra ao final */
+            #print-area,
+            #print-area > *:last-child,
+            .print-container > *:last-child,
+            #tabela-jogos-relatorio > tr:last-child,
+            table:last-of-type,
+            .table-responsive:last-child {
+                page-break-after: auto !important;
+                break-after: auto !important;
+                margin-bottom: 0 !important;
+                padding-bottom: 0 !important;
+            }
+
+            /* 7 ── Linha separadora vazia entre grupos não deve inflacionar */
+            tr[style*="height: 35px"] {
+                height: 0 !important;
+                line-height: 0 !important;
+            }
+
+            tr[style*="height: 35px"] td {
+                height: 12pt !important;
+                padding: 0 !important;
+                border: none !important;
+            }
+
+            /* 8 ── Tipografia e tabelas */
+            .card-header {
+                background-color: #fff !important;
+                color: #000 !important;
+                border-bottom: 2px solid #000 !important;
+            }
+
+            #pdf-titulo-campeonato,
+            #pdf-subtitulo-rodada {
+                color: #000 !important;
+                font-weight: bold !important;
+            }
+
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                color: #000 !important;
+            }
+
+            th, td {
+                border: 1px solid #ccc !important;
+                padding: 8px !important;
+                text-align: center !important;
+                color: #000 !important;
+            }
+
+            .text-muted, .text-secondary { color: #333 !important; }
             .bg-primary { background-color: #fff !important; color: #000 !important; }
             .bg-light { background-color: #f8f9fa !important; }
-            .container, .print-container { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
-            .badge-categoria-print { display: inline-block !important; font-size: 0.65rem !important; border: 1px solid #000 !important; border-radius: 99px !important; padding: 1px 6px !important; background: #eee !important; color: #000 !important; }
+
+            .container, .print-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .badge-categoria-print {
+                display: inline-block !important;
+                font-size: 0.65rem !important;
+                border: 1px solid #000 !important;
+                border-radius: 99px !important;
+                padding: 1px 6px !important;
+                background: #eee !important;
+                color: #000 !important;
+            }
         }
     </style>
 </head>

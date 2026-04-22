@@ -80,6 +80,7 @@ export const getElenco = async (req, res) => {
             include: { atleta: true }
         });
         const elenco = vinculos.map(v => ({
+            id: v.atletaId,
             vinculoId: v.id,
             atletaId: v.atletaId,
             nome: v.atleta?.nome || "Desconhecido",

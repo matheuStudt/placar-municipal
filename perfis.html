@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfis de Acesso - Súmula Digital</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="frontend/css/main.css">
+</head>
+
+<body data-bs-theme="light">
+    <div class="main-content-overlay" onclick="toggleSidebar()"></div>
+    <div id="menu-container"></div>
+
+    <main class="main-content">
+        <header class="top-navbar shadow-sm rounded-4 mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <h5 class="mb-0 fw-bold">Configurações de Segurança</h5>
+            </div>
+        </header>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">Perfis de Acesso</h2>
+            <button class="btn btn-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPerfil"
+                onclick="prepararNovo()">
+                <i class="bi bi-shield-plus me-2"></i> Novo Perfil
+            </button>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="px-4">ID</th>
+                            <th>Nome do Perfil</th>
+                            <th>Módulos Permitidos</th>
+                            <th class="text-end px-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-perfis">
+                        <!-- Conteúdo via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Perfil -->
+    <div class="modal fade" id="modalPerfil" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">Gestão de Perfil</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="formPerfil">
+                        <input type="hidden" id="perfil-id">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Nome do Perfil</label>
+                            <input type="text" class="form-control form-control-lg" id="perfil-nome"
+                                placeholder="Ex: Coordenador de Esportes" required>
+                        </div>
+
+                        <label class="form-label fw-bold mb-3 d-block border-bottom pb-2">Permissões por Módulo</label>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch p-3 border rounded-3 mb-2 bg-light">
+                                    <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" id="mod-campeonatos" value="campeonatos">
+                                    <label class="form-check-label fw-semibold" for="mod-campeonatos">Gestão de Campeonatos</label>
+                                </div>
+                                <div class="form-check form-switch p-3 border rounded-3 mb-2 bg-light">
+                                    <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" id="mod-equipes" value="equipes">
+                                    <label class="form-check-label fw-semibold" for="mod-equipes">Gestão de Equipes</label>
+                                </div>
+                                <div class="form-check form-switch p-3 border rounded-3 mb-2 bg-light">
+                                    <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" id="mod-atletas" value="atletas">
+                                    <label class="form-check-label fw-semibold" for="mod-atletas">Gestão de Atletas</label>
+                                </div>
+                                <div class="form-check form-switch p-3 border rounded-3 mb-2 bg-light">
+                                    <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" id="mod-categorias" value="categorias">
+                                    <label class="form-check-label fw-semibold" for="mod-categorias">Categorias/Modalidades</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch p-3 border rounded-3 mb-2 bg-light">
+                                    <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" id="mod-jogos" value="jogos">
+                                    <label class="form-check-label fw-semibold" for="mod-jogos">Tabela de Jogos</label>
+                                </div>
+                                <div class="form-check form-switch p-3 border rounded-3 mb-2 bg-light">
+                                    <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" id="mod-sumulas" value="sumulas">
+                                    <label class="form-check-label fw-semibold" for="mod-sumulas">Preenchimento de Súmulas</label>
+                                </div>
+                                <div class="form-check form-switch p-3 border rounded-3 mb-2 bg-light">
+                                    <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" id="mod-relatorios" value="relatorios">
+                                    <label class="form-check-label fw-semibold" for="mod-relatorios">Relatórios e PDFs</label>
+                                </div>
+                                <div class="form-check form-switch p-3 border rounded-3 mb-2 bg-light border-warning">
+                                    <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" id="mod-gestao_usuarios" value="gestao_usuarios">
+                                    <label class="form-check-label fw-bold text-primary" for="mod-gestao_usuarios">Gestão de Usuários e Perfis</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">SALVAR PERFIL</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="components/sidebar.js"></script>
+    <script src="frontend/js/main.js"></script>
+    <script>
+        const modulos = ['campeonatos', 'equipes', 'atletas', 'categorias', 'jogos', 'sumulas', 'relatorios', 'gestao_usuarios'];
+        
+        async function init() {
+            if (!checkSession()) return;
+            carregarPerfis();
+        }
+
+        async function carregarPerfis() {
+            try {
+                const res = await fetch(`${API}/perfis`, { headers: getAuthHeaders() });
+                const perfis = await res.json();
+                const body = document.getElementById('tabela-perfis');
+                body.innerHTML = '';
+
+                perfis.forEach(p => {
+                    const badges = p.permissoes.map(perm => `<span class="badge bg-secondary-subtle text-secondary border me-1">${perm}</span>`).join('');
+                    body.innerHTML += `
+                    <tr>
+                        <td class="px-4 text-muted">#${p.id}</td>
+                        <td class="fw-bold">${p.nome}</td>
+                        <td>${badges || '<span class="text-muted small">Nenhuma</span>'}</td>
+                        <td class="text-end px-4">
+                            <div class="btn-group shadow-sm">
+                                <button class="btn btn-sm btn-outline-primary" onclick="editarPerfil(${p.id})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="excluirPerfil(${p.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        function prepararNovo() {
+            document.getElementById('formPerfil').reset();
+            document.getElementById('perfil-id').value = '';
+        }
+
+        async function editarPerfil(id) {
+            try {
+                const res = await fetch(`${API}/perfis`, { headers: getAuthHeaders() });
+                const perfis = await res.json();
+                const perfil = perfis.find(p => p.id === id);
+                if (!perfil) return;
+
+                document.getElementById('perfil-id').value = perfil.id;
+                document.getElementById('perfil-nome').value = perfil.nome;
+
+                modulos.forEach(mod => {
+                    document.getElementById(`mod-${mod}`).checked = perfil.permissoes.includes(mod);
+                });
+
+                new bootstrap.Modal(document.getElementById('modalPerfil')).show();
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('formPerfil').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('perfil-id').value;
+            
+            const permissoes = [];
+            modulos.forEach(mod => {
+                if (document.getElementById(`mod-${mod}`).checked) permissoes.push(mod);
+            });
+
+            const data = {
+                nome: document.getElementById('perfil-nome').value,
+                permissoes
+            };
+
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API}/perfis/${id}` : `${API}/perfis`;
+
+            const res = await fetch(url, {
+                method,
+                headers: getAuthHeaders(),
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                bootstrap.Modal.getInstance(document.getElementById('modalPerfil')).hide();
+                carregarPerfis();
+                showToast('Perfil salvo com sucesso!');
+            } else {
+                showToast('Erro ao salvar perfil.', 'danger');
+            }
+        });
+
+        async function excluirPerfil(id) {
+            if (!confirm('Deseja excluir este perfil? Usuários vinculados ficarão sem permissões.')) return;
+            const res = await fetch(`${API}/perfis/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+            if (res.ok) carregarPerfis();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

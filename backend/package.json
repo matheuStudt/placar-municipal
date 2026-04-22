@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Backend do Sistema Placar Municipal",
+  "description": "Backend do Sistema Súmula Digital",
   "type": "module",
   "main": "src/server.ts",
   "scripts": {

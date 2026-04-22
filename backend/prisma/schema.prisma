@@ -15,18 +15,24 @@ model Prefeitura {
   logoUrl        String?
   corPrimaria    String       @default("#0d6efd")
   corSecundaria  String       @default("#6c757d")
+  limiteCampeonatos Int       @default(3)
   usuarios       Usuario[]
   campeonatos    Campeonato[]
   equipes        Equipe[]
   categorias     Categoria[]
+  perfis         PerfilAcesso[]
 }
 
 model Usuario {
   id           Int         @id @default(autoincrement())
   email        String      @unique
   senha        String
+  role         String      @default("COMUM") // COMUM | MASTER
   prefeitura   Prefeitura? @relation(fields: [prefeituraId], references: [id])
   prefeituraId Int?
+  perfil       PerfilAcesso? @relation(fields: [perfilId], references: [id])
+  perfilId     Int?
+  historicoEdicoes HistoricoEdicaoSumula[]
 }
 
 model Equipe {
@@ -129,6 +135,7 @@ model Jogo {
   chave         String?
   sumulaUrl     String?
   eventos       Evento[]
+  historico     HistoricoEdicaoSumula[]
 }
 
 model Evento {
@@ -152,4 +159,24 @@ model Categoria {
   prefeituraId Int
 
   @@unique([nome, prefeituraId])
+}
+
+// Audit log: registra toda edição de súmula finalizada feita por usuário MASTER
+model HistoricoEdicaoSumula {
+  id         Int      @id @default(autoincrement())
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId  Int
+  jogo       Jogo     @relation(fields: [jogoId], references: [id])
+  jogoId     Int
+  dataEdicao DateTime @default(now())
+  motivo     String?  // justificativa opcional informada pelo árbitro/admin
+}
+
+model PerfilAcesso {
+  id           Int        @id @default(autoincrement())
+  nome         String
+  permissoes   Json       // ["equipes", "jogos", "sumulas", ...]
+  prefeitura   Prefeitura @relation(fields: [prefeituraId], references: [id])
+  prefeituraId Int
+  usuarios     Usuario[]
 }

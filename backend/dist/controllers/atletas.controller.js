@@ -70,13 +70,22 @@ export const getAtletaHistorico = async (req, res) => {
         });
         if (!atleta)
             return res.status(404).json({ error: "Atleta não encontrado" });
-        const totalGols = await prisma.evento.aggregate({
+        const eventos = await prisma.evento.findMany({
             where: { atletaId: id },
-            _sum: { gols: true }
+            select: { equipeId: true, gols: true }
+        });
+        const golsPorEquipe = {};
+        let totalGols = 0;
+        eventos.forEach(e => {
+            if (e.equipeId) {
+                golsPorEquipe[e.equipeId] = (golsPorEquipe[e.equipeId] || 0) + (e.gols || 0);
+            }
+            totalGols += (e.gols || 0);
         });
         res.json({
             ...atleta,
-            totalGols: totalGols._sum.gols || 0
+            totalGols,
+            golsPorEquipe
         });
     }
     catch (e) {

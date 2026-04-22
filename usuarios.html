@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Usuários - Súmula Digital</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="frontend/css/main.css">
+</head>
+
+<body data-bs-theme="light">
+    <div class="main-content-overlay" onclick="toggleSidebar()"></div>
+    <div id="menu-container"></div>
+
+    <main class="main-content">
+        <header class="top-navbar shadow-sm rounded-4 mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <h5 class="mb-0 fw-bold">Administração Delegada</h5>
+            </div>
+        </header>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">Usuários do Sistema</h2>
+            <button class="btn btn-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalUsuario"
+                onclick="prepararNovo()">
+                <i class="bi bi-person-plus me-2"></i> Novo Usuário
+            </button>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="px-4">Email</th>
+                            <th>Nível</th>
+                            <th>Perfil de Acesso</th>
+                            <th class="text-end px-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-usuarios">
+                        <!-- Conteúdo via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Usuário -->
+    <div class="modal fade" id="modalUsuario" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content border-0">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">Gestão de Usuário</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="formUsuario">
+                        <input type="hidden" id="usuario-id">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control" id="usuario-email" placeholder="email@exemplo.com" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Senha</label>
+                            <input type="password" class="form-control" id="usuario-senha" placeholder="••••••••">
+                            <small class="text-muted" id="senha-help">Deixe em branco para manter a senha atual.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nível de Acesso (Role)</label>
+                            <select class="form-select" id="usuario-role">
+                                <option value="COMUM">Usuário Comum (Usa Perfil)</option>
+                                <option value="MASTER">Usuário Master (Acesso Total)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4" id="container-perfil">
+                            <label class="form-label fw-bold">Perfil de Acesso</label>
+                            <select class="form-select" id="usuario-perfil">
+                                <option value="">Carregando perfis...</option>
+                            </select>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">SALVAR USUÁRIO</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="components/sidebar.js"></script>
+    <script src="frontend/js/main.js"></script>
+    <script>
+        let perfisCache = [];
+        let prefeituraId = null;
+
+        async function init() {
+            const user = checkSession();
+            if (!user) return;
+            prefeituraId = user.prefeituraId;
+
+            await carregarPerfis();
+            carregarUsuarios();
+
+            document.getElementById('usuario-role').addEventListener('change', (e) => {
+                document.getElementById('container-perfil').style.display = (e.target.value === 'MASTER' ? 'none' : 'block');
+            });
+        }
+
+        async function carregarPerfis() {
+            try {
+                const res = await fetch(`${API}/perfis`, { headers: getAuthHeaders() });
+                perfisCache = await res.json();
+                const select = document.getElementById('usuario-perfil');
+                select.innerHTML = '<option value="">-- Selecione um Perfil --</option>';
+                perfisCache.forEach(p => {
+                    select.innerHTML += `<option value="${p.id}">${p.nome}</option>`;
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        async function carregarUsuarios() {
+            try {
+                const res = await fetch(`${API}/usuarios-gestao`, { headers: getAuthHeaders() });
+                const users = await res.json();
+                const body = document.getElementById('tabela-usuarios');
+                body.innerHTML = '';
+
+                users.forEach(u => {
+                    const roleBadge = u.role === 'MASTER' ? '<span class="badge bg-danger">MASTER</span>' : '<span class="badge bg-info">COMUM</span>';
+                    body.innerHTML += `
+                    <tr>
+                        <td class="px-4 fw-bold">${u.email}</td>
+                        <td>${roleBadge}</td>
+                        <td>${u.role === 'MASTER' ? '<span class="text-muted small">Acesso Total</span>' : (u.perfilNome || 'Nenhum')}</td>
+                        <td class="text-end px-4">
+                            <div class="btn-group shadow-sm">
+                                <button class="btn btn-sm btn-outline-primary" onclick="editarUsuario(${u.id})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="excluirUsuario(${u.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        function prepararNovo() {
+            document.getElementById('formUsuario').reset();
+            document.getElementById('usuario-id').value = '';
+            document.getElementById('usuario-senha').required = true;
+            document.getElementById('senha-help').style.display = 'none';
+            document.getElementById('container-perfil').style.display = 'block';
+        }
+
+        async function editarUsuario(id) {
+            try {
+                const res = await fetch(`${API}/usuarios-gestao`, { headers: getAuthHeaders() });
+                const users = await res.json();
+                const u = users.find(x => x.id === id);
+                if (!u) return;
+
+                document.getElementById('usuario-id').value = u.id;
+                document.getElementById('usuario-email').value = u.email;
+                document.getElementById('usuario-role').value = u.role || 'COMUM';
+                document.getElementById('usuario-perfil').value = u.perfilId || '';
+                document.getElementById('usuario-senha').required = false;
+                document.getElementById('senha-help').style.display = 'block';
+                document.getElementById('container-perfil').style.display = (u.role === 'MASTER' ? 'none' : 'block');
+
+                new bootstrap.Modal(document.getElementById('modalUsuario')).show();
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('formUsuario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('usuario-id').value;
+            
+            const data = {
+                email: document.getElementById('usuario-email').value,
+                role: document.getElementById('usuario-role').value,
+                perfilId: document.getElementById('usuario-perfil').value || null,
+                prefeituraId: prefeituraId
+            };
+            
+            const senha = document.getElementById('usuario-senha').value;
+            if (senha) data.senha = senha;
+
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API}/usuarios-gestao/${id}` : `${API}/usuarios-gestao`;
+
+            const res = await fetch(url, {
+                method,
+                headers: getAuthHeaders(),
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                bootstrap.Modal.getInstance(document.getElementById('modalUsuario')).hide();
+                carregarUsuarios();
+                showToast('Usuário salvo com sucesso!');
+            } else {
+                showToast('Erro ao salvar usuário.', 'danger');
+            }
+        });
+
+        async function excluirUsuario(id) {
+            if (!confirm('Deseja realmente excluir este usuário?')) return;
+            const res = await fetch(`${API}/usuarios-gestao/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+            if (res.ok) carregarUsuarios();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

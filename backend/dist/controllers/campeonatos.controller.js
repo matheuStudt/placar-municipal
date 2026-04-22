@@ -85,6 +85,16 @@ export const getCampeonatos = async (req, res) => {
             where: prefeituraId ? { prefeituraId } : {},
             include: { rodadas: { include: { jogos: true } } }
         });
+        // ── Busca o limite da prefeitura se o ID for fornecido ──
+        let limiteCampeonatos = 3; // default fallback
+        if (prefeituraId) {
+            const pref = await prisma.prefeitura.findUnique({
+                where: { id: prefeituraId },
+                select: { limiteCampeonatos: true }
+            });
+            if (pref)
+                limiteCampeonatos = pref.limiteCampeonatos;
+        }
         const campsDynamic = camps.map(c => {
             let statusDin = 'Inscrições Abertas';
             const todosJogos = c.rodadas.flatMap(r => r.jogos);
@@ -104,7 +114,11 @@ export const getCampeonatos = async (req, res) => {
                 rodadas: undefined
             };
         });
-        res.json(campsDynamic);
+        // Retorna um objeto com a lista e o limite
+        res.json({
+            campeonatos: campsDynamic,
+            limiteCampeonatos
+        });
     }
     catch (e) {
         console.error("[DEBUG] Erro GET campeonatos:", e);
@@ -385,6 +399,15 @@ export const gerarChaveamento = async (req, res) => {
                             return { id: jogoRef.mandanteId, nome: jogoRef.mandanteNome };
                         if (gV > gM)
                             return { id: jogoRef.visitanteId, nome: jogoRef.visitanteNome };
+                        // Empate no tempo normal: desempate por pênaltis
+                        const pM = jogoRef.penaltisMandante;
+                        const pV = jogoRef.penaltisVisitante;
+                        if (pM !== null && pM !== undefined && pV !== null && pV !== undefined) {
+                            if (pM > pV)
+                                return { id: jogoRef.mandanteId, nome: jogoRef.mandanteNome };
+                            if (pV > pM)
+                                return { id: jogoRef.visitanteId, nome: jogoRef.visitanteNome };
+                        }
                     }
                     return null;
                 }
@@ -399,6 +422,15 @@ export const gerarChaveamento = async (req, res) => {
                             return { id: jogoRef.mandanteId, nome: jogoRef.mandanteNome };
                         if (gV < gM)
                             return { id: jogoRef.visitanteId, nome: jogoRef.visitanteNome };
+                        // Empate no tempo normal: perdedor é quem perdeu nos pênaltis
+                        const pM = jogoRef.penaltisMandante;
+                        const pV = jogoRef.penaltisVisitante;
+                        if (pM !== null && pM !== undefined && pV !== null && pV !== undefined) {
+                            if (pM < pV)
+                                return { id: jogoRef.mandanteId, nome: jogoRef.mandanteNome };
+                            if (pV < pM)
+                                return { id: jogoRef.visitanteId, nome: jogoRef.visitanteNome };
+                        }
                     }
                     return null;
                 }

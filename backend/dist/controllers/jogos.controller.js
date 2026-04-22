@@ -136,9 +136,26 @@ export const updateJogo = async (req, res) => {
     }
 };
 export const finalizarJogo = async (req, res) => {
-    const { jogoId, golsM, golsV, estatisticas, penaltisM, penaltisV, sumulaUrl } = req.body;
+    const { jogoId, golsM, golsV, estatisticas, penaltisM, penaltisV, sumulaUrl, motivo } = req.body;
     const idProcurado = parseInt(String(jogoId));
     try {
+        // ── Busca o status atual do jogo antes de qualquer alteração ──
+        const jogoExistente = await prisma.jogo.findUnique({
+            where: { id: idProcurado },
+            select: { status: true }
+        });
+        if (!jogoExistente) {
+            return res.status(404).json({ error: 'Jogo não encontrado.' });
+        }
+        const jaFinalizado = jogoExistente.status === 'Finalizado';
+        const userRole = req.user?.role || 'COMUM';
+        // ── Guard de permissão: só MASTER pode editar súmulas finalizadas ──
+        if (jaFinalizado && userRole !== 'MASTER') {
+            return res.status(403).json({
+                error: 'Apenas administradores podem editar súmulas finalizadas.'
+            });
+        }
+        // ── Atualiza o jogo ──
         const jogoAtualizado = await prisma.jogo.update({
             where: { id: idProcurado },
             data: {
@@ -150,6 +167,17 @@ export const finalizarJogo = async (req, res) => {
                 status: "Finalizado"
             }
         });
+        // ── Audit log: registra edição MASTER de súmula já finalizada ──
+        if (jaFinalizado && userRole === 'MASTER' && req.user?.id) {
+            await prisma.historicoEdicaoSumula.create({
+                data: {
+                    usuarioId: req.user.id,
+                    jogoId: idProcurado,
+                    motivo: motivo || null
+                }
+            });
+        }
+        // ── Atualiza estatísticas ──
         if (Array.isArray(estatisticas)) {
             await prisma.evento.deleteMany({ where: { jogoId: idProcurado } });
             for (const s of estatisticas) {
@@ -171,7 +199,8 @@ export const finalizarJogo = async (req, res) => {
         res.json(jogoAtualizado);
     }
     catch (e) {
-        res.status(404).json({ error: "Erro ao finalizar jogo" });
+        console.error('[finalizarJogo] Erro:', e);
+        res.status(500).json({ error: 'Erro ao finalizar jogo.' });
     }
 };
 export const deleteJogo = async (req, res) => {

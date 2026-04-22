@@ -8,7 +8,7 @@ export const login = async (req, res) => {
     try {
         const user = await prisma.usuario.findFirst({
             where: { email },
-            include: { prefeitura: true }
+            include: { prefeitura: true, perfil: true }
         });
         if (!user) {
             return res.status(401).json({ error: 'Credenciais inválidas' });
@@ -32,15 +32,25 @@ export const login = async (req, res) => {
         if (!senhaValida) {
             return res.status(401).json({ error: 'Credenciais inválidas' });
         }
-        // Gerar token JWT
-        const token = jwt.sign({ id: user.id, email: user.email, prefeituraId: user.prefeituraId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+        // Gerar token JWT com role incluso
+        const token = jwt.sign({ id: user.id, email: user.email, prefeituraId: user.prefeituraId, role: user.role || 'COMUM' }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+        // Define as permissões para o frontend
+        let permissoes = [];
+        if (user.role === 'MASTER') {
+            permissoes = ['ALL'];
+        }
+        else if (user.perfil) {
+            permissoes = user.perfil.permissoes;
+        }
         res.json({
             token,
             id: user.id,
             email: user.email,
+            role: user.role || 'COMUM',
             prefeituraId: user.prefeituraId,
             prefeituraNome: user.prefeitura?.nome || 'Prefeitura Não Vinculada',
-            prefeituraSlug: user.prefeitura?.slug || ''
+            prefeituraSlug: user.prefeitura?.slug || '',
+            permissoes
         });
     }
     catch (e) {

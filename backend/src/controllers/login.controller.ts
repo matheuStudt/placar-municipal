@@ -12,7 +12,7 @@ export const login = async (req: Request, res: Response) => {
     try {
         const user = await (prisma as any).usuario.findFirst({
             where: { email },
-            include: { prefeitura: true }
+            include: { prefeitura: true, perfil: true }
         });
 
         if (!user) {
@@ -39,20 +39,30 @@ export const login = async (req: Request, res: Response) => {
             return res.status(401).json({ error: 'Credenciais inválidas' });
         }
 
-        // Gerar token JWT
+        // Gerar token JWT com role incluso
         const token = jwt.sign(
-            { id: user.id, email: user.email, prefeituraId: user.prefeituraId },
+            { id: user.id, email: user.email, prefeituraId: user.prefeituraId, role: user.role || 'COMUM' },
             JWT_SECRET,
             { expiresIn: JWT_EXPIRES_IN }
         );
+
+        // Define as permissões para o frontend
+        let permissoes: string[] = [];
+        if (user.role === 'MASTER') {
+            permissoes = ['ALL'];
+        } else if (user.perfil) {
+            permissoes = user.perfil.permissoes as string[];
+        }
 
         res.json({
             token,
             id: user.id,
             email: user.email,
+            role: user.role || 'COMUM',
             prefeituraId: user.prefeituraId,
             prefeituraNome: user.prefeitura?.nome || 'Prefeitura Não Vinculada',
-            prefeituraSlug: user.prefeitura?.slug || ''
+            prefeituraSlug: user.prefeitura?.slug || '',
+            permissoes
         });
     } catch (e) {
         console.error('[ERROR] Erro no login:', e);

@@ -21,6 +21,8 @@ import adminRoutes from './routes/admin.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
 import prefeiturasPubRoutes from './routes/prefeituras.routes.js';
 import categoriasRoutes from './routes/categorias.routes.js';
+import perfisRoutes from './routes/perfis.routes.js';
+import usuariosGestaoRoutes from './routes/usuarios_gestao.routes.js';
 import { initStorage } from './controllers/upload.controller.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -52,6 +54,8 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/prefeituras', prefeiturasPubRoutes); // pública — sem auth
 app.use('/api/categorias', categoriasRoutes);
+app.use('/api/perfis', perfisRoutes);
+app.use('/api/usuarios-gestao', usuariosGestaoRoutes);
 
 // O Render vai enviar a porta pela variável de ambiente PORT
 const PORT = process.env.PORT || 3001;

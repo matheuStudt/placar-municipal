@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Placar Municipal - Súmula Eletrônica</title>
+    <title>Súmula Digital - Súmula Eletrônica</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
@@ -186,6 +186,7 @@
     <script src="frontend/js/main.js"></script>
     <script>
         let prefeituraId = null;
+        let isMaster = false; // flag de permissão MASTER
 
         let jogoAtivo = null;
         let golsM = 0;
@@ -197,9 +198,12 @@
             const user = checkSession();
             if (!user) return;
             prefeituraId = user.prefeituraId;
+            // Detecta se o usuário logado é MASTER
+            isMaster = (user.role === 'MASTER');
             // Carregar campeonatos
             const resCamp = await fetch(`${API}/campeonatos?prefeituraId=${prefeituraId}`);
-            const campeonatos = await resCamp.json();
+            const dataCamp = await resCamp.json();
+            const campeonatos = dataCamp.campeonatos || [];
             const selectCamp = document.getElementById('select-campeonato');
             campeonatos.forEach(c => {
                 selectCamp.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
@@ -361,18 +365,62 @@
             }
 
             const btnFinalizar = document.getElementById('btn-finalizar');
-            if (isFinalizado) {
+
+            // Remove alerta e campo de motivo anteriores (se houver)
+            const alertAnterior = document.getElementById('alerta-master');
+            if (alertAnterior) alertAnterior.remove();
+            const motivoAnterior = document.getElementById('motivo-master-wrapper');
+            if (motivoAnterior) motivoAnterior.remove();
+
+            if (isFinalizado && !isMaster) {
+                // Usuário COMUM: bloqueia tudo
                 btnFinalizar.disabled = true;
                 btnFinalizar.innerHTML = '<i class="bi bi-lock-fill me-2"></i> JOGO FINALIZADO (SOMENTE LEITURA)';
                 btnFinalizar.classList.replace('btn-success', 'btn-secondary');
-                
+
                 // Desabilita botões de penaltis
-                document.querySelectorAll('.btn-counter').forEach(b => b.disabled = true);
+                document.querySelectorAll('.btn-counter').forEach(b => (b as HTMLButtonElement).disabled = true);
+
+            } else if (isFinalizado && isMaster) {
+                // Usuário MASTER: libera edição com aviso visual
+                btnFinalizar.disabled = false;
+                btnFinalizar.innerHTML = '<i class="bi bi-shield-lock-fill me-2"></i> CORRIGIR SÚMULA (MASTER)';
+                btnFinalizar.classList.replace('btn-secondary', 'btn-warning');
+                if (!btnFinalizar.classList.contains('btn-warning')) {
+                    btnFinalizar.classList.remove('btn-success');
+                    btnFinalizar.classList.add('btn-warning');
+                }
+
+                // Habilita botões de penaltis
+                document.getElementById('btn-penalti-sub-m').disabled = false;
+                document.getElementById('btn-penalti-add-m').disabled = false;
+                document.getElementById('btn-penalti-sub-v').disabled = false;
+                document.getElementById('btn-penalti-add-v').disabled = false;
+
+                // Alerta de aviso MASTER
+                const alerta = document.createElement('div');
+                alerta.id = 'alerta-master';
+                alerta.className = 'alert alert-warning d-flex align-items-center gap-2 mt-3 fw-bold';
+                alerta.innerHTML = '<i class="bi bi-exclamation-triangle-fill fs-5"></i> Você está editando uma súmula já finalizada. Esta alteração será registrada no histórico.';
+                btnFinalizar.insertAdjacentElement('afterend', alerta);
+
+                // Campo de motivo
+                const motivoWrapper = document.createElement('div');
+                motivoWrapper.id = 'motivo-master-wrapper';
+                motivoWrapper.className = 'mt-3';
+                motivoWrapper.innerHTML = `
+                    <label class="form-label fw-bold small text-muted"><i class="bi bi-journal-text me-1"></i> MOTIVO DA CORREÇÃO (OPCIONAL)</label>
+                    <textarea id="input-motivo-master" class="form-control" rows="2" placeholder="Ex: Correção solicitada via ofício nº 123/2026..."></textarea>
+                `;
+                alerta.insertAdjacentElement('afterend', motivoWrapper);
+
             } else {
+                // Jogo não finalizado: fluxo normal
                 btnFinalizar.disabled = false;
                 btnFinalizar.innerHTML = '<i class="bi bi-check2-circle me-2"></i> FINALIZAR E SALVAR RESULTADO';
+                btnFinalizar.classList.remove('btn-warning');
                 btnFinalizar.classList.replace('btn-secondary', 'btn-success');
-                
+
                 // Habilita botões de penaltis
                 document.getElementById('btn-penalti-sub-m').disabled = false;
                 document.getElementById('btn-penalti-add-m').disabled = false;
@@ -438,7 +486,8 @@
         }
 
         function atualizar(btn, valor, lado, tipo) {
-            if (jogoAtivo && jogoAtivo.status === 'Finalizado') return;
+            // Bloqueia apenas para COMUM em jogo finalizado
+            if (jogoAtivo && jogoAtivo.status === 'Finalizado' && !isMaster) return;
 
             const display = btn.parentElement.querySelector('.val-display');
             let atual = parseInt(display.innerText);
@@ -458,7 +507,8 @@
         }
 
         function atualizarPenalti(valor, lado) {
-            if (jogoAtivo && jogoAtivo.status === 'Finalizado') return;
+            // Bloqueia apenas para COMUM em jogo finalizado
+            if (jogoAtivo && jogoAtivo.status === 'Finalizado' && !isMaster) return;
 
             if (lado === 'mandante') {
                 if (penaltisM + valor < 0) return;
@@ -472,7 +522,9 @@
         }
 
         async function finalizarPartida() {
-            if (!jogoAtivo || jogoAtivo.status === 'Finalizado') return;
+            // COMUM não pode salvar jogo finalizado; MASTER pode (correção)
+            if (!jogoAtivo) return;
+            if (jogoAtivo.status === 'Finalizado' && !isMaster) return;
 
             const btnFinalizar = document.getElementById('btn-finalizar');
             const textoOriginal = btnFinalizar.innerHTML;
@@ -526,6 +578,8 @@
                     finalPenaltisV = penaltisV;
                 }
 
+                const motivo = document.getElementById('input-motivo-master')?.value || null;
+
                 const envioData = { 
                     jogoId: jogoAtivo.id, 
                     golsM, 
@@ -533,7 +587,8 @@
                     estatisticas,
                     penaltisM: finalPenaltisM,
                     penaltisV: finalPenaltisV,
-                    sumulaUrl
+                    sumulaUrl,
+                    motivo
                 };
 
                 const res = await fetch(`${API}/jogos/finalizar`, {

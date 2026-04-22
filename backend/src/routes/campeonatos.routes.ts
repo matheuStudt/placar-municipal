@@ -5,7 +5,7 @@ import {
 } from '../controllers/campeonatos.controller.js';
 import { getEquipesInscritas } from '../controllers/participacoes.controller.js';
 import { getRodadasByCampeonato } from '../controllers/rodadas.controller.js';
-import { authMiddleware } from '../middleware/auth.middleware.js';
+import { authMiddleware, verificarPermissao } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
@@ -17,9 +17,9 @@ router.get('/:id/classificacao', getClassificacao);
 router.get('/:id/estatisticas', getEstatisticas);
 
 // Rotas protegidas
-router.post('/', authMiddleware, createCampeonato);
-router.put('/:id', authMiddleware, updateCampeonato);
-router.delete('/:id', authMiddleware, deleteCampeonato);
-router.post('/:id/gerar-chaveamento', authMiddleware, gerarChaveamento);
+router.post('/', authMiddleware, verificarPermissao('campeonatos'), createCampeonato);
+router.put('/:id', authMiddleware, verificarPermissao('campeonatos'), updateCampeonato);
+router.delete('/:id', authMiddleware, verificarPermissao('campeonatos'), deleteCampeonato);
+router.post('/:id/gerar-chaveamento', authMiddleware, verificarPermissao('campeonatos'), gerarChaveamento);
 
 export default router;
