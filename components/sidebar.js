@@ -4,8 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const permissoes = user?.permissoes || [];
 
     const hasPermission = (mod) => {
-        if (!permissoes) return false;
-        return permissoes.includes('ALL') || permissoes.includes(mod);
+        // Bypass total para MASTER
+        if (user?.role === 'MASTER' || permissoes.includes('ALL')) return true;
+        if (!permissoes || !mod) return false;
+        return permissoes.includes(mod);
     };
 
     const menuItems = [

@@ -89,8 +89,18 @@ document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.setAttribute('data-bs-theme', 'light');
     document.body.setAttribute('data-bs-theme', 'light');
 
-    // Sessão - verifica login para telas protegidas
-    checkSession();
+    // Verifica se a página atual é pública
+    const publicPages = ['login.html', 'portal.html', 'equipe.html', 'detalhes-jogo.html', 'atleta.html', 'atletas.html'];
+    const currentUrl = window.location.href;
+    const isPublic = publicPages.some(page => currentUrl.includes(page));
+
+    // Sessão - verifica login apenas para telas protegidas
+    const user = checkSession();
+
+    // Se for página pública e não tiver usuário, não faz mais nada de personalização de admin
+    if (isPublic && !user) return;
+
+    // Se tiver usuário (mesmo em página pública), o checkSession já cuidou da personalização básica
 });
 
 /**
