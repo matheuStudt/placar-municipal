@@ -47,11 +47,18 @@ export const login = async (req: Request, res: Response) => {
         );
 
         // Define as permissões para o frontend
+        // MASTER → acesso total
+        // COMUM com perfil → permissões definidas no perfil
+        // COMUM sem perfil → acesso operacional completo (comportamento legado, usuário original da prefeitura)
         let permissoes: string[] = [];
+        const ALL_MODULES = ['campeonatos', 'equipes', 'atletas', 'categorias', 'jogos', 'sumulas', 'relatorios', 'gestao_usuarios'];
         if (user.role === 'MASTER') {
             permissoes = ['ALL'];
         } else if (user.perfil) {
             permissoes = user.perfil.permissoes as string[];
+        } else {
+            // Sem perfil atribuído = acesso completo a todos os módulos operacionais
+            permissoes = ALL_MODULES;
         }
 
         res.json({

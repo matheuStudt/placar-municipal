@@ -35,12 +35,20 @@ export const login = async (req, res) => {
         // Gerar token JWT com role incluso
         const token = jwt.sign({ id: user.id, email: user.email, prefeituraId: user.prefeituraId, role: user.role || 'COMUM' }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
         // Define as permissões para o frontend
+        // MASTER → acesso total
+        // COMUM com perfil → permissões definidas no perfil
+        // COMUM sem perfil → acesso operacional completo (comportamento legado, usuário original da prefeitura)
         let permissoes = [];
+        const ALL_MODULES = ['campeonatos', 'equipes', 'atletas', 'categorias', 'jogos', 'sumulas', 'relatorios', 'gestao_usuarios'];
         if (user.role === 'MASTER') {
             permissoes = ['ALL'];
         }
         else if (user.perfil) {
             permissoes = user.perfil.permissoes;
+        }
+        else {
+            // Sem perfil atribuído = acesso completo a todos os módulos operacionais
+            permissoes = ALL_MODULES;
         }
         res.json({
             token,

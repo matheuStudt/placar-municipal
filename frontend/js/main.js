@@ -85,9 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 3. Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    // Garante modo claro
-    document.documentElement.setAttribute('data-bs-theme', 'light');
-    document.body.setAttribute('data-bs-theme', 'light');
+    // NOTA: O tema (dark/light) é gerenciado exclusivamente pelo theme.js.
+    // Não sobrescrever data-bs-theme aqui para preservar a preferência do usuário.
 
     // Verifica se a página atual é pública
     const publicPages = ['login.html', 'portal.html', 'equipe.html', 'detalhes-jogo.html', 'atleta.html', 'atletas.html'];

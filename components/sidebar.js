@@ -4,9 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const permissoes = user?.permissoes || [];
 
     const hasPermission = (mod) => {
-        // Bypass total para MASTER
+        // Bypass total para MASTER ou permissão especial ALL
         if (user?.role === 'MASTER' || permissoes.includes('ALL')) return true;
-        if (!permissoes || !mod) return false;
+        // Sem permissões definidas = sem acesso (usuário com perfil restrito)
+        if (!permissoes || permissoes.length === 0) return false;
         return permissoes.includes(mod);
     };
 
