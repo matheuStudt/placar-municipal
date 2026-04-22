@@ -23,7 +23,8 @@
             }
 
             /* 2 ── Reset de altura e margens no html/body */
-            html, body {
+            html,
+            body {
                 height: auto !important;
                 min-height: 0 !important;
                 margin: 0 !important;
@@ -69,9 +70,9 @@
             /* 6 ── Anulação de quebra de página no ÚLTIMO elemento
                      Evita a folha em branco extra ao final */
             #print-area,
-            #print-area > *:last-child,
-            .print-container > *:last-child,
-            #tabela-jogos-relatorio > tr:last-child,
+            #print-area>*:last-child,
+            .print-container>*:last-child,
+            #tabela-jogos-relatorio>tr:last-child,
             table:last-of-type,
             .table-responsive:last-child {
                 page-break-after: auto !important;
@@ -111,18 +112,30 @@
                 color: #000 !important;
             }
 
-            th, td {
+            th,
+            td {
                 border: 1px solid #ccc !important;
                 padding: 8px !important;
                 text-align: center !important;
                 color: #000 !important;
             }
 
-            .text-muted, .text-secondary { color: #333 !important; }
-            .bg-primary { background-color: #fff !important; color: #000 !important; }
-            .bg-light { background-color: #f8f9fa !important; }
+            .text-muted,
+            .text-secondary {
+                color: #333 !important;
+            }
 
-            .container, .print-container {
+            .bg-primary {
+                background-color: #fff !important;
+                color: #000 !important;
+            }
+
+            .bg-light {
+                background-color: #f8f9fa !important;
+            }
+
+            .container,
+            .print-container {
                 width: 100% !important;
                 max-width: 100% !important;
                 margin: 0 !important;
@@ -169,7 +182,8 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label small fw-bold text-muted">CAMPEONATO</label>
-                        <select id="select-campeonato" class="form-select form-select-lg" onchange="carregarRodadas()"></select>
+                        <select id="select-campeonato" class="form-select form-select-lg"
+                            onchange="carregarRodadas()"></select>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold text-muted">RODADA</label>
@@ -185,17 +199,21 @@
         <div class="card shadow-sm border-0" id="print-area">
             <div class="card-header bg-primary text-white d-none d-print-block text-center" style="padding: 1rem;">
                 <!-- NOVO CABEÇALHO PREFEITURA -->
-                <img id="pdf-logo-prefeitura" src="" alt="Logo da Prefeitura" style="max-height: 90px; display: none;" class="img-fluid mb-2">
+                <img id="pdf-logo-prefeitura" src="" alt="Logo da Prefeitura" style="max-height: 90px; display: none;"
+                    class="img-fluid mb-2">
                 <h4 class="fw-bold mb-3 text-uppercase" id="pdf-nome-prefeitura">PREFEITURA MUNICIPAL</h4>
                 <hr class="border-dark opacity-50 mb-3" style="width: 50%; margin: 0 auto;">
-                
+
                 <h3 class="mb-0 fw-bold" id="pdf-titulo-campeonato">Tabela Oficial</h3>
                 <p class="mb-0" id="pdf-subtitulo-rodada">Todos os Jogos</p>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <tbody id="tabela-jogos-relatorio">
-                        <tr><td colspan="6" class="text-center text-muted p-4">Selecione o campeonato e a rodada para exibir.</td></tr>
+                        <tr>
+                            <td colspan="6" class="text-center text-muted p-4">Selecione o campeonato e a rodada para
+                                exibir.</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -236,15 +254,43 @@
             }
         }
 
+        /* async function carregarCampeonatos() {
+             try {
+                 const res = await fetch(`${API}/campeonatos?prefeituraId=${prefeituraId}`);
+                 const camps = await res.json();
+                 const select = document.getElementById('select-campeonato');
+                 select.innerHTML = '<option value="">Selecione...</option>';
+                 camps.forEach(c => select.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+             } catch (e) {
+                 console.error("Erro campeonato:", e);
+             }
+         }*/
+
         async function carregarCampeonatos() {
             try {
                 const res = await fetch(`${API}/campeonatos?prefeituraId=${prefeituraId}`);
                 const camps = await res.json();
                 const select = document.getElementById('select-campeonato');
+
                 select.innerHTML = '<option value="">Selecione...</option>';
-                camps.forEach(c => select.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+
+                // VERIFICAÇÃO DE SEGURANÇA: Checa se 'camps' é realmente um Array (Lista)
+                if (Array.isArray(camps)) {
+                    camps.forEach(c => select.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+                }
+                // Alguns backends mandam a lista dentro de uma propriedade "data" ou "campeonatos"
+                else if (camps && Array.isArray(camps.data)) {
+                    camps.data.forEach(c => select.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+                }
+                // Se não for nenhum dos dois, a API mandou um erro. Vamos mostrar no console para investigar.
+                else {
+                    console.error("A API não retornou uma lista válida de campeonatos. Resposta do servidor:", camps);
+                    select.innerHTML = '<option value="">Erro ao carregar (Verifique o console)</option>';
+                }
+
             } catch (e) {
                 console.error("Erro campeonato:", e);
+                document.getElementById('select-campeonato').innerHTML = '<option value="">Erro de conexão</option>';
             }
         }
 
@@ -266,7 +312,7 @@
 
                 cbRodada.innerHTML = '<option value="todas">Todas as Rodadas</option>';
                 rodadas.forEach(r => cbRodada.innerHTML += `<option value="${r.id}">${r.nome}</option>`);
-                
+
                 carregarJogos();
             } catch (e) {
                 console.error(e);
@@ -312,14 +358,14 @@
                     const dataStr = j.data ? new Date(j.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data Indefinida';
                     const rodadaLabel = j.rodada?.nome || (j.rodada?.numero ? `Rodada ${j.rodada.numero}` : '');
                     const key = `${rodadaLabel}||${dataStr}||${localStr}`;
-                    if(!grupos[key]) grupos[key] = [];
+                    if (!grupos[key]) grupos[key] = [];
                     grupos[key].push(j);
                 });
 
                 let isPrimeiro = true;
                 Object.keys(grupos).forEach(key => {
                     const [rodadaLabel, dataStr, localStr] = key.split('||');
-                    
+
                     if (!isPrimeiro) {
                         tbody.innerHTML += `
                             <tr style="border-style: hidden;">
@@ -342,7 +388,7 @@
                     const subGrupos = {};
                     grupos[key].forEach(j => {
                         const ch = j.chave || '-';
-                        if(!subGrupos[ch]) subGrupos[ch] = [];
+                        if (!subGrupos[ch]) subGrupos[ch] = [];
                         subGrupos[ch].push(j);
                     });
 
@@ -394,7 +440,7 @@
 
         function gerarPDF() {
             const campId = document.getElementById('select-campeonato').value;
-            if(!campId){
+            if (!campId) {
                 showToast('Por favor, selecione um campeonato para gerar o relatório.', 'warning');
                 return;
             }
@@ -404,4 +450,5 @@
         window.onload = init;
     </script>
 </body>
+
 </html>
