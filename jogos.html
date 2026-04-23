@@ -35,6 +35,9 @@
             color: #fff;
         }
     </style>
+
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
 </head>
 
 <body data-bs-theme="light">
@@ -572,64 +575,78 @@
                 visitanteNome = visitanteSelect.options[visitanteSelect.selectedIndex].text;
             }
 
-            const idUpdate = document.getElementById('jogo-id-update').value;
-            const novo = {
-                campeonatoId: campeonatoAtual,
-                numero: document.getElementById('numero-jogo').value,
-                rodadaId: document.getElementById('select-rodada-form').value,
-                chave: document.getElementById('jogo-chave').value,
-                mandanteId,
-                visitanteId,
-                mandantePlaceholder,
-                visitantePlaceholder,
-                mandanteNome,
-                visitanteNome,
-                data: document.getElementById('data-jogo').value,
-                horario: document.getElementById('horario').value,
-                local: document.getElementById('local').value
-            };
+            btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>SALVANDO...';
+            btnSubmit.disabled = true;
 
-            //const url = idUpdate ? `${API_BASE}/jogos/${idUpdate}` : `${API_BASE}/jogos`;
-            const url = idUpdate ? `${API}/jogos/${idUpdate}` : `${API}/jogos`;
-            const method = idUpdate ? 'PUT' : 'POST';
+            try {
+                const idUpdate = document.getElementById('jogo-id-update').value;
+                const novo = {
+                    campeonatoId: campeonatoAtual,
+                    numero: document.getElementById('numero-jogo').value,
+                    rodadaId: document.getElementById('select-rodada-form').value,
+                    chave: document.getElementById('jogo-chave').value || null,
+                    mandanteId,
+                    visitanteId,
+                    mandantePlaceholder,
+                    visitantePlaceholder,
+                    mandanteNome,
+                    visitanteNome,
+                    data: document.getElementById('data-jogo').value,
+                    horario: document.getElementById('horario').value,
+                    local: document.getElementById('local').value
+                };
 
-            const res = await fetch(url, {
-                method: method,
-                headers: getAuthHeaders(),
-                body: JSON.stringify(novo)
-            });
+                const url = idUpdate ? `${API}/jogos/${idUpdate}` : `${API}/jogos`;
+                const method = idUpdate ? 'PUT' : 'POST';
 
-            if (res.ok) {
-                carregarJogos(campeonatoAtual);
+                const res = await fetch(url, {
+                    method: method,
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(novo)
+                });
 
-                if (idUpdate) {
-                    // Trata-se de uma edição, fechamos o modal
-                    document.getElementById('btn-fechar-modal').click();
-                    document.getElementById('formNovoJogo').reset();
+                if (res.ok) {
+                    carregarJogos(campeonatoAtual);
+
+                    if (idUpdate) {
+                        // Trata-se de uma edição, fechamos o modal
+                        document.getElementById('btn-fechar-modal').click();
+                        document.getElementById('formNovoJogo').reset();
+                        showToast('Jogo ajustado com sucesso!', 'success');
+                    } else {
+                        // Trata-se de inclusão em sequência, prepara o próximo jogo
+                        const numeroAtual = parseInt(document.getElementById('numero-jogo').value) || 0;
+                        document.getElementById('numero-jogo').value = numeroAtual + 1;
+
+                        document.getElementById('select-mandante').value = '';
+                        document.getElementById('select-visitante').value = '';
+                        document.getElementById('input-mandante-placeholder').value = '';
+                        document.getElementById('input-visitante-placeholder').value = '';
+
+                        // Atualiza o cache de jogos para que as opções de "Vencedor do Jogo X"
+                        // apareçam imediatamente ao adicionar o próximo jogo (sem precisar recarregar a página)
+                        try {
+                            const resJogos = await fetch(`${API}/jogos?campeonatoId=${campeonatoAtual}`);
+                            window.jogosExistentesCache = await resJogos.json();
+                        } catch (e) { console.warn('Falha ao atualizar cache de jogos:', e); }
+
+                        // Força a repopulação dos selects de placeholder
+                        document.getElementById('input-mandante-placeholder').innerHTML = '';
+                        document.getElementById('input-visitante-placeholder').innerHTML = '';
+                        atualizarVisibilidadeEquipes();
+                        
+                        showToast('Partida adicionada com sucesso!', 'success');
+                    }
                 } else {
-                    // Trata-se de inclusão em sequência, prepara o próximo jogo
-                    const numeroAtual = parseInt(document.getElementById('numero-jogo').value) || 0;
-                    document.getElementById('numero-jogo').value = numeroAtual + 1;
-
-                    document.getElementById('select-mandante').value = '';
-                    document.getElementById('select-visitante').value = '';
-                    document.getElementById('input-mandante-placeholder').value = '';
-                    document.getElementById('input-visitante-placeholder').value = '';
-
-                    // Atualiza o cache de jogos para que as opções de "Vencedor do Jogo X"
-                    // apareçam imediatamente ao adicionar o próximo jogo (sem precisar recarregar a página)
-                    try {
-                        const resJogos = await fetch(`${API}/jogos?campeonatoId=${campeonatoAtual}`);
-                        window.jogosExistentesCache = await resJogos.json();
-                    } catch (e) { console.warn('Falha ao atualizar cache de jogos:', e); }
-
-                    // Força a repopulação dos selects de placeholder (zera o innerHTML para contornar o guard de options.length)
-                    document.getElementById('input-mandante-placeholder').innerHTML = '';
-                    document.getElementById('input-visitante-placeholder').innerHTML = '';
-                    atualizarVisibilidadeEquipes();
+                    const err = await res.json().catch(() => ({}));
+                    showToast(err.error || 'Erro ao salvar o jogo.', 'danger');
                 }
-            } else {
-                showToast('Erro ao salvar o jogo.', 'danger');
+            } catch (error) {
+                console.error(error);
+                showToast('Erro de conexão ao salvar o jogo.', 'danger');
+            } finally {
+                btnSubmit.innerHTML = originalBtnHtml;
+                btnSubmit.disabled = false;
             }
         });
 

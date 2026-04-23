@@ -29,10 +29,17 @@ export const getPrefeituras = async (req: Request, res: Response) => {
 };
 
 export const createPrefeitura = async (req: Request, res: Response) => {
-    const { nome, slug, logoUrl, corPrimaria, corSecundaria } = req.body;
+    const { nome, slug, logoUrl, corPrimaria, corSecundaria, limiteCampeonatos } = req.body;
     try {
         const p = await prisma.prefeitura.create({
-            data: { nome, slug, logoUrl, corPrimaria: corPrimaria || "#0d6efd", corSecundaria: corSecundaria || "#6c757d" }
+            data: { 
+                nome, 
+                slug, 
+                logoUrl, 
+                corPrimaria: corPrimaria || "#0d6efd", 
+                corSecundaria: corSecundaria || "#6c757d",
+                limiteCampeonatos: limiteCampeonatos ? parseInt(String(limiteCampeonatos)) : 3
+            }
         });
         res.status(201).json(p);
     } catch (e) {
@@ -42,11 +49,16 @@ export const createPrefeitura = async (req: Request, res: Response) => {
 
 export const updatePrefeitura = async (req: Request, res: Response) => {
     const id = parseInt(String(req.params.id));
-    const { nome, slug, logoUrl, corPrimaria, corSecundaria } = req.body;
+    const { nome, slug, logoUrl, corPrimaria, corSecundaria, limiteCampeonatos } = req.body;
     try {
+        const dataUpdate: any = { nome, slug, logoUrl, corPrimaria, corSecundaria };
+        if (limiteCampeonatos !== undefined && limiteCampeonatos !== null) {
+            dataUpdate.limiteCampeonatos = parseInt(String(limiteCampeonatos));
+        }
+        
         const p = await prisma.prefeitura.update({
             where: { id },
-            data: { nome, slug, logoUrl, corPrimaria, corSecundaria }
+            data: dataUpdate
         });
         res.json(p);
     } catch (e) {

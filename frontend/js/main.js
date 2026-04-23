@@ -150,3 +150,12 @@ function voltarPaginaAnterior() {
         window.location.href = slug ? `portal.html?slug=${slug}` : 'portal.html';
     }
 }
+
+// 6. Registro do Service Worker para PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(registration => console.log('Service Worker registrado com sucesso.'))
+      .catch(err => console.error('Erro ao registrar Service Worker:', err));
+  });
+}
