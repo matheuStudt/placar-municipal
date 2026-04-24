@@ -88,3 +88,58 @@ export const verificarPermissao = (modulo: string) => {
     };
 };
 
+export const verificarHierarquiaUsuario = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+    // Se for POST, e tentar criar MASTER
+    if (req.method === 'POST' && req.body.role === 'MASTER' && req.user?.role !== 'MASTER') {
+        res.status(403).json({ error: "Você não tem permissão para criar um usuário MASTER." });
+        return;
+    }
+
+    // Se for PUT, PATCH ou DELETE, precisamos verificar o alvo
+    if (['PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+        if (!req.params.id) {
+            res.status(400).json({ error: "ID inválido." });
+            return;
+        }
+
+        const idAlvo = parseInt(String(req.params.id));
+        if (isNaN(idAlvo)) {
+            res.status(400).json({ error: "ID inválido." });
+            return;
+        }
+
+        try {
+            const alvo = await prisma.usuario.findUnique({ where: { id: idAlvo } });
+            if (!alvo) {
+                res.status(404).json({ error: "Usuário alvo não encontrado." });
+                return;
+            }
+
+            // ADMIN não pode modificar MASTER
+            if (alvo.role === 'MASTER' && req.user?.role !== 'MASTER') {
+                res.status(403).json({ error: "Acesso negado: Somente um MASTER pode modificar ou excluir outro MASTER." });
+                return;
+            }
+
+            // ADMIN não pode promover a MASTER
+            if (req.body.role === 'MASTER' && req.user?.role !== 'MASTER') {
+                res.status(403).json({ error: "Você não tem permissão para promover um usuário a MASTER." });
+                return;
+            }
+
+            // Isolamento de Tenant (ADMIN só mexe na própria prefeitura)
+            if (req.user?.role !== 'MASTER' && alvo.prefeituraId !== req.user?.prefeituraId) {
+                res.status(403).json({ error: "Acesso negado. Usuário pertence a outra prefeitura." });
+                return;
+            }
+
+        } catch (e) {
+            console.error('[verificarHierarquiaUsuario] Erro:', e);
+            res.status(500).json({ error: "Erro interno ao verificar hierarquia." });
+            return;
+        }
+    }
+
+    next();
+};
+
