@@ -624,24 +624,26 @@
                 });
 
                 if (res.ok) {
-                    showToast('Resultado Salvo com sucesso!', 'success');
-                    const campId = document.getElementById('select-campeonato').value;
-                    const rodadaId = document.getElementById('select-rodada').value;
-                    if (campId) {
-                        window.location.href = `jogos.html?campeonatoId=${campId}&rodadaId=${rodadaId || ''}`;
-                    } else {
-                        window.location.href = 'jogos.html';
-                    }
+                    showToast('Salvo com sucesso!', 'success');
+                    setTimeout(() => {
+                        const campId = document.getElementById('select-campeonato').value;
+                        const rodadaId = document.getElementById('select-rodada').value;
+                        if (campId) {
+                            window.location.href = `jogos.html?campeonatoId=${campId}&rodadaId=${rodadaId || ''}`;
+                        } else {
+                            window.location.href = 'jogos.html';
+                        }
+                    }, 1500);
                 } else {
                     const errInfo = await res.text();
                     console.error("Erro da API:", errInfo);
-                    showToast('Ocorreu um erro ao salvar o resultado. Tente novamente.', 'danger');
+                    showToast('Erro ao salvar.', 'error');
                     btnFinalizar.disabled = false;
                     btnFinalizar.innerHTML = textoOriginal;
                 }
             } catch (error) {
                 console.error("Erro de conexão:", error);
-                showToast('Erro de conexão. Verifique sua internet e tente novamente.', 'danger');
+                showToast('Erro ao salvar.', 'error');
                 btnFinalizar.disabled = false;
                 btnFinalizar.innerHTML = textoOriginal;
             }

@@ -108,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {'success'|'danger'|'warning'|'info'} tipo - Cor do toast.
  */
 function showToast(mensagem, tipo = 'success') {
+    if (tipo === 'error') tipo = 'danger';
     const container = document.getElementById('toast-container');
     if (!container) return;
 

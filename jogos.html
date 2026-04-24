@@ -609,13 +609,13 @@
                 });
 
                 if (res.ok) {
+                    showToast('Salvo com sucesso!', 'success');
                     carregarJogos(campeonatoAtual);
 
                     if (idUpdate) {
                         // Trata-se de uma edição, fechamos o modal
                         document.getElementById('btn-fechar-modal').click();
                         document.getElementById('formNovoJogo').reset();
-                        showToast('Jogo ajustado com sucesso!', 'success');
                     } else {
                         // Trata-se de inclusão em sequência, prepara o próximo jogo
                         const numeroAtual = parseInt(document.getElementById('numero-jogo').value) || 0;
@@ -637,12 +637,10 @@
                         document.getElementById('input-mandante-placeholder').innerHTML = '';
                         document.getElementById('input-visitante-placeholder').innerHTML = '';
                         atualizarVisibilidadeEquipes();
-                        
-                        showToast('Partida adicionada com sucesso!', 'success');
                     }
                 } else {
                     const err = await res.json().catch(() => ({}));
-                    showToast(err.error || 'Erro ao salvar o jogo.', 'danger');
+                    showToast('Erro ao salvar.', 'error');
                 }
             } catch (error) {
                 console.error(error);
