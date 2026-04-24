@@ -43,8 +43,8 @@ export const verificarPermissao = (modulo: string) => {
             return;
         }
         
-        // Usuário MASTER da prefeitura tem acesso total
-        if (req.user.role === 'MASTER') {
+        // Verificação rápida pelo token (se aplicável)
+        if (req.user.role === 'MASTER' || req.user.role === 'ADMIN') {
             next();
             return;
         }
@@ -55,15 +55,30 @@ export const verificarPermissao = (modulo: string) => {
                 include: { perfil: true }
             });
 
-            if (!usuario || !usuario.perfil) {
+            if (!usuario) {
+                res.status(401).json({ error: 'Usuário não encontrado.' });
+                return;
+            }
+
+            // Bypass direto no banco: Donos de tenant ou perfis master têm passe livre total
+            if (usuario.role === 'MASTER' || usuario.role === 'ADMIN') {
+                next();
+                return;
+            }
+
+            if (!usuario.perfil) {
+                console.warn('Bloqueio 403 em', req.originalUrl, 'Motivo: Perfil de acesso não encontrado. Usuário:', req.user);
                 res.status(403).json({ error: 'Sem permissão: Perfil de acesso não encontrado.' });
                 return;
             }
 
             const permissoes = usuario.perfil.permissoes as string[];
-            if (Array.isArray(permissoes) && (permissoes.includes(modulo) || permissoes.includes('ALL'))) {
+            const isPerfilAdmin = usuario.perfil.nome && (usuario.perfil.nome.toUpperCase() === 'ADMIN' || usuario.perfil.nome.toUpperCase() === 'MASTER');
+
+            if (isPerfilAdmin || (Array.isArray(permissoes) && (permissoes.includes(modulo) || permissoes.includes('ALL')))) {
                 next();
             } else {
+                console.warn('Bloqueio 403 em', req.originalUrl, `Motivo: Falta de permissão no módulo [${modulo}]. Usuário:`, req.user);
                 res.status(403).json({ error: `Acesso negado: Você não tem permissão para acessar o módulo [${modulo}].` });
             }
         } catch (error) {
