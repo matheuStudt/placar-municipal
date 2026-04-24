@@ -218,7 +218,7 @@
 
                     select.innerHTML = '<option value="">Selecione um município...</option>';
                     prefeituras
-                        .filter(p => p.nome !== 'Administração')
+                        .filter(p => p.nome !== 'Administração' && p.nome !== 'Administração Central')
                         .forEach(p => {
                             const opt = document.createElement('option');
                             opt.value = p.slug;

@@ -8,7 +8,7 @@ const router = Router();
 router.get('/', async (req: Request, res: Response) => {
     try {
         const prefeituras = await prisma.prefeitura.findMany({
-            where: { nome: { not: 'Administração' } },
+            where: { nome: { not: 'Administração Central' } },
             select: { id: true, nome: true, slug: true, logoUrl: true },
             orderBy: { nome: 'asc' }
         });
