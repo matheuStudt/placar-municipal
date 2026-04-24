@@ -38,7 +38,7 @@ export const verificarPermissao = (modulo) => {
                 return;
             }
             const permissoes = usuario.perfil.permissoes;
-            if (Array.isArray(permissoes) && permissoes.includes(modulo)) {
+            if (Array.isArray(permissoes) && (permissoes.includes(modulo) || permissoes.includes('ALL'))) {
                 next();
             }
             else {

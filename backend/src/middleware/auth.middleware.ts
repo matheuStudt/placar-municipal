@@ -61,7 +61,7 @@ export const verificarPermissao = (modulo: string) => {
             }
 
             const permissoes = usuario.perfil.permissoes as string[];
-            if (Array.isArray(permissoes) && permissoes.includes(modulo)) {
+            if (Array.isArray(permissoes) && (permissoes.includes(modulo) || permissoes.includes('ALL'))) {
                 next();
             } else {
                 res.status(403).json({ error: `Acesso negado: Você não tem permissão para acessar o módulo [${modulo}].` });
