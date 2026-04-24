@@ -575,6 +575,9 @@
                 visitanteNome = visitanteSelect.options[visitanteSelect.selectedIndex].text;
             }
 
+            const btnSubmit = document.querySelector('#formNovoJogo button[type="submit"]');
+            const originalBtnHtml = btnSubmit.innerHTML;
+
             btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>SALVANDO...';
             btnSubmit.disabled = true;
 
