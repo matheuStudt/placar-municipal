@@ -104,7 +104,9 @@
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <label class="form-label small fw-bold text-muted">CATEGORIA</label>
-                                <button type="button" class="btn btn-link btn-sm text-primary p-0 text-decoration-none fw-bold" onclick="abrirModalCategorias()">
+                                <button type="button"
+                                    class="btn btn-link btn-sm text-primary p-0 text-decoration-none fw-bold"
+                                    onclick="abrirModalCategorias()">
                                     <i class="bi bi-gear-fill me-1"></i> Gerenciar
                                 </button>
                             </div>
@@ -180,7 +182,8 @@
                     <form id="form-nova-categoria" class="mb-4">
                         <label class="form-label small fw-bold text-muted text-uppercase">Nova Categoria</label>
                         <div class="input-group">
-                            <input type="text" id="novo-nome-categoria" class="form-control" placeholder="Ex: Sub-13, Amador..." required>
+                            <input type="text" id="novo-nome-categoria" class="form-control"
+                                placeholder="Ex: Sub-13, Amador..." required>
                             <button type="submit" class="btn btn-primary">ADICIONAR</button>
                         </div>
                     </form>
@@ -217,10 +220,10 @@
             try {
                 const res = await fetch(`${API}/categorias?prefeituraId=${prefeituraId}`);
                 const categorias = await res.json();
-                
+
                 const select = document.getElementById('categoria');
                 const valorAtual = select.value;
-                
+
                 select.innerHTML = '<option value="">Sem categoria específica</option>';
                 categorias.forEach(cat => {
                     const opt = document.createElement('option');
@@ -228,7 +231,7 @@
                     opt.textContent = cat.nome;
                     select.appendChild(opt);
                 });
-                
+
                 // Mantém o valor selecionado se ele ainda existir
                 select.value = valorAtual;
 
@@ -547,6 +550,9 @@
 
             const res = await fetch(`${API}/equipes/${equipeId}/elenco`);
             const elenco = await res.json();
+
+            elenco.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }));
+
             const lista = document.getElementById('lista-elenco');
             lista.innerHTML = elenco.length ? '' : '<div class="p-3 text-center text-muted">Nenhum atleta vinculado ainda.</div>';
             elenco.forEach(at => {
