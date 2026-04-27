@@ -7,8 +7,17 @@
 (function () {
     const STORAGE_KEY = 'tema-portal';
 
+    /** Verifica se é página pública */
+    function isPublicPage() {
+        const publicPages = ['login.html', 'portal.html', 'equipe.html', 'detalhes-jogo.html', 'atleta.html', 'atletas.html', 'campeonatos.html'];
+        const currentUrl = window.location.href;
+        return publicPages.some(page => currentUrl.includes(page)) || 
+               (currentUrl.endsWith('/') === false && currentUrl.indexOf('.html') === -1 && currentUrl.includes('localhost'));
+    }
+
     /** Lê o tema salvo ou detecta preferência do SO */
     function getTemaInicial() {
+        if (isPublicPage()) return 'light';
         const salvo = localStorage.getItem(STORAGE_KEY);
         if (salvo === 'dark' || salvo === 'light') return salvo;
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
