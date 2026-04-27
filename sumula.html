@@ -57,6 +57,185 @@
         .card-atleta:hover {
             background-color: var(--bs-secondary-bg);
         }
+        /* ===== Card de Resultado para Instagram ===== */
+        #card-resultado-template {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            width: 1080px;
+            height: 1080px;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(145deg, #0f172a 0%, #1e3a8a 40%, #1e40af 70%, #0f172a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        #card-resultado-template .card-bg-glow {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 20% 80%, rgba(59,130,246,0.25) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 80% 20%, rgba(99,102,241,0.2) 0%, transparent 55%);
+            pointer-events: none;
+        }
+        #card-resultado-template .card-stripe-top,
+        #card-resultado-template .card-stripe-bot {
+            position: absolute;
+            left: 0; right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #3b82f6, #6366f1, #3b82f6);
+        }
+        #card-resultado-template .card-stripe-top { top: 0; }
+        #card-resultado-template .card-stripe-bot { bottom: 0; }
+        #card-resultado-template .card-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            padding: 0 60px;
+        }
+        #card-resultado-template .card-badge {
+            background: rgba(59,130,246,0.2);
+            border: 1.5px solid rgba(99,182,255,0.4);
+            border-radius: 50px;
+            padding: 10px 32px;
+            color: #93c5fd;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 44px;
+        }
+        #card-resultado-template .card-teams {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            gap: 0;
+            margin-bottom: 40px;
+        }
+        #card-resultado-template .card-team {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            gap: 18px;
+        }
+        #card-resultado-template .team-logo-wrap {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            border: 3px solid rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #card-resultado-template .team-logo-wrap img {
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+        }
+        #card-resultado-template .team-logo-wrap .team-initials {
+            font-size: 64px;
+            font-weight: 900;
+            color: rgba(255,255,255,0.6);
+            line-height: 1;
+        }
+        #card-resultado-template .team-name {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            max-width: 280px;
+        }
+        #card-resultado-template .card-vs-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 0 30px;
+            flex-shrink: 0;
+        }
+        #card-resultado-template .card-score {
+            font-size: 128px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+            letter-spacing: -4px;
+            text-shadow: 0 4px 32px rgba(99,182,255,0.5);
+        }
+        #card-resultado-template .card-score-sep {
+            font-size: 80px;
+            font-weight: 300;
+            color: rgba(255,255,255,0.35);
+            line-height: 1;
+        }
+        #card-resultado-template .card-vs-label {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+        }
+        #card-resultado-template .card-divider {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            margin: 30px 0;
+        }
+        #card-resultado-template .card-meta {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            color: rgba(255,255,255,0.5);
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        #card-resultado-template .card-meta .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+        }
+        #card-resultado-template .card-watermark {
+            position: absolute;
+            bottom: 28px;
+            right: 40px;
+            font-size: 17px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 2px;
+            z-index: 3;
+        }
+        /* Botão Gerar Card */
+        #btn-gerar-card {
+            background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+            border: none;
+            color: #fff;
+            font-weight: 700;
+        }
+        #btn-gerar-card:hover {
+            background: linear-gradient(135deg, #6d28d9 0%, #4338ca 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(99,102,241,0.4);
+        }
+        #btn-gerar-card:disabled {
+            opacity: 0.5;
+            transform: none;
+            cursor: not-allowed;
+        }
     </style>
 
     <link rel="icon" type="image/png" href="frontend/img/icons/favicon-96x96.png" sizes="96x96" />
@@ -68,6 +247,9 @@
 </head>
 
 <body data-bs-theme="light" class="overflow-x-hidden">
+
+    <!-- Template oculto do card de resultado para Instagram -->
+    <div id="card-resultado-template"></div>
 
     <div class="main-content-overlay" onclick="toggleSidebar()"></div>
     <div id="menu-container"></div>
@@ -205,11 +387,16 @@
         <button id="btn-finalizar" class="btn btn-success w-100 py-3 fw-bold fs-5 shadow" onclick="finalizarPartida()">
             <i class="bi bi-check2-circle me-2"></i> FINALIZAR E SALVAR RESULTADO
         </button>
+
+        <button id="btn-gerar-card" class="btn w-100 py-3 fw-bold fs-5 shadow mt-3" onclick="gerarCardResultado()" disabled>
+            <i class="bi bi-instagram me-2"></i> GERAR CARD DE RESULTADO
+        </button>
     </main>
     </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="components/sidebar.js"></script>
     <script src="frontend/js/main.js"></script>
     <script>
@@ -331,6 +518,10 @@
             btnFinalizar.disabled = false;
             btnFinalizar.innerHTML = '<i class="bi bi-check2-circle me-2"></i> FINALIZAR E SALVAR RESULTADO';
             btnFinalizar.classList.replace('btn-secondary', 'btn-success');
+
+            // Desabilita o botão de gerar card ao limpar o jogo
+            const btnCard = document.getElementById('btn-gerar-card');
+            if (btnCard) btnCard.disabled = true;
         }
 
         async function carregarDadosDoJogo() {
@@ -367,6 +558,10 @@
             const isFinalizado = jogoAtivo.status === 'Finalizado';
             renderizarLado(dados.elencoMandante, 'mandante', isFinalizado, jogoAtivo.mandanteId);
             renderizarLado(dados.elencoVisitante, 'visitante', isFinalizado, jogoAtivo.visitanteId);
+
+            // Habilita o botão de gerar card ao carregar um jogo
+            const btnCard = document.getElementById('btn-gerar-card');
+            if (btnCard) btnCard.disabled = false;
 
             const wrapper = document.getElementById('penaltis-wrapper');
             const containerPen = document.getElementById('penaltis-container');
@@ -650,6 +845,141 @@
                 showToast('Erro ao salvar.', 'error');
                 btnFinalizar.disabled = false;
                 btnFinalizar.innerHTML = textoOriginal;
+            }
+        }
+
+        // ============================================================
+        // GERADOR DE CARD DE RESULTADO PARA INSTAGRAM (1080x1080)
+        // ============================================================
+        async function gerarCardResultado() {
+            if (!jogoAtivo) {
+                showToast('Selecione um jogo primeiro.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btn-gerar-card');
+            const textoOriginal = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> GERANDO IMAGEM...';
+
+            try {
+                // --- Dados do jogo ---
+                const nomeMandante = jogoAtivo.mandanteNome || 'MANDANTE';
+                const nomeVisitante = jogoAtivo.visitanteNome || 'VISITANTE';
+                const logoMandante = jogoAtivo.mandanteLogo || jogoAtivo.logoMandante || null;
+                const logoVisitante = jogoAtivo.visitanteLogo || jogoAtivo.logoVisitante || null;
+                const campeonato = document.getElementById('select-campeonato');
+                const nomeCamp = campeonato.options[campeonato.selectedIndex]?.text || 'Campeonato';
+                const rodada = document.getElementById('select-rodada');
+                const nomeRodada = rodada.options[rodada.selectedIndex]?.text || '';
+
+                // Formata a data do jogo
+                let dataFormatada = '';
+                if (jogoAtivo.data) {
+                    const d = new Date(jogoAtivo.data);
+                    dataFormatada = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+                }
+
+                // Iniciais para fallback quando não há logo
+                function getInitials(nome) {
+                    return nome.split(' ').map(p => p[0]).join('').substring(0, 3).toUpperCase();
+                }
+
+                // Monta o bloco de logo ou iniciais
+                function buildLogoHtml(url, nome) {
+                    if (url) {
+                        return `<img src="${url}" alt="${nome}" crossorigin="anonymous" onerror="this.parentElement.innerHTML='<span class=team-initials>${getInitials(nome)}</span>'">`;
+                    }
+                    return `<span class="team-initials">${getInitials(nome)}</span>`;
+                }
+
+                // Pênaltis
+                let penaltisHtml = '';
+                const temPenaltis = (jogoAtivo.penaltisMandante !== null && jogoAtivo.penaltisMandante !== undefined);
+                if (temPenaltis) {
+                    penaltisHtml = `<div style="font-size:22px;font-weight:700;color:rgba(255,255,255,0.55);margin-top:6px;letter-spacing:1px;">Pên: ${jogoAtivo.penaltisMandante} × ${jogoAtivo.penaltisVisitante}</div>`;
+                }
+
+                // Meta info
+                const metaParts = [nomeCamp];
+                if (nomeRodada && nomeRodada !== 'Selecione a Rodada...') metaParts.push(nomeRodada);
+                if (dataFormatada) metaParts.push(dataFormatada);
+
+                // Preenche o template
+                const tpl = document.getElementById('card-resultado-template');
+                tpl.innerHTML = `
+                    <div class="card-bg-glow"></div>
+                    <div class="card-stripe-top"></div>
+                    <div class="card-stripe-bot"></div>
+                    <div class="card-content">
+                        <div class="card-badge">⚽ Resultado Final</div>
+                        <div class="card-teams">
+                            <div class="card-team">
+                                <div class="team-logo-wrap">${buildLogoHtml(logoMandante, nomeMandante)}</div>
+                                <div class="team-name">${nomeMandante}</div>
+                            </div>
+                            <div class="card-vs-block">
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <div class="card-score">${golsM}</div>
+                                    <div class="card-score-sep">×</div>
+                                    <div class="card-score">${golsV}</div>
+                                </div>
+                                ${penaltisHtml}
+                                <div class="card-vs-label">placar</div>
+                            </div>
+                            <div class="card-team">
+                                <div class="team-logo-wrap">${buildLogoHtml(logoVisitante, nomeVisitante)}</div>
+                                <div class="team-name">${nomeVisitante}</div>
+                            </div>
+                        </div>
+                        <div class="card-divider"></div>
+                        <div class="card-meta">
+                            ${metaParts.map((p, i) => i === 0 ? `<span>${p}</span>` : `<span class="dot"></span><span>${p}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="card-watermark">SÚMULA DIGITAL</div>
+                `;
+
+                // Aguarda carregamento das imagens dentro do template
+                const imgs = tpl.querySelectorAll('img');
+                if (imgs.length > 0) {
+                    await Promise.all(Array.from(imgs).map(img => {
+                        if (img.complete) return Promise.resolve();
+                        return new Promise(res => {
+                            img.onload = res;
+                            img.onerror = res;
+                        });
+                    }));
+                }
+
+                // Pequeno delay para garantir renderização
+                await new Promise(r => setTimeout(r, 150));
+
+                // Renderiza com html2canvas
+                const canvas = await html2canvas(tpl, {
+                    width: 1080,
+                    height: 1080,
+                    scale: 1,
+                    useCORS: true,
+                    allowTaint: false,
+                    backgroundColor: null,
+                    logging: false
+                });
+
+                // Dispara download
+                const link = document.createElement('a');
+                const nomeArquivo = `card_${nomeMandante.replace(/\s+/g,'_')}_vs_${nomeVisitante.replace(/\s+/g,'_')}.png`;
+                link.download = nomeArquivo;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                showToast('Card gerado com sucesso! 🎉', 'success');
+            } catch (err) {
+                console.error('[Gerar Card]', err);
+                showToast('Erro ao gerar o card.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = textoOriginal;
             }
         }
 
