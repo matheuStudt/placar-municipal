@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <link rel="stylesheet" href="frontend/css/main.css">
     <style>
@@ -178,9 +179,14 @@
 
         <div class="d-flex justify-content-between align-items-center mb-4 btn-print-hide">
             <h2 class="fw-bold">Exportação de Relatórios</h2>
-            <button class="btn btn-primary fw-bold shadow-sm" onclick="gerarPDF()">
-                <i class="bi bi-file-earmark-pdf me-2"></i> Salvar como PDF
-            </button>
+            <div class="d-flex gap-2">
+                <button class="btn btn-dark fw-bold shadow-sm" onclick="gerarCardRodada()" id="btn-card-instagram">
+                    <i class="bi bi-instagram me-2"></i> Gerar Card da Rodada
+                </button>
+                <button class="btn btn-primary fw-bold shadow-sm" onclick="gerarPDF()">
+                    <i class="bi bi-file-earmark-pdf me-2"></i> Salvar como PDF
+                </button>
+            </div>
         </div>
 
         <!-- Ferramentas de Filtro (Somente no Viewport) -->
@@ -227,6 +233,94 @@
         </div>
 
     </main>
+
+    <!-- ══════════════════════════════════════════════
+         TEMPLATE OCULTO — CARD INSTAGRAM 1080x1080
+         ══════════════════════════════════════════════ -->
+    <div id="template-card-instagram" style="
+        width: 1080px;
+        height: 1080px;
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        background: #121212;
+        font-family: 'Inter', sans-serif;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 3px solid transparent;
+        background-clip: padding-box;
+        box-sizing: border-box;
+    ">
+        <!-- Gradiente de borda decorativa -->
+        <div style="
+            position: absolute;
+            inset: 0;
+            border-radius: 0;
+            padding: 3px;
+            background: linear-gradient(135deg, #2a2a2a, #444 50%, #2a2a2a);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 0;
+        "></div>
+
+        <!-- HEADER -->
+        <div id="card-header" style="
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 36px 60px 28px;
+            text-align: center;
+            border-bottom: 2px solid #FFD700;
+            position: relative;
+            z-index: 1;
+        ">
+            <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:8px;">
+                <img id="card-logo-prefeitura" src="" alt="" style="max-height:64px; display:none; border-radius:50%;">
+                <div>
+                    <div id="card-nome-prefeitura" style="color:#FFD700; font-size:14px; font-weight:700; letter-spacing:3px; text-transform:uppercase; opacity:0.85;">PREFEITURA MUNICIPAL</div>
+                    <div id="card-nome-campeonato" style="color:#ffffff; font-size:26px; font-weight:700; line-height:1.1; text-transform:uppercase; letter-spacing:1px;">CAMPEONATO</div>
+                </div>
+            </div>
+            <div style="display:inline-block; background:linear-gradient(90deg,#FFD700,#FFA500); color:#121212; font-size:12px; font-weight:800; letter-spacing:4px; padding:5px 28px; border-radius:20px; text-transform:uppercase; margin-top:6px;">RESUMO DA RODADA</div>
+            <div id="card-nome-rodada" style="color:rgba(255,255,255,0.6); font-size:14px; margin-top:8px; letter-spacing:1px;"></div>
+        </div>
+
+        <!-- BODY — lista de jogos (preenchido via JS) -->
+        <div id="card-lista-jogos" style="
+            flex: 1;
+            display: flex;
+            padding: 20px 40px;
+            gap: 8px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        ">
+            <!-- Colunas injetadas via JS -->
+        </div>
+
+        <!-- FOOTER -->
+        <div style="
+            background: linear-gradient(135deg, #1a1a2e, #0f3460);
+            border-top: 2px solid #FFD700;
+            padding: 16px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+        ">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:28px; height:28px; background:linear-gradient(135deg,#FFD700,#FFA500); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#121212"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+                </div>
+                <span style="color:#FFD700; font-size:13px; font-weight:700; letter-spacing:1px;">Súmula Digital</span>
+            </div>
+            <div style="color:rgba(255,255,255,0.4); font-size:11px; letter-spacing:2px; text-transform:uppercase;">Gerado por Súmula Digital</div>
+            <img id="card-footer-logo" src="" alt="" style="max-height:40px; display:none; opacity:0.8;">
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="components/sidebar.js"></script>
@@ -454,6 +548,214 @@
                 return;
             }
             window.print();
+        }
+
+        /* ═══════════════════════════════════════════════════════
+           GERADOR DE CARD PARA INSTAGRAM (1080 × 1080 px)
+           ═══════════════════════════════════════════════════════ */
+        async function gerarCardRodada() {
+            const campId = document.getElementById('select-campeonato').value;
+            if (!campId) {
+                showToast('Selecione um campeonato antes de gerar o card.', 'warning');
+                return;
+            }
+
+            // Botão: estado de carregando
+            const btn = document.getElementById('btn-card-instagram');
+            const btnOriginal = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Gerando...';
+
+            try {
+                // ── 1. Dados dos selects ──────────────────────────────────
+                const selCamp = document.getElementById('select-campeonato');
+                const selRod  = document.getElementById('select-rodada');
+                const nomeCampeonato = selCamp.options[selCamp.selectedIndex]?.text || 'Campeonato';
+                const nomeRodada    = selRod.options[selRod.selectedIndex]?.text  || '';
+
+                // ── 2. Coletar jogos da tabela já renderizada ─────────────
+                const tbody = document.getElementById('tabela-jogos-relatorio');
+                const linhas = Array.from(tbody.querySelectorAll('tr'));
+
+                // Filtra apenas as linhas de jogo real (com 6 <td> e sem colspan=6 em th)
+                const jogosData = [];
+                linhas.forEach(tr => {
+                    const tds = tr.querySelectorAll('td');
+                    if (tds.length < 5) return;
+                    // Linha de jogo: coluna 2=mandante, 3=placar, 4=visitante
+                    const placarcell = tds[3]?.innerText?.trim() || '';
+                    if (!placarcell.includes('X') && !placarcell.includes('x')) return;
+
+                    const partes = placarcell.split(/X/i);
+                    const gmText = partes[0]?.trim().replace(/\u00a0/g, '') || '';
+                    const gvText = partes[1]?.trim().replace(/\u00a0/g, '') || '';
+
+                    jogosData.push({
+                        mandante : tds[2]?.innerText?.trim() || '—',
+                        visitante: tds[4]?.innerText?.trim() || '—',
+                        golsM    : gmText !== '' ? gmText : null,
+                        golsV    : gvText !== '' ? gvText : null,
+                        logoM    : null,
+                        logoV    : null,
+                    });
+                });
+
+                // ── 3. Tentar buscar logos via API de jogos ──────────────
+                try {
+                    const rodadaId = selRod.value;
+                    let url = `${API}/jogos?campeonatoId=${campId}`;
+                    const res = await fetch(url);
+                    let apiJogos = await res.json();
+                    if (rodadaId && rodadaId !== 'todas') {
+                        apiJogos = apiJogos.filter(j => String(j.rodadaId) === String(rodadaId));
+                    }
+                    // Mapeia logos pelo nome do mandante/visitante
+                    apiJogos.forEach(j => {
+                        const found = jogosData.find(jd =>
+                            jd.mandante === j.mandanteNome && jd.visitante === j.visitanteNome
+                        );
+                        if (found) {
+                            found.logoM = j.mandanteLogo || j.mandante?.logoUrl || null;
+                            found.logoV = j.visitanteLogo || j.visitante?.logoUrl || null;
+                        }
+                    });
+                } catch (_) { /* logos não críticas */ }
+
+                if (jogosData.length === 0) {
+                    showToast('Nenhum jogo com resultado encontrado para gerar o card.', 'warning');
+                    return;
+                }
+
+                // ── 4. Preencher configurações do header ──────────────────
+                const nomePref  = document.getElementById('pdf-nome-prefeitura')?.innerText || '';
+                const logoSrc   = document.getElementById('pdf-logo-prefeitura')?.src || '';
+                const logoDsp   = document.getElementById('pdf-logo-prefeitura')?.style?.display;
+
+                document.getElementById('card-nome-prefeitura').innerText  = nomePref;
+                document.getElementById('card-nome-campeonato').innerText  = nomeCampeonato;
+                document.getElementById('card-nome-rodada').innerText      = nomeRodada;
+
+                const cardLogoPref = document.getElementById('card-logo-prefeitura');
+                const cardFooterLogo = document.getElementById('card-footer-logo');
+                if (logoSrc && logoDsp !== 'none') {
+                    cardLogoPref.src           = logoSrc;
+                    cardLogoPref.style.display  = 'inline-block';
+                    cardFooterLogo.src          = logoSrc;
+                    cardFooterLogo.style.display = 'inline-block';
+                } else {
+                    cardLogoPref.style.display  = 'none';
+                    cardFooterLogo.style.display = 'none';
+                }
+
+                // ── 5. Montar lista de jogos no template ──────────────────
+                const LIMITE_COLUNA_UNICA = 8;
+                const duasColunas = jogosData.length > LIMITE_COLUNA_UNICA;
+                const listaContainer = document.getElementById('card-lista-jogos');
+                listaContainer.innerHTML = '';
+
+                // Divide em coluna(s)
+                const col1 = duasColunas ? jogosData.slice(0, Math.ceil(jogosData.length / 2)) : jogosData;
+                const col2 = duasColunas ? jogosData.slice(Math.ceil(jogosData.length / 2))  : [];
+
+                const criarColuna = (lista) => {
+                    const col = document.createElement('div');
+                    col.style.cssText = `
+                        flex: 1;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 6px;
+                        justify-content: center;
+                    `;
+
+                    lista.forEach(jogo => {
+                        const fontSize = duasColunas
+                            ? (lista.length > 8 ? '11px' : '13px')
+                            : (jogosData.length > 6 ? '14px' : '16px');
+                        const logoSize = duasColunas ? '28px' : '36px';
+
+                        const FALLBACK = `
+                            <svg width="${logoSize}" height="${logoSize}" viewBox="0 0 24 24" fill="#555" style="flex-shrink:0;">
+                                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                            </svg>`;
+
+                        const logoMHtml = jogo.logoM
+                            ? `<img src="${jogo.logoM}" width="${logoSize}" height="${logoSize}" style="object-fit:contain; flex-shrink:0; border-radius:50%;" crossorigin="anonymous" onerror="this.outerHTML='${FALLBACK.replace(/"/g, "'")}'"/>`
+                            : FALLBACK;
+
+                        const logoVHtml = jogo.logoV
+                            ? `<img src="${jogo.logoV}" width="${logoSize}" height="${logoSize}" style="object-fit:contain; flex-shrink:0; border-radius:50%;" crossorigin="anonymous" onerror="this.outerHTML='${FALLBACK.replace(/"/g, "'")}'"/>`
+                            : FALLBACK;
+
+                        const finalizado = jogo.golsM !== null && jogo.golsV !== null;
+                        const placarHtml = finalizado
+                            ? `<span style="color:#FFD700; font-weight:800; font-size:${duasColunas ? '18px' : '22px'}; letter-spacing:1px;">${jogo.golsM}</span>
+                               <span style="color:#888; font-size:12px; margin:0 2px;">×</span>
+                               <span style="color:#FFD700; font-weight:800; font-size:${duasColunas ? '18px' : '22px'}; letter-spacing:1px;">${jogo.golsV}</span>`
+                            : `<span style="color:#555; font-size:14px; letter-spacing:2px;">vs</span>`;
+
+                        const row = document.createElement('div');
+                        row.style.cssText = `
+                            display: flex;
+                            align-items: center;
+                            background: rgba(255,255,255,0.04);
+                            border: 1px solid rgba(255,215,0,0.08);
+                            border-radius: 10px;
+                            padding: ${duasColunas ? '8px 12px' : '10px 16px'};
+                            gap: 8px;
+                            min-height: ${duasColunas ? '44px' : '52px'};
+                        `;
+                        row.innerHTML = `
+                            ${logoMHtml}
+                            <span style="flex:1; text-align:right; color:#e0e0e0; font-weight:600; font-size:${fontSize}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${jogo.mandante}</span>
+                            <div style="display:flex; align-items:center; gap:4px; flex-shrink:0; min-width:${duasColunas ? '56px' : '72px'}; justify-content:center;
+                                background:rgba(0,0,0,0.4); border-radius:8px; padding:4px 10px;">
+                                ${placarHtml}
+                            </div>
+                            <span style="flex:1; text-align:left; color:#e0e0e0; font-weight:600; font-size:${fontSize}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${jogo.visitante}</span>
+                            ${logoVHtml}
+                        `;
+                        col.appendChild(row);
+                    });
+                    return col;
+                };
+
+                listaContainer.appendChild(criarColuna(col1));
+                if (duasColunas) {
+                    // Divisória vertical
+                    const sep = document.createElement('div');
+                    sep.style.cssText = 'width:1px; background:rgba(255,215,0,0.15); align-self:stretch; margin:0 8px;';
+                    listaContainer.appendChild(sep);
+                    listaContainer.appendChild(criarColuna(col2));
+                }
+
+                // ── 6. Renderizar com html2canvas ─────────────────────────
+                showToast('Renderizando imagem, aguarde...', 'info');
+
+                const canvas = await html2canvas(document.getElementById('template-card-instagram'), {
+                    useCORS      : true,
+                    allowTaint   : false,
+                    scale        : 1,
+                    width        : 1080,
+                    height       : 1080,
+                    backgroundColor: '#121212',
+                    logging      : false,
+                });
+
+                // ── 7. Download automático ────────────────────────────────
+                const link = document.createElement('a');
+                link.download = `resultados-rodada-${nomeRodada.replace(/\s+/g, '-').toLowerCase() || 'card'}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                showToast('Card gerado e salvo com sucesso! 🎉', 'success');
+
+            } catch (err) {
+                console.error('Erro ao gerar card:', err);
+                showToast('Erro ao gerar o card. Verifique o console.', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = btnOriginal;
+            }
         }
 
         window.onload = init;
