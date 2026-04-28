@@ -602,9 +602,10 @@
                 btnFinalizar.classList.replace('btn-success', 'btn-secondary');
 
                 // Desabilita botões de penaltis
-                //document.querySelectorAll('.btn-counter').forEach(b => (b as HTMLButtonElement).disabled = true);
-                // Desabilita botões de penaltis
-                document.querySelectorAll('.btn-counter').forEach(b => b.disabled = true);
+                document.getElementById('btn-penalti-sub-m').disabled = true;
+                document.getElementById('btn-penalti-add-m').disabled = true;
+                document.getElementById('btn-penalti-sub-v').disabled = true;
+                document.getElementById('btn-penalti-add-v').disabled = true;
 
             } else if (isFinalizado && isMaster) {
                 // Usuário MASTER: libera edição com aviso visual
