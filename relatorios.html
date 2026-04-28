@@ -254,7 +254,8 @@
         padding: 40px;
     ">
         <!-- HEADER: Logo > Nome > Badge -->
-        <div style="text-align:center; width:100%; margin-bottom:32px; display:flex; flex-direction:column; align-items:center; gap:10px;">
+        <div
+            style="text-align:center; width:100%; margin-bottom:32px; display:flex; flex-direction:column; align-items:center; gap:10px;">
             <!-- Logo da Prefeitura (centralizada no topo) -->
             <img id="card-logo-prefeitura-top" src="" alt="Logo Prefeitura" style="
                 width: 90px;
@@ -326,8 +327,11 @@
         ">
             <!-- Logo Súmula Digital (esquerda) -->
             <div style="display:flex; align-items:center; gap:10px;">
-                <div style="width:36px; height:36px; background:#FFD700; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                <div
+                    style="width:36px; height:36px; background:#FFD700; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#000">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+                    </svg>
                 </div>
                 <div>
                     <div style="color:#FFD700; font-weight:800; font-size:15px; line-height:1;">SÚMULA DIGITAL</div>
@@ -335,9 +339,12 @@
                 </div>
             </div>
             <!-- Nome prefeitura centro -->
-            <div id="card-nome-prefeitura" style="color:rgba(255,255,255,0.35); font-size:12px; letter-spacing:2px; text-transform:uppercase; text-align:center;"></div>
+            <div id="card-nome-prefeitura"
+                style="color:rgba(255,255,255,0.35); font-size:12px; letter-spacing:2px; text-transform:uppercase; text-align:center;">
+            </div>
             <!-- Logo Prefeitura (direita) -->
-            <img id="card-footer-logo" src="" alt="Logo Prefeitura" style="max-height:48px; max-width:80px; display:none; object-fit:contain; opacity:0.85;">
+            <img id="card-footer-logo" src="" alt="Logo Prefeitura"
+                style="max-height:48px; max-width:80px; display:none; object-fit:contain; opacity:0.85;">
             <!-- Placeholder quando não há logo -->
             <div id="card-footer-sem-logo" style="width:80px;"></div>
         </div>
@@ -590,9 +597,9 @@
             try {
                 // ── 1. Dados dos selects ──────────────────────────────────
                 const selCamp = document.getElementById('select-campeonato');
-                const selRod  = document.getElementById('select-rodada');
+                const selRod = document.getElementById('select-rodada');
                 const nomeCampeonato = selCamp.options[selCamp.selectedIndex]?.text || 'Campeonato';
-                const nomeRodada    = selRod.options[selRod.selectedIndex]?.text  || '';
+                const nomeRodada = selRod.options[selRod.selectedIndex]?.text || '';
 
                 // ── 2. Coletar jogos da tabela já renderizada ─────────────
                 const tbody = document.getElementById('tabela-jogos-relatorio');
@@ -612,12 +619,12 @@
                     const gvText = partes[1]?.trim().replace(/\u00a0/g, '') || '';
 
                     jogosData.push({
-                        mandante : tds[2]?.innerText?.trim() || '—',
+                        mandante: tds[2]?.innerText?.trim() || '—',
                         visitante: tds[4]?.innerText?.trim() || '—',
-                        golsM    : gmText !== '' ? gmText : null,
-                        golsV    : gvText !== '' ? gvText : null,
-                        logoM    : null,
-                        logoV    : null,
+                        golsM: gmText !== '' ? gmText : null,
+                        golsV: gvText !== '' ? gvText : null,
+                        logoM: null,
+                        logoV: null,
                     });
                 });
 
@@ -649,11 +656,11 @@
 
                 // ── 4. Preencher header do card (Premium Blue) ───────────
                 const nomePref = document.getElementById('pdf-nome-prefeitura')?.innerText || '';
-                const logoSrc  = document.getElementById('pdf-logo-prefeitura')?.src || '';
-                const logoDsp  = document.getElementById('pdf-logo-prefeitura')?.style?.display;
+                const logoSrc = document.getElementById('pdf-logo-prefeitura')?.src || '';
+                const logoDsp = document.getElementById('pdf-logo-prefeitura')?.style?.display;
 
                 document.getElementById('card-nome-campeonato').innerText = nomeCampeonato;
-                document.getElementById('card-nome-rodada').innerText     = nomeRodada;
+                document.getElementById('card-nome-rodada').innerText = nomeRodada;
 
                 // Sub-título: nome da prefeitura abaixo do campeonato
                 const subPref = document.getElementById('card-nome-prefeitura-sub');
@@ -663,7 +670,7 @@
                 const cardLogoTop = document.getElementById('card-logo-prefeitura-top');
                 if (cardLogoTop) {
                     if (logoSrc && logoDsp !== 'none') {
-                        cardLogoTop.src          = logoSrc;
+                        cardLogoTop.src = logoSrc;
                         cardLogoTop.style.display = 'block';
                     } else {
                         cardLogoTop.style.display = 'none';
@@ -671,12 +678,12 @@
                 }
 
                 // Footer logo (prefeitura à direita)
-                const cardFooterLogo    = document.getElementById('card-footer-logo');
+                const cardFooterLogo = document.getElementById('card-footer-logo');
                 const cardFooterSemLogo = document.getElementById('card-footer-sem-logo');
                 if (cardFooterLogo) {
                     if (logoSrc && logoDsp !== 'none') {
-                        cardFooterLogo.src           = logoSrc;
-                        cardFooterLogo.style.display  = 'block';
+                        cardFooterLogo.src = logoSrc;
+                        cardFooterLogo.style.display = 'block';
                         if (cardFooterSemLogo) cardFooterSemLogo.style.display = 'none';
                     } else {
                         cardFooterLogo.style.display = 'none';
@@ -687,18 +694,18 @@
                 // ── 5. Montar linhas de jogo — estilo Interbairros ────────
                 const LIMITE_1COL = 8;
                 const duasColunas = jogosData.length > LIMITE_1COL;
-                const container   = document.getElementById('card-lista-jogos');
+                const container = document.getElementById('card-lista-jogos');
                 container.innerHTML = '';
                 container.style.flexDirection = 'column';
                 container.style.gap = '14px';
                 container.style.alignItems = '';
 
                 // Tamanhos adaptativos
-                const barH    = duasColunas ? '52px'  : '68px';
-                const scoreH  = duasColunas ? '60px'  : '76px';
-                const scoreW  = duasColunas ? '100px' : '128px';
-                const logoSz  = duasColunas ? '56px'  : '72px';
-                const scoreFs = duasColunas ? '28px'  : '38px';
+                const barH = duasColunas ? '52px' : '68px';
+                const scoreH = duasColunas ? '60px' : '76px';
+                const scoreW = duasColunas ? '100px' : '128px';
+                const logoSz = duasColunas ? '56px' : '72px';
+                const scoreFs = duasColunas ? '28px' : '38px';
 
                 const ESCUDO_SVG = (sz) =>
                     `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="#aaa" ` +
@@ -710,7 +717,7 @@
                     ? `<img src="${url}" width="${sz}" height="${sz}" crossorigin="anonymous"
                          style="object-fit:contain;border-radius:50%;border:3px solid #FFB800;
                                 background:#fff;padding:4px;box-sizing:border-box;flex-shrink:0;"
-                         onerror="this.outerHTML='${ESCUDO_SVG(sz).replace(/"/g,"'")}'">`
+                         onerror="this.outerHTML='${ESCUDO_SVG(sz).replace(/"/g, "'")}'">`
                     : ESCUDO_SVG(sz);
 
                 // Fonte adaptativa por comprimento do nome
@@ -722,10 +729,10 @@
 
                 const criarLinha = (jogo) => {
                     const finalizado = jogo.golsM !== null && jogo.golsV !== null;
-                    const placarTxt  = finalizado ? `${jogo.golsM} - ${jogo.golsV}` : 'vs';
-                    const placarFs   = finalizado ? scoreFs : '22px';
-                    const placarClr  = finalizado ? '#000'  : '#999';
-                    const barFs      = duasColunas ? '16px' : '20px';
+                    const placarTxt = finalizado ? `${jogo.golsM} - ${jogo.golsV}` : 'vs';
+                    const placarFs = finalizado ? scoreFs : '22px';
+                    const placarClr = finalizado ? '#ffffff' : '#dddddd';
+                    const barFs = duasColunas ? '16px' : '20px';
 
                     const row = document.createElement('div');
                     row.style.cssText = `
@@ -742,7 +749,7 @@
                             font-size:${fSize(jogo.mandante, barFs)};text-transform:uppercase;
                             overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
                             justify-content:flex-start;">${jogo.mandante}</div>
-                        <div style="background:#fff;color:${placarClr};height:${scoreH};
+                        <div style="background:#0d2a6b;color:${placarClr};height:${scoreH};
                             min-width:${scoreW};display:flex;align-items:center;
                             justify-content:center;font-size:${placarFs};font-weight:900;
                             border-radius:5px;border:3px solid #FFB800;
@@ -764,7 +771,7 @@
                 if (!duasColunas) {
                     jogosData.forEach(j => container.appendChild(criarLinha(j)));
                 } else {
-                    const meio     = Math.ceil(jogosData.length / 2);
+                    const meio = Math.ceil(jogosData.length / 2);
                     const col1jogos = jogosData.slice(0, meio);
                     const col2jogos = jogosData.slice(meio);
                     container.style.flexDirection = 'row';
@@ -781,13 +788,13 @@
                 showToast('Renderizando imagem, aguarde...', 'info');
 
                 const canvas = await html2canvas(document.getElementById('template-card-instagram'), {
-                    useCORS        : true,
-                    allowTaint     : false,
-                    scale          : 1,
-                    width          : 1080,
-                    height         : 1080,
+                    useCORS: true,
+                    allowTaint: false,
+                    scale: 1,
+                    width: 1080,
+                    height: 1080,
                     backgroundColor: '#01081f',
-                    logging        : false,
+                    logging: false,
                 });
 
                 // ── 7. Download automático ────────────────────────────────
