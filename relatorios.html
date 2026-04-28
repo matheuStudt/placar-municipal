@@ -647,24 +647,41 @@
                     return;
                 }
 
-                // ── 4. Preencher header do card ───────────────────────────
+                // ── 4. Preencher header do card (Premium Blue) ───────────
                 const nomePref = document.getElementById('pdf-nome-prefeitura')?.innerText || '';
                 const logoSrc  = document.getElementById('pdf-logo-prefeitura')?.src || '';
                 const logoDsp  = document.getElementById('pdf-logo-prefeitura')?.style?.display;
 
                 document.getElementById('card-nome-campeonato').innerText = nomeCampeonato;
                 document.getElementById('card-nome-rodada').innerText     = nomeRodada;
-                document.getElementById('card-nome-prefeitura').innerText = nomePref;
 
+                // Sub-título: nome da prefeitura abaixo do campeonato
+                const subPref = document.getElementById('card-nome-prefeitura-sub');
+                if (subPref) subPref.innerText = nomePref;
+
+                // Logo da prefeitura no topo (centralizada)
+                const cardLogoTop = document.getElementById('card-logo-prefeitura-top');
+                if (cardLogoTop) {
+                    if (logoSrc && logoDsp !== 'none') {
+                        cardLogoTop.src          = logoSrc;
+                        cardLogoTop.style.display = 'block';
+                    } else {
+                        cardLogoTop.style.display = 'none';
+                    }
+                }
+
+                // Footer logo (prefeitura à direita)
                 const cardFooterLogo    = document.getElementById('card-footer-logo');
                 const cardFooterSemLogo = document.getElementById('card-footer-sem-logo');
-                if (logoSrc && logoDsp !== 'none') {
-                    cardFooterLogo.src           = logoSrc;
-                    cardFooterLogo.style.display  = 'block';
-                    cardFooterSemLogo.style.display = 'none';
-                } else {
-                    cardFooterLogo.style.display    = 'none';
-                    cardFooterSemLogo.style.display = 'block';
+                if (cardFooterLogo) {
+                    if (logoSrc && logoDsp !== 'none') {
+                        cardFooterLogo.src           = logoSrc;
+                        cardFooterLogo.style.display  = 'block';
+                        if (cardFooterSemLogo) cardFooterSemLogo.style.display = 'none';
+                    } else {
+                        cardFooterLogo.style.display = 'none';
+                        if (cardFooterSemLogo) cardFooterSemLogo.style.display = 'block';
+                    }
                 }
 
                 // ── 5. Montar linhas de jogo — estilo Interbairros ────────
@@ -686,12 +703,12 @@
                 const ESCUDO_SVG = (sz) =>
                     `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="#aaa" ` +
                     `style="flex-shrink:0;background:#fff;border-radius:50%;padding:8px;` +
-                    `box-sizing:border-box;border:3px solid #FFD700;">` +
+                    `box-sizing:border-box;border:3px solid #FFB800;">` +
                     `<path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>`;
 
                 const mkLogoHtml = (url, sz) => url
                     ? `<img src="${url}" width="${sz}" height="${sz}" crossorigin="anonymous"
-                         style="object-fit:contain;border-radius:50%;border:3px solid #FFD700;
+                         style="object-fit:contain;border-radius:50%;border:3px solid #FFB800;
                                 background:#fff;padding:4px;box-sizing:border-box;flex-shrink:0;"
                          onerror="this.outerHTML='${ESCUDO_SVG(sz).replace(/"/g,"'")}'">`
                     : ESCUDO_SVG(sz);
@@ -719,20 +736,21 @@
                         <div style="z-index:3;flex-shrink:0;margin-right:-4px;">
                             ${mkLogoHtml(jogo.logoM, logoSz)}
                         </div>
-                        <div style="background:#FFD700;color:#000;height:${barH};flex:1;
+                        <div style="background:#FFB800;color:#000;height:${barH};flex:1;
                             display:flex;align-items:center;padding:0 12px 0 10px;
-                            border-radius:10px 0 0 10px;font-weight:900;
+                            border-radius:8px 0 0 8px;font-weight:900;
                             font-size:${fSize(jogo.mandante, barFs)};text-transform:uppercase;
                             overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
                             justify-content:flex-start;">${jogo.mandante}</div>
                         <div style="background:#fff;color:${placarClr};height:${scoreH};
                             min-width:${scoreW};display:flex;align-items:center;
                             justify-content:center;font-size:${placarFs};font-weight:900;
-                            border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.5);
+                            border-radius:5px;border:3px solid #FFB800;
+                            box-shadow:0 4px 16px rgba(0,0,0,0.5);
                             z-index:2;flex-shrink:0;letter-spacing:1px;">${placarTxt}</div>
-                        <div style="background:#FFD700;color:#000;height:${barH};flex:1;
+                        <div style="background:#FFB800;color:#000;height:${barH};flex:1;
                             display:flex;align-items:center;padding:0 10px 0 12px;
-                            border-radius:0 10px 10px 0;font-weight:900;
+                            border-radius:0 8px 8px 0;font-weight:900;
                             font-size:${fSize(jogo.visitante, barFs)};text-transform:uppercase;
                             overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
                             justify-content:flex-end;">${jogo.visitante}</div>
@@ -768,7 +786,7 @@
                     scale          : 1,
                     width          : 1080,
                     height         : 1080,
-                    backgroundColor: '#000000',
+                    backgroundColor: '#01081f',
                     logging        : false,
                 });
 
