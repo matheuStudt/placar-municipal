@@ -606,6 +606,7 @@
                 document.getElementById('btn-penalti-add-m').disabled = true;
                 document.getElementById('btn-penalti-sub-v').disabled = true;
                 document.getElementById('btn-penalti-add-v').disabled = true;
+                document.getElementById('toggle-penaltis').disabled = true;
 
             } else if (isFinalizado && isMaster) {
                 // Usuário MASTER: libera edição com aviso visual
@@ -622,6 +623,7 @@
                 document.getElementById('btn-penalti-add-m').disabled = false;
                 document.getElementById('btn-penalti-sub-v').disabled = false;
                 document.getElementById('btn-penalti-add-v').disabled = false;
+                document.getElementById('toggle-penaltis').disabled = false;
 
                 // Alerta de aviso MASTER
                 const alerta = document.createElement('div');
@@ -652,6 +654,7 @@
                 document.getElementById('btn-penalti-add-m').disabled = false;
                 document.getElementById('btn-penalti-sub-v').disabled = false;
                 document.getElementById('btn-penalti-add-v').disabled = false;
+                document.getElementById('toggle-penaltis').disabled = false;
             }
         }
 
