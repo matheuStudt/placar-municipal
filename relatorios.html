@@ -389,7 +389,7 @@
                  const camps = await res.json();
                  const select = document.getElementById('select-campeonato');
                  select.innerHTML = '<option value="">Selecione...</option>';
-                 camps.forEach(c => select.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+                 camps.forEach(c => select.innerHTML += `<option value="${c.id}">${formatarNomeCampeonato(c)}</option>`);
              } catch (e) {
                  console.error("Erro campeonato:", e);
              }
@@ -405,14 +405,14 @@
 
                 // VERIFICAÇÃO DE SEGURANÇA AJUSTADA
                 if (Array.isArray(camps)) {
-                    camps.forEach(c => select.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+                    camps.forEach(c => select.innerHTML += `<option value="${c.id}">${formatarNomeCampeonato(c)}</option>`);
                 }
                 // O NOSSO NOVO CENÁRIO: O backend mandou o limite junto, então a lista está em "camps.campeonatos"
                 else if (camps && Array.isArray(camps.campeonatos)) {
-                    camps.campeonatos.forEach(c => select.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+                    camps.campeonatos.forEach(c => select.innerHTML += `<option value="${c.id}">${formatarNomeCampeonato(c)}</option>`);
                 }
                 else if (camps && Array.isArray(camps.data)) {
-                    camps.data.forEach(c => select.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+                    camps.data.forEach(c => select.innerHTML += `<option value="${c.id}">${formatarNomeCampeonato(c)}</option>`);
                 }
                 else {
                     console.error("A API não retornou uma lista válida de campeonatos. Resposta do servidor:", camps);

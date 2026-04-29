@@ -421,7 +421,7 @@
             const campeonatos = dataCamp.campeonatos || [];
             const selectCamp = document.getElementById('select-campeonato');
             campeonatos.forEach(c => {
-                selectCamp.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
+                selectCamp.innerHTML += `<option value="${c.id}">${formatarNomeCampeonato(c)}</option>`;
             });
 
             const urlParams = new URLSearchParams(window.location.search);

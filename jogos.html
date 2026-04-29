@@ -216,7 +216,7 @@
                 const select = document.getElementById('select-campeonato-filtro');
                 select.innerHTML = '<option value="">-- Escolha um Campeonato --</option>';
                 camps.forEach(c => {
-                    select.innerHTML += `<option value="${c.id}">${c.nome} (${c.ano})</option>`;
+                    select.innerHTML += `<option value="${c.id}">${formatarNomeCampeonato(c)}</option>`;
                 });
             } catch (e) { console.error(e); }
         }

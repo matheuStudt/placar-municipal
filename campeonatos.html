@@ -406,16 +406,16 @@
                     body.innerHTML += `
                     <tr>
                         <td class="px-4 text-muted">#${c.id}</td>
-                        <td class="fw-bold">${c.nome}</td>
+                        <td class="fw-bold">${formatarNomeCampeonato(c)}</td>
                         <td>${c.ano}</td>
                         <td><span class="badge bg-info-subtle text-info border border-info-subtle">${c.formato}</span></td>
                         <td>${c.categoria ? `<span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle">${c.categoria}</span>` : '<span class="text-muted small">-</span>'}</td>
                         <td class="text-end px-4">
                             <div class="btn-group shadow-sm">
-                                <button class="btn btn-sm btn-outline-success" onclick="abrirModalInscricao(${c.id}, '${c.nome}')" title="Inscrições">
+                                <button class="btn btn-sm btn-outline-success" onclick="abrirModalInscricao(${c.id}, '${formatarNomeCampeonato(c).replace(/'/g, "\\'")}')" title="Inscrições">
                                     <i class="bi bi-shield-plus"></i> Equipes
                                 </button>
-                                <button class="btn btn-sm btn-outline-dark" onclick="abrirModalRodadas(${c.id}, '${c.nome}')" title="Rodadas">
+                                <button class="btn btn-sm btn-outline-dark" onclick="abrirModalRodadas(${c.id}, '${formatarNomeCampeonato(c).replace(/'/g, "\\'")}')" title="Rodadas">
                                     <i class="bi bi-calendar-event"></i> Rodadas
                                 </button>
                                 <button class="btn btn-sm btn-outline-warning" onclick="gerarChaveamento(${c.id})" title="Gerar Chaveamento Automático">

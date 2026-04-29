@@ -160,3 +160,55 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.error('Erro ao registrar Service Worker:', err));
   });
 }
+
+/**
+ * Formata o nome completo do campeonato: Nome + Categoria + Ano
+ * Aplica abreviações na categoria se o nome final ficar muito longo (> limite).
+ * @param {Object} c - Objeto do campeonato contendo nome, categoria e ano
+ * @param {number} limit - Limite de caracteres antes de abreviar (default: 40)
+ */
+function formatarNomeCampeonato(c, limit = 40) {
+    if (!c) return '';
+    const nome = c.nome || '';
+    const categoria = c.categoria || '';
+    const ano = c.ano || '';
+
+    // Primeira tentativa de formatação (nome + categoria + ano)
+    let formatado = `${nome}`;
+    if (categoria) formatado += ` ${categoria}`;
+    if (ano) formatado += ` ${ano}`;
+
+    // Se estiver dentro do limite, retorna
+    if (formatado.length <= limit) {
+        return formatado.trim();
+    }
+
+    // Se passar do limite, vamos abreviar a categoria
+    if (categoria) {
+        const abrev = {
+            'Masculino': 'Masc.',
+            'Feminino': 'Fem.',
+            'Adulto': 'Ad.',
+            'Veterano': 'Vet.',
+            'Principal': 'Princ.',
+            'Master': 'Mast.',
+            'Infantil': 'Inf.',
+            'Juvenil': 'Juv.',
+            'Aspirante': 'Asp.',
+            'Amador': 'Amad.',
+            'Sub': 'Sub'
+        };
+        
+        let categoriaAbreviada = categoria;
+        for (const [key, value] of Object.entries(abrev)) {
+            // Regex ignorando case, pegando palavra inteira
+            const regex = new RegExp(`\\b${key}\\b`, 'gi');
+            categoriaAbreviada = categoriaAbreviada.replace(regex, value);
+        }
+        
+        formatado = `${nome} ${categoriaAbreviada}`;
+        if (ano) formatado += ` ${ano}`;
+    }
+
+    return formatado.trim();
+}
