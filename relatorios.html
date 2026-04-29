@@ -541,6 +541,12 @@
                             const hr = j.horario || '--:--';
                             const gM = j.status === 'Finalizado' ? j.golsMandante : '&nbsp;&nbsp;';
                             const gV = j.status === 'Finalizado' ? j.golsVisitante : '&nbsp;&nbsp;';
+                            
+                            let penaltisHtml = '';
+                            if (j.status === 'Finalizado' && j.penaltisMandante !== null && j.penaltisMandante !== undefined) {
+                                penaltisHtml = `<br><small class="text-muted" style="font-size:0.75rem;">(${j.penaltisMandante}) x (${j.penaltisVisitante})</small>`;
+                            }
+
                             const nJ = j.numero || '-';
                             const chDesc = j.chave || '-';
                             const catJogo = j.rodada?.campeonato?.categoria || null;
@@ -553,7 +559,7 @@
                                     <td class="text-center text-muted fw-bold">#${nJ}</td>
                                     <td class="text-center fw-bold text-secondary">${hr}${catBadge}</td>
                                     <td class="text-end fw-bold text-dark">${j.mandanteNome}</td>
-                                    <td class="text-center bg-light fw-bold fs-6">${gM} X ${gV}</td>
+                                    <td class="text-center bg-light fw-bold fs-6" style="line-height:1.2;">${gM} X ${gV}${penaltisHtml}</td>
                                     <td class="text-start fw-bold text-dark">${j.visitanteNome}</td>
                                     <td class="text-center small fw-bold border-start">
                                         <span class="badge bg-secondary-subtle text-secondary px-2">${chDesc}</span>
@@ -611,8 +617,11 @@
                     const tds = tr.querySelectorAll('td');
                     if (tds.length < 5) return;
                     // Linha de jogo: coluna 2=mandante, 3=placar, 4=visitante
-                    const placarcell = tds[3]?.innerText?.trim() || '';
+                    let placarcell = tds[3]?.innerText?.trim() || '';
                     if (!placarcell.includes('X') && !placarcell.includes('x')) return;
+
+                    // Ignorar a linha de pênaltis na hora de extrair os gols básicos do placar
+                    placarcell = placarcell.split('\n')[0];
 
                     const partes = placarcell.split(/X/i);
                     const gmText = partes[0]?.trim().replace(/\u00a0/g, '') || '';
@@ -645,6 +654,14 @@
                         if (found) {
                             found.logoM = j.mandanteLogo || j.mandante?.logoUrl || null;
                             found.logoV = j.visitanteLogo || j.visitante?.logoUrl || null;
+                            if (j.status === 'Finalizado') {
+                                found.golsM = j.golsMandante;
+                                found.golsV = j.golsVisitante;
+                                if (j.penaltisMandante !== null && j.penaltisMandante !== undefined) {
+                                    found.penaltisM = j.penaltisMandante;
+                                    found.penaltisV = j.penaltisVisitante;
+                                }
+                            }
                         }
                     });
                 } catch (_) { /* logos não críticas */ }
@@ -734,6 +751,16 @@
                     const placarClr = finalizado ? '#ffffff' : '#dddddd';
                     const barFs = duasColunas ? '16px' : '20px';
 
+                    let placarHtml = placarTxt;
+                    if (finalizado && jogo.penaltisM !== undefined && jogo.penaltisM !== null) {
+                        placarHtml = `
+                            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1;">
+                                <div>${placarTxt}</div>
+                                <div style="font-size:14px; color:#FFB800; margin-top:2px; font-weight:700;">(${jogo.penaltisM}) - (${jogo.penaltisV})</div>
+                            </div>
+                        `;
+                    }
+
                     const row = document.createElement('div');
                     row.style.cssText = `
                         display:flex; align-items:center; justify-content:space-between;
@@ -754,7 +781,7 @@
                             justify-content:center;font-size:${placarFs};font-weight:900;
                             border-radius:5px;border:3px solid #FFB800;
                             box-shadow:0 4px 16px rgba(0,0,0,0.5);
-                            z-index:2;flex-shrink:0;letter-spacing:1px;">${placarTxt}</div>
+                            z-index:2;flex-shrink:0;letter-spacing:1px;">${placarHtml}</div>
                         <div style="background:#FFB800;color:#000;height:${barH};flex:1;
                             display:flex;align-items:center;padding:0 10px 0 12px;
                             border-radius:0 8px 8px 0;font-weight:900;
