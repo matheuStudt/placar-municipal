@@ -1033,7 +1033,7 @@
             const nomeCampeonato = selCamp.options[selCamp.selectedIndex]?.text || 'Campeonato';
             
             document.getElementById('card-class-nome-campeonato').innerText = nomeCampeonato;
-            document.getElementById('card-class-nome-rodada').innerText = rodada.nome || \`Rodada \${rodada.numero}\`;
+            document.getElementById('card-class-nome-rodada').innerText = rodada.nome || `Rodada ${rodada.numero}`;
             
             const logoSrc = document.getElementById('pdf-logo-prefeitura')?.src;
             const logoDsp = document.getElementById('pdf-logo-prefeitura')?.style?.display;
@@ -1047,7 +1047,7 @@
 
             let chaves = [''];
             try {
-                const resEq = await fetch(\`\${API}/campeonatos/\${campId}/equipes\`);
+                const resEq = await fetch(`${API}/campeonatos/${campId}/equipes`);
                 if (resEq.ok) {
                     const equipes = await resEq.json();
                     const chs = [...new Set(equipes.map(e => e.chave).filter(c => c))].sort();
@@ -1057,8 +1057,8 @@
 
             let htmlFinal = '';
             for (const chave of chaves) {
-                let url = \`\${API}/campeonatos/\${campId}/classificacao\`;
-                if (chave) url += \`?chave=\${encodeURIComponent(chave)}\`;
+                let url = `${API}/campeonatos/${campId}/classificacao`;
+                if (chave) url += `?chave=${encodeURIComponent(chave)}`;
                 
                 try {
                     const res = await fetch(url);
@@ -1068,9 +1068,9 @@
 
                     const labelChave = chave ? (chave.includes('Chave') ? chave : 'Chave ' + chave) : 'Classificação Geral';
                     
-                    let tableHtml = \`
+                    let tableHtml = `
                     <div style="background: rgba(255,255,255,0.05); border: 2px solid #FFB800; border-radius: 12px; padding: 12px; min-width: 450px; flex: 1;">
-                        <h4 style="color: #FFB800; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase; font-size: 22px; text-align: center;">\${labelChave}</h4>
+                        <h4 style="color: #FFB800; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase; font-size: 22px; text-align: center;">${labelChave}</h4>
                         <table style="width: 100%; border-collapse: collapse; color: #fff; font-family: Arial, sans-serif;">
                             <thead>
                                 <tr style="background: rgba(255,255,255,0.1); font-weight: bold; font-size: 14px; text-align: center; color: #FFD700;">
@@ -1085,26 +1085,26 @@
                                 </tr>
                             </thead>
                             <tbody>
-                    \`;
+                    `;
 
                     const limit = chaves.length > 2 ? 6 : (chaves.length > 1 ? 8 : 12);
                     data.slice(0, limit).forEach((t, i) => {
                         const bg = i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent';
-                        tableHtml += \`
-                            <tr style="background: \${bg}; font-size: 15px; text-align: center; font-weight: 600;">
-                                <td style="padding: 8px 6px; text-align: left; color:#FFB800;">\${i+1}º</td>
-                                <td style="padding: 8px 6px; text-align: left; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">\${t.nome.toUpperCase()}</td>
-                                <td style="padding: 8px 6px; color:#FFB800;">\${t.p}</td>
-                                <td style="padding: 8px 6px;">\${t.j}</td>
-                                <td style="padding: 8px 6px;">\${t.v}</td>
-                                <td style="padding: 8px 6px;">\${t.e||0}</td>
-                                <td style="padding: 8px 6px;">\${t.d||0}</td>
-                                <td style="padding: 8px 6px;">\${t.sg}</td>
+                        tableHtml += `
+                            <tr style="background: ${bg}; font-size: 15px; text-align: center; font-weight: 600;">
+                                <td style="padding: 8px 6px; text-align: left; color:#FFB800;">${i+1}º</td>
+                                <td style="padding: 8px 6px; text-align: left; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.nome.toUpperCase()}</td>
+                                <td style="padding: 8px 6px; color:#FFB800;">${t.p}</td>
+                                <td style="padding: 8px 6px;">${t.j}</td>
+                                <td style="padding: 8px 6px;">${t.v}</td>
+                                <td style="padding: 8px 6px;">${t.e||0}</td>
+                                <td style="padding: 8px 6px;">${t.d||0}</td>
+                                <td style="padding: 8px 6px;">${t.sg}</td>
                             </tr>
-                        \`;
+                        `;
                     });
 
-                    tableHtml += \`</tbody></table></div>\`;
+                    tableHtml += `</tbody></table></div>`;
                     htmlFinal += tableHtml;
 
                 } catch (e) {
@@ -1118,7 +1118,7 @@
                 useCORS: true, allowTaint: false, scale: 1, width: 1080, height: 1080, backgroundColor: '#01081f', logging: false
             });
             const link = document.createElement('a');
-            link.download = \`classificacao-\${rodada.nome?.replace(/\\s+/g, '-').toLowerCase() || 'grupos'}.png\`;
+            link.download = `classificacao-${rodada.nome?.replace(/\s+/g, '-').toLowerCase() || 'grupos'}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
             showToast('Card de Classificação gerado!', 'success');
@@ -1129,7 +1129,7 @@
             const nomeCampeonato = selCamp.options[selCamp.selectedIndex]?.text || 'Campeonato';
             
             document.getElementById('card-mm-nome-campeonato').innerText = nomeCampeonato;
-            document.getElementById('card-mm-nome-rodada').innerText = rodada.nome || \`Mata-Mata\`;
+            document.getElementById('card-mm-nome-rodada').innerText = rodada.nome || `Mata-Mata`;
             
             const logoSrc = document.getElementById('pdf-logo-prefeitura')?.src;
             const logoDsp = document.getElementById('pdf-logo-prefeitura')?.style?.display;
@@ -1142,7 +1142,7 @@
             container.innerHTML = '<div style="color:#fff;font-size:20px;">Carregando chaves...</div>';
 
             try {
-                let url = \`\${API}/jogos?campeonatoId=\${campId}&rodadaId=\${rodada.id}\`;
+                let url = `${API}/jogos?campeonatoId=${campId}&rodadaId=${rodada.id}`;
                 const res = await fetch(url);
                 const jogos = await res.json();
 
@@ -1157,37 +1157,37 @@
                     const finalizado = j.status === 'Finalizado';
                     const gm = finalizado ? j.golsMandante : '-';
                     const gv = finalizado ? j.golsVisitante : '-';
-                    const penM = (finalizado && j.penaltisMandante !== null && j.penaltisMandante !== undefined) ? \`(\${j.penaltisMandante})\` : '';
-                    const penV = (finalizado && j.penaltisVisitante !== null && j.penaltisVisitante !== undefined) ? \`(\${j.penaltisVisitante})\` : '';
+                    const penM = (finalizado && j.penaltisMandante !== null && j.penaltisMandante !== undefined) ? `(${j.penaltisMandante})` : '';
+                    const penV = (finalizado && j.penaltisVisitante !== null && j.penaltisVisitante !== undefined) ? `(${j.penaltisVisitante})` : '';
 
-                    const logoM = j.mandanteLogo || j.mandante?.logoUrl ? \`<img src="\${j.mandanteLogo || j.mandante?.logoUrl}" style="width:36px;height:36px;object-fit:contain;background:#fff;border-radius:50%;padding:4px;border:2px solid #FFB800;">\` : \`<div style="width:36px;height:36px;background:#fff;border-radius:50%;border:2px solid #FFB800;"></div>\`;
-                    const logoV = j.visitanteLogo || j.visitante?.logoUrl ? \`<img src="\${j.visitanteLogo || j.visitante?.logoUrl}" style="width:36px;height:36px;object-fit:contain;background:#fff;border-radius:50%;padding:4px;border:2px solid #FFB800;">\` : \`<div style="width:36px;height:36px;background:#fff;border-radius:50%;border:2px solid #FFB800;"></div>\`;
+                    const logoM = j.mandanteLogo || j.mandante?.logoUrl ? `<img src="${j.mandanteLogo || j.mandante?.logoUrl}" style="width:36px;height:36px;object-fit:contain;background:#fff;border-radius:50%;padding:4px;border:2px solid #FFB800;">` : `<div style="width:36px;height:36px;background:#fff;border-radius:50%;border:2px solid #FFB800;"></div>`;
+                    const logoV = j.visitanteLogo || j.visitante?.logoUrl ? `<img src="${j.visitanteLogo || j.visitante?.logoUrl}" style="width:36px;height:36px;object-fit:contain;background:#fff;border-radius:50%;padding:4px;border:2px solid #FFB800;">` : `<div style="width:36px;height:36px;background:#fff;border-radius:50%;border:2px solid #FFB800;"></div>`;
 
-                    htmlFinal += \`
+                    htmlFinal += `
                     <div style="background: rgba(255,255,255,0.08); border: 2px solid #0d2a6b; border-radius: 12px; width: 45%; max-width: 450px; padding: 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
-                        <div style="text-align:center; font-size:13px; color:#FFB800; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">JOGO \${j.numero} \${j.data ? '• ' + j.data.split('-').reverse().join('/') : ''}</div>
+                        <div style="text-align:center; font-size:13px; color:#FFB800; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">JOGO ${j.numero} ${j.data ? '• ' + j.data.split('-').reverse().join('/') : ''}</div>
                         <div style="display: flex; align-items: center; justify-content: space-between;">
                             <div style="display: flex; align-items: center; gap: 10px; width: 70%;">
-                                \${logoM}
-                                <span style="color: #fff; font-weight: 900; font-size: 18px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">\${j.mandanteNome}</span>
+                                ${logoM}
+                                <span style="color: #fff; font-weight: 900; font-size: 18px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${j.mandanteNome}</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 5px;">
-                                <span style="color:#FFB800; font-size:12px; font-weight:bold;">\${penM}</span>
-                                <span style="color: #FFB800; font-weight: 900; font-size: 26px;">\${gm}</span>
+                                <span style="color:#FFB800; font-size:12px; font-weight:bold;">${penM}</span>
+                                <span style="color: #FFB800; font-weight: 900; font-size: 26px;">${gm}</span>
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; justify-content: space-between;">
                             <div style="display: flex; align-items: center; gap: 10px; width: 70%;">
-                                \${logoV}
-                                <span style="color: #fff; font-weight: 900; font-size: 18px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">\${j.visitanteNome}</span>
+                                ${logoV}
+                                <span style="color: #fff; font-weight: 900; font-size: 18px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${j.visitanteNome}</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 5px;">
-                                <span style="color:#FFB800; font-size:12px; font-weight:bold;">\${penV}</span>
-                                <span style="color: #FFB800; font-weight: 900; font-size: 26px;">\${gv}</span>
+                                <span style="color:#FFB800; font-size:12px; font-weight:bold;">${penV}</span>
+                                <span style="color: #FFB800; font-weight: 900; font-size: 26px;">${gv}</span>
                             </div>
                         </div>
                     </div>
-                    \`;
+                    `;
                 });
                 
                 htmlFinal += '</div>';
@@ -1202,7 +1202,7 @@
                 useCORS: true, allowTaint: false, scale: 1, width: 1080, height: 1080, backgroundColor: '#01081f', logging: false
             });
             const link = document.createElement('a');
-            link.download = \`matamata-\${rodada.nome?.replace(/\\s+/g, '-').toLowerCase() || 'eliminatorias'}.png\`;
+            link.download = `matamata-${rodada.nome?.replace(/\s+/g, '-').toLowerCase() || 'eliminatorias'}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
             showToast('Card Mata-Mata gerado!', 'success');
