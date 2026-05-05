@@ -134,7 +134,15 @@
                 </div>
                 <div class="modal-body p-4">
                     <div class="bg-light p-3 rounded mb-4 border shadow-sm">
-                        <h6 class="fw-bold mb-3 small">VINCULAR ATLETAS</h6>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0 small">VINCULAR ATLETAS</h6>
+                            <div>
+                                <input type="file" id="file-scan-lista" hidden accept="image/*,application/pdf" onchange="handleFileScan(event)">
+                                <button type="button" class="btn btn-sm btn-outline-primary fw-bold bg-white" onclick="document.getElementById('file-scan-lista').click()">
+                                    <i class="bi bi-camera me-1"></i> Escanear Lista
+                                </button>
+                            </div>
+                        </div>
                         <input type="hidden" id="equipe-id-vinculo">
                         <div class="row g-2 mb-2">
                             <div class="col-md-12">
@@ -195,6 +203,44 @@
                     <h6 class="fw-bold mb-3 text-muted text-uppercase small">Categorias Cadastradas</h6>
                     <div id="lista-categorias" class="list-group list-group-flush border rounded-3 overflow-hidden">
                         <!-- Carregado via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Revisão Lista OCR -->
+    <div class="modal fade" id="modalRevisaoLista" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-list-check me-2"></i>Revisão de Lista (IA)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-info border-0 shadow-sm small">
+                        <i class="bi bi-info-circle-fill me-2"></i>Abaixo estão os nomes extraídos pelo serviço de IA.
+                        Revise eventuais erros de leitura e exclua itens que não sejam atletas.
+                    </div>
+                    <div class="table-responsive border rounded-3 shadow-sm mb-3" style="max-height: 400px;">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th style="width: 50%;">Nome Lido</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-revisao-ia">
+                                <!-- Preenchido dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button class="btn btn-light fw-bold shadow-sm" data-bs-dismiss="modal">Cancelar</button>
+                        <button class="btn btn-success fw-bold shadow-sm px-4" id="btn-confirmar-lote" onclick="confirmarVinculoLote()">
+                            <i class="bi bi-check2-all me-2"></i>Confirmar e Vincular Todos
+                        </button>
                     </div>
                 </div>
             </div>
@@ -626,6 +672,134 @@
                 const categoriaSelect = document.getElementById('categoria');
                 if (categoriaSelect) categoriaSelect.value = '';
             });
+        }
+
+        // --- FUNÇÕES DE OCR E VINCULAÇÃO EM LOTE ---
+        let atletasLoteRevisao = [];
+        let modalRevisaoBS = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            modalRevisaoBS = new bootstrap.Modal(document.getElementById('modalRevisaoLista'));
+        });
+
+        async function handleFileScan(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const originalBtn = event.target.nextElementSibling;
+            const originalHTML = originalBtn.innerHTML;
+            
+            try {
+                originalBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Lendo...';
+                originalBtn.disabled = true;
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const res = await fetch(`${API}/equipes/escanear-lista?prefeituraId=${prefeituraId}`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(true), // assumes true removes content-type to let browser set boundary
+                    body: formData
+                });
+
+                if (!res.ok) {
+                    const data = await res.json().catch(() => ({}));
+                    throw new Error(data.error || 'Erro ao escanear a lista.');
+                }
+
+                atletasLoteRevisao = await res.json();
+                renderTabelaRevisao();
+                
+                // Hide modalElenco and show modalRevisao
+                bootstrap.Modal.getInstance(document.getElementById('modalElenco'))?.hide();
+                modalRevisaoBS.show();
+
+            } catch (error) {
+                showToast(error.message, 'danger');
+            } finally {
+                originalBtn.innerHTML = originalHTML;
+                originalBtn.disabled = false;
+                event.target.value = ''; // Reset file input
+            }
+        }
+
+        function renderTabelaRevisao() {
+            const tbody = document.getElementById('tabela-revisao-ia');
+            if (atletasLoteRevisao.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Nenhum nome extraído.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = atletasLoteRevisao.map((atleta, index) => `
+                <tr>
+                    <td>
+                        <input type="text" class="form-control form-control-sm" value="${atleta.nome}" onchange="atualizarNomeRevisao(${index}, this.value)">
+                    </td>
+                    <td>
+                        ${atleta.status === 'EXISTENTE' 
+                            ? '<span class="badge bg-success bg-opacity-10 text-success border border-success">Encontrado</span>' 
+                            : '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary">Novo Atleta</span>'}
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-danger border-0" onclick="removerAtletaRevisao(${index})">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function atualizarNomeRevisao(index, novoNome) {
+            atletasLoteRevisao[index].nome = novoNome.toUpperCase();
+        }
+
+        function removerAtletaRevisao(index) {
+            atletasLoteRevisao.splice(index, 1);
+            renderTabelaRevisao();
+        }
+
+        async function confirmarVinculoLote() {
+            if (atletasLoteRevisao.length === 0) {
+                showToast('A lista está vazia.', 'warning');
+                return;
+            }
+
+            const equipeId = document.getElementById('equipe-id-vinculo').value;
+            const btn = document.getElementById('btn-confirmar-lote');
+            const originalHTML = btn.innerHTML;
+
+            try {
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Salvando...';
+                btn.disabled = true;
+
+                const payload = {
+                    prefeituraId,
+                    atletas: atletasLoteRevisao
+                };
+
+                const res = await fetch(`${API}/equipes/${equipeId}/vincular-lote`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const data = await res.json().catch(() => ({}));
+                    throw new Error(data.error || 'Erro ao processar lote.');
+                }
+
+                showToast('Atletas processados e vinculados com sucesso!', 'success');
+                modalRevisaoBS.hide();
+                
+                // Re-open Elenco modal to show updated list
+                abrirModalElenco(equipeId, document.getElementById('nome-equipe-modal').innerText);
+
+            } catch (error) {
+                showToast(error.message, 'danger');
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
         }
 
     </script>
