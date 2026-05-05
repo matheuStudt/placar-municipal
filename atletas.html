@@ -294,7 +294,7 @@
 
         async function excluirAtleta(id) {
             if (confirm("Deseja realmente excluir este atleta? Isso também o removerá de qualquer equipe.")) {
-                const res = await fetch(`${API}/atletas/${id}`, { method: 'DELETE' });
+                const res = await fetch(`${API}/atletas/${id}?prefeituraId=${prefeituraId}`, { method: 'DELETE', headers: getAuthHeaders() });
                 if (!res.ok) {
                     const data = await res.json().catch(() => ({}));
                     showToast(data.error || 'Erro ao excluir atleta.', 'danger');

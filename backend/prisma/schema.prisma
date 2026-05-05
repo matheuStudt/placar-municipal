@@ -21,6 +21,7 @@ model Prefeitura {
   equipes        Equipe[]
   categorias     Categoria[]
   perfis         PerfilAcesso[]
+  atletas        Atleta[]
 }
 
 model Usuario {
@@ -83,12 +84,17 @@ model Participacao {
 }
 
 model Atleta {
-  id       Int       @id @default(autoincrement())
-  nome     String
-  cpf      String?
-  dataNasc String?
-  vinculos Vinculo[]
-  eventos  Evento[]
+  id           Int        @id @default(autoincrement())
+  nome         String
+  cpf          String?
+  dataNasc     String?
+  vinculos     Vinculo[]
+  eventos      Evento[]
+  prefeituraId Int
+  prefeitura   Prefeitura @relation(fields: [prefeituraId], references: [id])
+
+  @@index([prefeituraId])
+  @@unique([cpf, prefeituraId])
 }
 
 model Vinculo {
