@@ -149,7 +149,7 @@ export const escanearLista = async (req: Request, res: Response) => {
             return res.status(400).json({ error: "A IA não retornou um formato JSON válido." });
         }
 
-        const resultados = [];
+        const resultados: {nome: string, status: string, atletaId?: number}[] = [];
         for (const item of extractedNames) {
             const atleta = await prisma.atleta.findFirst({
                 where: {
