@@ -3,7 +3,10 @@ import { getEquipes, createEquipe, getEquipeById, updateEquipe, deleteEquipe, ge
 import { authMiddleware, verificarPermissao } from '../middleware/auth.middleware.js';
 import multer from 'multer';
 
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({ 
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+});
 const router = Router();
 
 router.get('/', getEquipes);

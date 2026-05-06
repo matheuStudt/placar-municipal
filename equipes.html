@@ -618,14 +618,14 @@
 
         async function removerAtleta(vinculoId, equipeId) {
             if (!confirm("Deseja remover este atleta da equipe?")) return;
-            await fetch(`${API}/vinculos/${vinculoId}`, { method: 'DELETE' });
+            await fetch(`${API}/vinculos/${vinculoId}`, { method: 'DELETE', headers: getAuthHeaders() });
             atualizarListaElenco(equipeId);
         }
 
         async function limparElencoDaEquipe() {
             const equipeId = document.getElementById('equipe-id-vinculo').value;
             if (!confirm("Atenção! Deseja remover TODOS os atletas vinculados a esta equipe?")) return;
-            const res = await fetch(`${API}/equipes/${equipeId}/elenco`, { method: 'DELETE' });
+            const res = await fetch(`${API}/equipes/${equipeId}/elenco`, { method: 'DELETE', headers: getAuthHeaders() });
             if (res.ok) {
                 atualizarListaElenco(equipeId);
             } else {
