@@ -109,10 +109,12 @@ export const limparElenco = async (req: Request, res: Response) => {
 export const escanearLista = async (req: Request, res: Response) => {
     try {
         const file = req.file;
-        const prefeituraId = req.query.prefeituraId ? parseInt(String(req.query.prefeituraId)) : undefined;
+        const prefeituraIdStr = req.query.prefeituraId;
 
-        if (!prefeituraId) return res.status(400).json({ error: "Prefeitura ID não fornecido." });
+        if (!prefeituraIdStr) return res.status(400).json({ error: "Prefeitura ID não fornecido." });
         if (!file) return res.status(400).json({ error: "Nenhum arquivo enviado." });
+        
+        const prefeituraId = parseInt(String(prefeituraIdStr));
 
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) return res.status(500).json({ error: "GEMINI_API_KEY não configurada no servidor." });
@@ -190,7 +192,7 @@ export const vincularLote = async (req: Request, res: Response) => {
                     const novoAtleta = await tx.atleta.create({
                         data: {
                             nome: item.nome,
-                            prefeituraId: parseInt(prefeituraId)
+                            prefeituraId: parseInt(String(prefeituraId))
                         }
                     });
                     idsParaVincular.push(novoAtleta.id);
