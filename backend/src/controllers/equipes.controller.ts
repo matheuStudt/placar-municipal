@@ -113,7 +113,7 @@ export const escanearLista = async (req: Request, res: Response) => {
 
         if (!prefeituraIdStr) return res.status(400).json({ error: "Prefeitura ID não fornecido." });
         if (!file) return res.status(400).json({ error: "Nenhum arquivo enviado." });
-        
+
         const prefeituraId = parseInt(String(prefeituraIdStr));
 
         const apiKey = process.env.GEMINI_API_KEY;
@@ -122,7 +122,7 @@ export const escanearLista = async (req: Request, res: Response) => {
         const ai = new GoogleGenAI({ apiKey });
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-1.5-flash',
             contents: [
                 {
                     role: 'user',
@@ -146,12 +146,12 @@ export const escanearLista = async (req: Request, res: Response) => {
         let extractedNames: { nome: string }[] = [];
         try {
             extractedNames = JSON.parse(text);
-        } catch(e) {
+        } catch (e) {
             console.error("Erro no parse do JSON do Gemini:", text);
             return res.status(400).json({ error: "A IA não retornou um formato JSON válido." });
         }
 
-        const resultados: {nome: string, status: string, atletaId?: number}[] = [];
+        const resultados: { nome: string, status: string, atletaId?: number }[] = [];
         for (const item of extractedNames) {
             const atleta = await prisma.atleta.findFirst({
                 where: {
