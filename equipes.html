@@ -137,8 +137,10 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="fw-bold mb-0 small">VINCULAR ATLETAS</h6>
                             <div>
-                                <input type="file" id="file-scan-lista" hidden accept="image/*,application/pdf" onchange="handleFileScan(event)">
-                                <button type="button" class="btn btn-sm btn-outline-primary fw-bold bg-white" onclick="document.getElementById('file-scan-lista').click()">
+                                <input type="file" id="file-scan-lista" hidden accept="image/*,application/pdf"
+                                    onchange="handleFileScan(event)">
+                                <button type="button" class="btn btn-sm btn-outline-primary fw-bold bg-white"
+                                    onclick="document.getElementById('file-scan-lista').click()">
                                     <i class="bi bi-camera me-1"></i> Escanear Lista
                                 </button>
                             </div>
@@ -238,7 +240,8 @@
                     </div>
                     <div class="d-flex justify-content-end gap-2">
                         <button class="btn btn-light fw-bold shadow-sm" data-bs-dismiss="modal">Cancelar</button>
-                        <button class="btn btn-success fw-bold shadow-sm px-4" id="btn-confirmar-lote" onclick="confirmarVinculoLote()">
+                        <button class="btn btn-success fw-bold shadow-sm px-4" id="btn-confirmar-lote"
+                            onclick="confirmarVinculoLote()">
                             <i class="bi bi-check2-all me-2"></i>Confirmar e Vincular Todos
                         </button>
                     </div>
@@ -682,13 +685,13 @@
             modalRevisaoBS = new bootstrap.Modal(document.getElementById('modalRevisaoLista'));
         });
 
-        async function handleFileScan(event) {
+        /*async function handleFileScan(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const originalBtn = event.target.nextElementSibling;
             const originalHTML = originalBtn.innerHTML;
-            
+
             try {
                 originalBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Lendo...';
                 originalBtn.disabled = true;
@@ -712,7 +715,7 @@
 
                 atletasLoteRevisao = await res.json();
                 renderTabelaRevisao();
-                
+
                 // Hide modalElenco and show modalRevisao
                 bootstrap.Modal.getInstance(document.getElementById('modalElenco'))?.hide();
                 modalRevisaoBS.show();
@@ -723,6 +726,71 @@
                 originalBtn.innerHTML = originalHTML;
                 originalBtn.disabled = false;
                 event.target.value = ''; // Reset file input
+            }
+        }*/
+
+        async function handleFileScan(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 1. Melhoramos a seleção: Buscamos o botão pelo ID ou pela classe mais próxima
+            // Se o seu botão não tiver este ID, peça ao agente para adicionar id="btn-scan" nele.
+            const originalBtn = document.getElementById('btn-escanear-lista') || event.target.nextElementSibling;
+
+            // Proteção: Se não achar o botão, não continua para não travar a tela
+            if (!originalBtn) return console.error("Botão de scan não encontrado no DOM");
+
+            const originalHTML = originalBtn.innerHTML;
+
+            try {
+                // 2. Estado visual de carregamento
+                originalBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Lendo...';
+                originalBtn.disabled = true;
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const fetchHeaders = getAuthHeaders();
+                delete fetchHeaders['Content-Type'];
+
+                const res = await fetch(`${API}/equipes/escanear-lista?prefeituraId=${prefeituraId}`, {
+                    method: 'POST',
+                    headers: fetchHeaders,
+                    body: formData
+                });
+
+                // 3. Tratamento Robusto de Erros
+                if (!res.ok) {
+                    let errorMessage = 'Erro ao processar arquivo.';
+                    try {
+                        const errorData = await res.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch (e) {
+                        // Se não for JSON (ex: erro 503 do Google/Render), usamos o statusText
+                        errorMessage = `Erro ${res.status}: O servidor de IA está instável. Tente novamente em instantes.`;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                atletasLoteRevisao = await res.json();
+                renderTabelaRevisao();
+
+                // Esconde o modal de elenco e mostra o de revisão
+                const modalElencoDoc = document.getElementById('modalElenco');
+                if (modalElencoDoc) {
+                    bootstrap.Modal.getInstance(modalElencoDoc)?.hide();
+                }
+                modalRevisaoBS.show();
+
+            } catch (error) {
+                // 4. Feedback real para o usuário
+                console.error('Erro no handleFileScan:', error);
+                showToast(error.message, 'danger');
+            } finally {
+                // 5. Reset garantido
+                originalBtn.innerHTML = originalHTML;
+                originalBtn.disabled = false;
+                event.target.value = ''; // Limpa o input para permitir subir o mesmo arquivo de novo
             }
         }
 
@@ -739,9 +807,9 @@
                         <input type="text" class="form-control form-control-sm" value="${atleta.nome}" onchange="atualizarNomeRevisao(${index}, this.value)">
                     </td>
                     <td>
-                        ${atleta.status === 'EXISTENTE' 
-                            ? '<span class="badge bg-success bg-opacity-10 text-success border border-success">Encontrado</span>' 
-                            : '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary">Novo Atleta</span>'}
+                        ${atleta.status === 'EXISTENTE'
+                    ? '<span class="badge bg-success bg-opacity-10 text-success border border-success">Encontrado</span>'
+                    : '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary">Novo Atleta</span>'}
                     </td>
                     <td class="text-center">
                         <button class="btn btn-sm btn-outline-danger border-0" onclick="removerAtletaRevisao(${index})">
@@ -793,7 +861,7 @@
 
                 showToast('Atletas processados e vinculados com sucesso!', 'success');
                 modalRevisaoBS.hide();
-                
+
                 // Re-open Elenco modal to show updated list
                 abrirModalElenco(equipeId, document.getElementById('nome-equipe-modal').innerText);
 
