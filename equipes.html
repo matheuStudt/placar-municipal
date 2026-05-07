@@ -696,9 +696,12 @@
                 const formData = new FormData();
                 formData.append('file', file);
 
+                const fetchHeaders = getAuthHeaders();
+                delete fetchHeaders['Content-Type']; // Let the browser set multipart/form-data automatically
+
                 const res = await fetch(`${API}/equipes/escanear-lista?prefeituraId=${prefeituraId}`, {
                     method: 'POST',
-                    headers: getAuthHeaders(true), // assumes true removes content-type to let browser set boundary
+                    headers: fetchHeaders,
                     body: formData
                 });
 
