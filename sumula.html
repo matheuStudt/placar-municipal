@@ -209,6 +209,35 @@
             border-radius: 50%;
             background: rgba(255,255,255,0.3);
         }
+        #card-resultado-template .team-scorers {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            margin-top: 5px;
+            font-size: 17px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.85);
+            text-align: center;
+            width: 100%;
+        }
+        #card-resultado-template .scorer-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        #card-resultado-template .scorer-item .card-icon {
+            display: inline-block;
+            width: 10px;
+            height: 14px;
+            border-radius: 2px;
+            margin-left: 5px;
+            vertical-align: baseline;
+        }
+        #card-resultado-template .scorer-item .amarelo { background-color: #facc15; }
+        #card-resultado-template .scorer-item .vermelho { background-color: #ef4444; }
+        #card-resultado-template .scorer-item .gol { margin-left: 5px; font-size: 15px; }
         #card-resultado-template .card-watermark {
             position: absolute;
             bottom: 28px;
@@ -904,6 +933,36 @@
                     penaltisHtml = `<div style="font-size:22px;font-weight:700;color:rgba(255,255,255,0.55);margin-top:6px;letter-spacing:1px;">Pên: ${jogoAtivo.penaltisMandante} × ${jogoAtivo.penaltisVisitante}</div>`;
                 }
 
+                // Extração de Detalhes dos Atletas
+                function getEstatisticasHtml(lado) {
+                    const cards = document.querySelectorAll(`#lista-${lado} .card-atleta`);
+                    const eventos = [];
+                    cards.forEach(c => {
+                        const nomeElem = c.querySelector('.text-truncate');
+                        if (!nomeElem) return;
+                        let nomeArr = nomeElem.innerText.trim().split(' ');
+                        let nome = nomeArr[0] + (nomeArr.length > 1 ? ' ' + nomeArr[1] : '');
+                        
+                        const gols = parseInt(c.querySelector('.gol-count').innerText) || 0;
+                        const gc = parseInt(c.querySelector('.gc-count').innerText) || 0;
+                        const am = parseInt(c.querySelector('.am-count').innerText) || 0;
+                        const vm = parseInt(c.querySelector('.vm-count').innerText) || 0;
+                        
+                        let markers = '';
+                        if (gols > 0) markers += `<span class="gol">⚽${gols > 1 ? `(${gols})` : ''}</span>`;
+                        if (gc > 0) markers += `<span class="gol">⚽(GC)${gc > 1 ? `(${gc})` : ''}</span>`;
+                        if (am > 0) markers += `<span class="card-icon amarelo"></span>${am > 1 ? `(${am})` : ''}`;
+                        if (vm > 0) markers += `<span class="card-icon vermelho"></span>`;
+                        
+                        if (markers) {
+                            eventos.push(`<div class="scorer-item"><span>${nome}</span>${markers}</div>`);
+                        }
+                    });
+                    return eventos.join('');
+                }
+                const detalhesMandante = getEstatisticasHtml('mandante');
+                const detalhesVisitante = getEstatisticasHtml('visitante');
+
                 // Meta info
                 const metaParts = [nomeCamp];
                 if (nomeRodada && nomeRodada !== 'Selecione a Rodada...') metaParts.push(nomeRodada);
@@ -921,6 +980,7 @@
                             <div class="card-team">
                                 <div class="team-logo-wrap">${buildLogoHtml(logoMandante, nomeMandante)}</div>
                                 <div class="team-name">${nomeMandante}</div>
+                                <div class="team-scorers">${detalhesMandante}</div>
                             </div>
                             <div class="card-vs-block">
                                 <div style="display:flex;align-items:center;gap:12px;">
@@ -934,6 +994,7 @@
                             <div class="card-team">
                                 <div class="team-logo-wrap">${buildLogoHtml(logoVisitante, nomeVisitante)}</div>
                                 <div class="team-name">${nomeVisitante}</div>
+                                <div class="team-scorers">${detalhesVisitante}</div>
                             </div>
                         </div>
                         <div class="card-divider"></div>
