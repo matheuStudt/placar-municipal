@@ -4,13 +4,17 @@ import { AuthRequest } from '../middleware/auth.middleware.js';
 
 // ── GET /atletas?prefeituraId=X ─────────────────────────────────────────────
 export const getAtletas = async (req: Request, res: Response) => {
-    const prefeituraId = Number(req.query.prefeituraId);
-    if (!prefeituraId) {
+    const pId = req.query.prefeituraId;
+    if (!pId) {
         return res.status(400).json({ error: "prefeituraId é obrigatório" });
+    }
+    const prefId = Number(pId);
+    if (isNaN(prefId)) {
+        return res.status(400).json({ error: "prefeituraId inválido" });
     }
     try {
         const atletas = await prisma.atleta.findMany({
-            where: { prefeituraId },
+            where: { prefeituraId: prefId },
             orderBy: { nome: 'asc' }
         });
         res.json(atletas);
@@ -23,11 +27,16 @@ export const getAtletas = async (req: Request, res: Response) => {
 export const createAtleta = async (req: Request, res: Response) => {
     const { nome, cpf, dataNasc } = req.body;
     // Aceita prefeituraId do body ou do token JWT (autenticado)
-    const prefeituraId = Number(req.body.prefeituraId) || (req as AuthRequest).user?.prefeituraId;
+    const pId = req.body.prefeituraId || (req as AuthRequest).user?.prefeituraId;
 
-    if (!prefeituraId) {
+    if (!pId) {
         return res.status(400).json({ error: "prefeituraId é obrigatório" });
     }
+    const prefId = Number(pId);
+    if (isNaN(prefId)) {
+        return res.status(400).json({ error: "prefeituraId inválido" });
+    }
+
     if (!nome || !String(nome).trim()) {
         return res.status(400).json({ error: "Nome é obrigatório" });
     }
@@ -38,7 +47,7 @@ export const createAtleta = async (req: Request, res: Response) => {
                 nome: String(nome).trim(),
                 cpf: cpf && String(cpf).trim() ? String(cpf).trim() : null,
                 dataNasc: dataNasc && String(dataNasc).trim() ? String(dataNasc).trim() : null,
-                prefeituraId: Number(prefeituraId)
+                prefeituraId: prefId
             }
         });
         res.status(201).json(novo);
@@ -56,16 +65,20 @@ export const createAtleta = async (req: Request, res: Response) => {
 export const updateAtleta = async (req: Request, res: Response) => {
     const id = parseInt(String(req.params.id));
     const { nome, cpf, dataNasc } = req.body;
-    const prefeituraId = Number(req.body.prefeituraId) || (req as AuthRequest).user?.prefeituraId;
+    const pId = req.body.prefeituraId || (req as AuthRequest).user?.prefeituraId;
 
-    if (!prefeituraId) {
+    if (!pId) {
         return res.status(400).json({ error: "prefeituraId é obrigatório" });
+    }
+    const prefId = Number(pId);
+    if (isNaN(prefId)) {
+        return res.status(400).json({ error: "prefeituraId inválido" });
     }
 
     try {
         // updateMany permite filtro composto id + prefeituraId (isolamento de tenant)
         const result = await prisma.atleta.updateMany({
-            where: { id, prefeituraId: Number(prefeituraId) },
+            where: { id, prefeituraId: prefId },
             data: {
                 nome: nome ? String(nome).trim() : undefined,
                 cpf: cpf !== undefined ? (String(cpf).trim() || null) : undefined,
@@ -92,16 +105,20 @@ export const updateAtleta = async (req: Request, res: Response) => {
 // ── DELETE /atletas/:id?prefeituraId=X ───────────────────────────────────────
 export const deleteAtleta = async (req: Request, res: Response) => {
     const id = parseInt(String(req.params.id));
-    const prefeituraId = Number(req.query.prefeituraId) || (req as AuthRequest).user?.prefeituraId;
+    const pId = req.query.prefeituraId || (req as AuthRequest).user?.prefeituraId;
 
-    if (!prefeituraId) {
+    if (!pId) {
         return res.status(400).json({ error: "prefeituraId é obrigatório" });
+    }
+    const prefId = Number(pId);
+    if (isNaN(prefId)) {
+        return res.status(400).json({ error: "prefeituraId inválido" });
     }
 
     try {
         // Verificar que o atleta pertence a esta prefeitura (isolamento de tenant)
         const atleta = await prisma.atleta.findFirst({
-            where: { id, prefeituraId: Number(prefeituraId) }
+            where: { id, prefeituraId: prefId }
         });
         if (!atleta) {
             return res.status(404).json({ error: "Atleta não encontrado nesta prefeitura" });
