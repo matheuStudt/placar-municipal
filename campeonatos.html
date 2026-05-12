@@ -439,8 +439,17 @@
             document.getElementById('nome-camp-inscricao').innerText = nome;
             document.getElementById('inscricao-camp-id').value = id;
 
+            // Busca a categoria do campeonato para filtrar as equipes
+            const camp = window.campsData.find(c => c.id === id);
+            const categoria = camp ? camp.categoria : null;
+
+            let url = `${API}/equipes?prefeituraId=${prefeituraId}`;
+            if (categoria) {
+                url += `&categoria=${encodeURIComponent(categoria)}`;
+            }
+
             // Carrega equipes no select
-            const resEq = await fetch(`${API}/equipes?prefeituraId=${prefeituraId}`);
+            const resEq = await fetch(url);
             const equipes = await resEq.json();
             const select = document.getElementById('select-equipes-inscricao');
             select.innerHTML = '<option value="">Escolha uma equipe...</option>';

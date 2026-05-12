@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '../prisma.js';
 import { AuthRequest } from '../middleware/auth.middleware.js';
 
-// ── GET /atletas?prefeituraId=X ─────────────────────────────────────────────
+// ── GET /atletas?prefeituraId=X&categoria=Sub-15 ─────────────────────────────
 export const getAtletas = async (req: Request, res: Response) => {
     const pId = req.query.prefeituraId;
     if (!pId) {
@@ -12,9 +12,22 @@ export const getAtletas = async (req: Request, res: Response) => {
     if (isNaN(prefId)) {
         return res.status(400).json({ error: "prefeituraId inválido" });
     }
+    const categoria = req.query.categoria ? String(req.query.categoria) : undefined;
     try {
+        let atletaIdsFilter: number[] | undefined;
+        if (categoria) {
+            // Retorna apenas atletas que têm vínculo com equipes da categoria solicitada
+            const vinculos = await prisma.vinculo.findMany({
+                where: { equipe: { categoria, prefeituraId: prefId } },
+                select: { atletaId: true }
+            });
+            atletaIdsFilter = [...new Set(vinculos.map(v => v.atletaId))];
+        }
         const atletas = await prisma.atleta.findMany({
-            where: { prefeituraId: prefId },
+            where: {
+                prefeituraId: prefId,
+                ...(atletaIdsFilter !== undefined ? { id: { in: atletaIdsFilter } } : {})
+            },
             orderBy: { nome: 'asc' }
         });
         res.json(atletas);

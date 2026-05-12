@@ -35,11 +35,20 @@
             </div>
         </header>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold">Gerenciar Equipes</h2>
-            <button class="btn btn-primary fw-bold shadow-sm" onclick="novaEquipe()">
-                <i class="bi bi-plus-circle me-2"></i> Nova Equipe
-            </button>
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-4">
+                <h2 class="fw-bold mb-0">Gerenciar Equipes</h2>
+            </div>
+            <div class="col-md-4">
+                <select id="filtro-categoria-equipes" class="form-select form-select-sm shadow-sm" onchange="carregarEquipes()">
+                    <option value="">Todas as Categorias</option>
+                </select>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-primary fw-bold shadow-sm" onclick="novaEquipe()">
+                    <i class="bi bi-plus-circle me-2"></i> Nova Equipe
+                </button>
+            </div>
         </div>
 
         <div class="card shadow-sm border-0">
@@ -81,14 +90,14 @@
                                 placeholder="Ex: Vila Nova F.C." required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-muted">RESPONSÁVEL / TÉCNICO</label>
+                            <label class="form-label small fw-bold text-muted">RESPONSÁVEL / TÉCNICO (<span class="text-primary">opcional</span>)</label>
                             <input type="text" id="responsavel" class="form-control form-control-lg"
-                                placeholder="Nome do responsável" required>
+                                placeholder="Nome do responsável">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-muted">WHATSAPP</label>
+                            <label class="form-label small fw-bold text-muted">WHATSAPP (<span class="text-primary">opcional</span>)</label>
                             <input type="text" id="telefone" class="form-control form-control-lg"
-                                placeholder="(00) 00000-0000" required>
+                                placeholder="(00) 00000-0000">
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-bold text-muted">LOCAL DE MANDO / SEDE</label>
@@ -149,13 +158,18 @@
                         </div>
                         <input type="hidden" id="equipe-id-vinculo">
                         <div class="row g-2 mb-2">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="input-group">
                                     <span class="input-group-text bg-white"><i
                                             class="bi bi-search text-muted"></i></span>
                                     <input type="text" id="busca-atletas-vinculo" class="form-control"
                                         placeholder="Buscar atleta por nome..." oninput="filtrarListaVinculo()">
                                 </div>
+                            </div>
+                            <div class="col-md-6">
+                                <select id="filtro-categoria-vinculo" class="form-select" onchange="recarregarAtletasVinculo()">
+                                    <option value="">Todas as Categorias</option>
+                                </select>
                             </div>
                         </div>
                         <!-- Lista de checkboxes -->
@@ -280,12 +294,39 @@
                 const valorAtual = select.value;
 
                 select.innerHTML = '<option value="">Sem categoria específica</option>';
+                
+                const filtroSelect = document.getElementById('filtro-categoria-equipes');
+                let filtroValor = '';
+                if(filtroSelect) {
+                    filtroValor = filtroSelect.value;
+                    filtroSelect.innerHTML = '<option value="">Todas as Categorias</option>';
+                }
+
                 categorias.forEach(cat => {
                     const opt = document.createElement('option');
                     opt.value = cat.nome;
                     opt.textContent = cat.nome;
                     select.appendChild(opt);
+
+                    if(filtroSelect) {
+                        const optFiltro = document.createElement('option');
+                        optFiltro.value = cat.nome;
+                        optFiltro.textContent = cat.nome;
+                        filtroSelect.appendChild(optFiltro);
+                    }
+
+                    const filtroVinculo = document.getElementById('filtro-categoria-vinculo');
+                    if (filtroVinculo) {
+                        const optFiltroV = document.createElement('option');
+                        optFiltroV.value = cat.nome;
+                        optFiltroV.textContent = cat.nome;
+                        filtroVinculo.appendChild(optFiltroV);
+                    }
                 });
+
+                if(filtroSelect) {
+                    filtroSelect.value = filtroValor;
+                }
 
                 // Mantém o valor selecionado se ele ainda existir
                 select.value = valorAtual;
@@ -354,8 +395,13 @@
             const tabela = document.getElementById('tabela-equipes');
             tabela.innerHTML = Array(5).fill('<tr><td colspan="6"><div class="skeleton" style="height: 38px; border-radius: 4px; opacity:0.5;"></div></td></tr>').join('');
             try {
+                const filtroSelect = document.getElementById('filtro-categoria-equipes');
+                let url = `${API}/equipes?prefeituraId=${prefeituraId}`;
+                if (filtroSelect && filtroSelect.value) {
+                    url += `&categoria=${encodeURIComponent(filtroSelect.value)}`;
+                }
 
-                const res = await fetch(`${API}/equipes?prefeituraId=${prefeituraId}`);
+                const res = await fetch(url);
                 const equipes = await res.json();
                 // Adicione esta linha para ordenar de A a Z
                 equipes.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }));
@@ -528,13 +574,21 @@
             document.getElementById('equipe-id-vinculo').value = id;
             document.getElementById('busca-atletas-vinculo').value = '';
 
-            const resAtletas = await fetch(`${API}/atletas?prefeituraId=${prefeituraId}`);
-            atletasParaVincular = await resAtletas.json();
-            atletasParaVincular.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }));
-
-            filtrarListaVinculo();
+            await recarregarAtletasVinculo();
             atualizarListaElenco(id);
             new bootstrap.Modal(document.getElementById('modalElenco')).show();
+        }
+
+        async function recarregarAtletasVinculo() {
+            const filtroCat = document.getElementById('filtro-categoria-vinculo').value;
+            let url = `${API}/atletas?prefeituraId=${prefeituraId}`;
+            if (filtroCat) {
+                url += `&categoria=${encodeURIComponent(filtroCat)}`;
+            }
+            const resAtletas = await fetch(url);
+            atletasParaVincular = await resAtletas.json();
+            atletasParaVincular.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }));
+            filtrarListaVinculo();
         }
 
         function filtrarListaVinculo() {

@@ -4,10 +4,12 @@ import { GoogleGenAI } from '@google/genai';
 
 export const getEquipes = async (req: Request, res: Response) => {
     const prefeituraId = req.query.prefeituraId ? parseInt(String(req.query.prefeituraId)) : undefined;
+    const categoria = req.query.categoria ? String(req.query.categoria) : undefined;
     try {
-        const equipes = await prisma.equipe.findMany({
-            where: prefeituraId ? { prefeituraId } : {}
-        });
+        const where: Record<string, unknown> = {};
+        if (prefeituraId) where.prefeituraId = prefeituraId;
+        if (categoria) where.categoria = categoria;
+        const equipes = await prisma.equipe.findMany({ where });
         res.json(equipes);
     } catch (e) {
         res.status(500).json({ error: "Erro ao buscar equipes" });
@@ -20,9 +22,9 @@ export const createEquipe = async (req: Request, res: Response) => {
         const nova = await prisma.equipe.create({
             data: {
                 nome,
-                responsavel,
-                telefone,
-                local,
+                responsavel: responsavel && String(responsavel).trim() ? String(responsavel).trim() : null,
+                telefone: telefone && String(telefone).trim() ? String(telefone).trim() : null,
+                local: local || null,
                 logoUrl: logoUrl || null,
                 categoria: categoria || null,
                 prefeituraId: parseInt(String(prefeituraId)) || 1
@@ -51,7 +53,14 @@ export const updateEquipe = async (req: Request, res: Response) => {
     try {
         const atualizada = await prisma.equipe.update({
             where: { id },
-            data: { nome, responsavel, telefone, local, logoUrl: logoUrl || null, categoria: categoria || null }
+            data: {
+                nome,
+                responsavel: responsavel !== undefined ? (String(responsavel).trim() || null) : undefined,
+                telefone: telefone !== undefined ? (String(telefone).trim() || null) : undefined,
+                local: local || null,
+                logoUrl: logoUrl || null,
+                categoria: categoria || null
+            }
         });
         res.json(atualizada);
     } catch (e) {

@@ -39,8 +39,8 @@ model Usuario {
 model Equipe {
   id            Int            @id @default(autoincrement())
   nome          String
-  responsavel   String
-  telefone      String
+  responsavel   String?
+  telefone      String?
   local         String?
   logoUrl       String?
   categoria     String?
