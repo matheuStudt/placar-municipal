@@ -181,12 +181,12 @@
 
         <ul class="nav nav-tabs mb-4 btn-print-hide" id="relatoriosTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active fw-bold" id="exportacao-tab" data-bs-toggle="tab" data-bs-target="#exportacao" type="button" role="tab" aria-controls="exportacao" aria-selected="true">
+                <button class="nav-link active fw-bold text-dark" id="exportacao-tab" data-bs-toggle="tab" data-bs-target="#exportacao" type="button" role="tab" aria-controls="exportacao" aria-selected="true">
                     <i class="bi bi-file-earmark-bar-graph me-2"></i>Exportação Oficial
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link fw-bold" id="agenda-tab" data-bs-toggle="tab" data-bs-target="#agenda" type="button" role="tab" aria-controls="agenda" aria-selected="false">
+                <button class="nav-link fw-bold text-dark" id="agenda-tab" data-bs-toggle="tab" data-bs-target="#agenda" type="button" role="tab" aria-controls="agenda" aria-selected="false">
                     <i class="bi bi-calendar-event me-2"></i>Agenda Integrada
                 </button>
             </li>
@@ -267,34 +267,68 @@
 
             <!-- ABA AGENDA INTEGRADA -->
             <div class="tab-pane fade" id="agenda" role="tabpanel" aria-labelledby="agenda-tab">
-                <div class="d-flex justify-content-between align-items-center mb-4 btn-print-hide">
-                    <h2 class="fw-bold">Agenda Integrada</h2>
-                    <button class="btn btn-primary shadow-sm fw-bold" onclick="carregarAgendaIntegrada()">
-                        <i class="bi bi-search me-2"></i>Buscar Jogos
-                    </button>
+
+                <!-- Barra de ações -->
+                <div class="d-flex justify-content-between align-items-center mb-4 btn-print-hide flex-wrap gap-2">
+                    <h2 class="fw-bold mb-0">Agenda Integrada</h2>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <div class="dropdown">
+                            <button class="btn btn-dark fw-bold shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="btn-card-instagram-agenda">
+                                <i class="bi bi-instagram me-2"></i>Gerar Card
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark shadow">
+                                <li><a class="dropdown-item fw-semibold" href="#" onclick="gerarCardRodadaAgenda()">Card de Resultados</a></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary fw-bold shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-box-arrow-up me-2"></i>Exportar
+                            </button>
+                            <ul class="dropdown-menu shadow">
+                                <li><a class="dropdown-item fw-semibold text-danger" href="#" onclick="gerarPDFAgenda()"><i class="bi bi-file-earmark-pdf me-2"></i>PDF</a></li>
+                                <li><a class="dropdown-item fw-semibold text-success" href="#" onclick="exportarExcelAgenda()"><i class="bi bi-file-earmark-excel me-2"></i>Excel</a></li>
+                                <li><a class="dropdown-item fw-semibold text-primary" href="#" onclick="exportarWordAgenda()"><i class="bi bi-file-earmark-word me-2"></i>Word</a></li>
+                            </ul>
+                        </div>
+                        <button class="btn btn-primary shadow-sm fw-bold" onclick="carregarAgendaIntegrada()">
+                            <i class="bi bi-search me-2"></i>Buscar Jogos
+                        </button>
+                    </div>
                 </div>
 
+                <!-- Filtros dinâmicos -->
                 <div class="card shadow-sm border-0 mb-4 btn-print-hide">
+                    <div class="card-header bg-transparent fw-bold text-muted small py-2">FILTROS DE CAMPEONATOS E RODADAS</div>
                     <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted">CAMPEONATOS (Segure CTRL para selecionar vários)</label>
-                                <select id="select-campeonatos-agenda" class="form-select" multiple size="4"></select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted">DATA (Opcional)</label>
-                                <input type="date" id="input-data-agenda" class="form-control" style="height: 48px;">
-                                <div class="form-text mt-2"><i class="bi bi-info-circle"></i> Se não informar data, trará todos os jogos dos campeonatos.</div>
+                        <div id="agenda-filtros-lista">
+                            <!-- linhas de filtro injetadas via JS -->
+                        </div>
+                        <div class="d-flex align-items-center gap-3 mt-3 flex-wrap">
+                            <button class="btn btn-outline-primary btn-sm fw-bold" onclick="adicionarFiltroAgenda()">
+                                <i class="bi bi-plus-circle me-1"></i>Adicionar Campeonato
+                            </button>
+                            <div>
+                                <label class="form-label small fw-bold text-muted mb-1">DATA (Opcional)</label>
+                                <input type="date" id="input-data-agenda" class="form-control form-control-sm" style="min-width:160px;">
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Cards resultado -->
                 <div id="agenda-cards-container" class="row g-3">
                     <div class="col-12 text-center text-muted p-4">
-                        Selecione os campeonatos e clique em Buscar Jogos.
+                        <i class="bi bi-calendar2-week fs-1 d-block mb-2 opacity-25"></i>Adicione campeonatos e clique em Buscar Jogos.
                     </div>
                 </div>
+
+                <!-- Tabela oculta p/ exportação -->
+                <div id="agenda-print-area" style="display:none;">
+                    <table class="table table-hover align-middle mb-0">
+                        <tbody id="tabela-agenda-exportacao"></tbody>
+                    </table>
+                </div>
+
             </div>
         </div>
 
@@ -544,33 +578,28 @@
                 const res = await fetch(`${API}/campeonatos?prefeituraId=${prefeituraId}`);
                 const camps = await res.json();
                 const select = document.getElementById('select-campeonato');
-                const selectAgenda = document.getElementById('select-campeonatos-agenda');
 
                 select.innerHTML = '<option value="">Selecione...</option>';
-                if (selectAgenda) selectAgenda.innerHTML = '';
 
-                const renderCamps = (list) => {
-                    list.forEach(c => {
-                        const optHtml = `<option value="${c.id}">${formatarNomeCampeonato(c)}</option>`;
-                        select.innerHTML += optHtml;
-                        if (selectAgenda) selectAgenda.innerHTML += optHtml;
-                    });
-                };
-
-                // VERIFICAÇÃO DE SEGURANÇA AJUSTADA
-                if (Array.isArray(camps)) {
-                    renderCamps(camps);
-                }
-                // O NOSSO NOVO CENÁRIO: O backend mandou o limite junto, então a lista está em "camps.campeonatos"
-                else if (camps && Array.isArray(camps.campeonatos)) {
-                    renderCamps(camps.campeonatos);
-                }
-                else if (camps && Array.isArray(camps.data)) {
-                    renderCamps(camps.data);
-                }
+                let lista = [];
+                if (Array.isArray(camps)) lista = camps;
+                else if (camps && Array.isArray(camps.campeonatos)) lista = camps.campeonatos;
+                else if (camps && Array.isArray(camps.data)) lista = camps.data;
                 else {
                     console.error("A API não retornou uma lista válida de campeonatos. Resposta do servidor:", camps);
                     select.innerHTML = '<option value="">Erro ao carregar (Verifique o console)</option>';
+                    return;
+                }
+
+                lista.forEach(c => select.innerHTML += `<option value="${c.id}">${formatarNomeCampeonato(c)}</option>`);
+
+                // Guarda a lista para as linhas dinâmicas da Agenda
+                agendaCampsList = lista;
+
+                // Adiciona a primeira linha de filtro da Agenda automaticamente se estiver vazia
+                const lista_filtros = document.getElementById('agenda-filtros-lista');
+                if (lista_filtros && lista_filtros.children.length === 0) {
+                    adicionarFiltroAgenda();
                 }
 
             } catch (e) {
@@ -1317,89 +1346,174 @@
             showToast('Card Mata-Mata gerado!', 'success');
         }
 
+        // ── AGENDA: gerenciamento de linhas de filtro ─────────────────
+        let agendaCampsList = [];
+
+        function adicionarFiltroAgenda(campId, rodadaId) {
+            const lista = document.getElementById('agenda-filtros-lista');
+            const idx = lista.children.length;
+            const div = document.createElement('div');
+            div.className = 'row g-2 align-items-end mb-2 agenda-filtro-row';
+            div.dataset.idx = idx;
+            div.innerHTML = `
+                <div class="col">
+                    <label class="form-label small fw-bold text-muted mb-1">CAMPEONATO</label>
+                    <select class="form-select form-select-sm agenda-sel-camp" onchange="carregarRodadaFiltro(this)">
+                        <option value="">Selecione...</option>
+                        ${agendaCampsList.map(c => `<option value="${c.id}" ${String(c.id)===String(campId)?'selected':''}>${formatarNomeCampeonato(c)}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="col">
+                    <label class="form-label small fw-bold text-muted mb-1">RODADA</label>
+                    <select class="form-select form-select-sm agenda-sel-rodada">
+                        <option value="todas">Todas as Rodadas</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-outline-danger btn-sm" onclick="this.closest('.agenda-filtro-row').remove()" title="Remover">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>`;
+            lista.appendChild(div);
+
+            const selCamp = div.querySelector('.agenda-sel-camp');
+            if (campId) {
+                selCamp.value = campId;
+                carregarRodadaFiltro(selCamp, rodadaId);
+            }
+        }
+
+        async function carregarRodadaFiltro(selEl, preSelectRodadaId) {
+            const campId = selEl.value;
+            const row = selEl.closest('.agenda-filtro-row');
+            const selRod = row.querySelector('.agenda-sel-rodada');
+            selRod.innerHTML = '<option value="">Carregando...</option>';
+            if (!campId) { selRod.innerHTML = '<option value="todas">Todas as Rodadas</option>'; return; }
+            try {
+                const res = await fetch(`${API}/campeonatos/${campId}/rodadas`);
+                const rodadas = await res.json();
+                selRod.innerHTML = '<option value="todas">Todas as Rodadas</option>';
+                rodadas.forEach(r => selRod.innerHTML += `<option value="${r.id}">${r.nome}</option>`);
+                if (preSelectRodadaId) selRod.value = preSelectRodadaId;
+            } catch(e) { selRod.innerHTML = '<option value="todas">Todas as Rodadas</option>'; }
+        }
+
+        // ── AGENDA: buscar e renderizar ───────────────────────────────
+        let agendaJogosCache = [];
+
         async function carregarAgendaIntegrada() {
             const selectAgenda = document.getElementById('select-campeonatos-agenda');
             const selectedOptions = Array.from(selectAgenda.selectedOptions).map(opt => opt.value);
+            const filtroRows = document.querySelectorAll('.agenda-filtro-row');
             const dataFiltro = document.getElementById('input-data-agenda').value;
             const container = document.getElementById('agenda-cards-container');
+            const tbodyExp = document.getElementById('tabela-agenda-exportacao');
 
-            if (selectedOptions.length === 0) {
-                showToast('Selecione ao menos um campeonato para buscar a agenda.', 'warning');
+            if (filtroRows.length === 0) {
+                showToast('Adicione ao menos um campeonato antes de buscar.', 'warning');
                 return;
             }
 
             container.innerHTML = '<div class="col-12 text-center p-4"><span class="spinner-border text-primary"></span><br>Buscando jogos...</div>';
 
             try {
-                const idsParam = selectedOptions.join(',');
-                let url = `${API}/jogos?campeonatosIds=${idsParam}`;
-                if (dataFiltro) {
-                    url += `&data=${dataFiltro}`;
+                let todosJogos = [];
+
+                for (const row of filtroRows) {
+                    const campId = row.querySelector('.agenda-sel-camp').value;
+                    const rodadaId = row.querySelector('.agenda-sel-rodada').value;
+                    if (!campId) continue;
+
+                    let url = `${API}/jogos?campeonatoId=${campId}`;
+                    if (rodadaId && rodadaId !== 'todas') url += `&rodadaId=${rodadaId}`;
+                    if (dataFiltro) url += `&data=${dataFiltro}`;
+
+                    const res = await fetch(url);
+                    const jogos = await res.json();
+                    todosJogos = todosJogos.concat(jogos);
                 }
 
-                const res = await fetch(url);
-                const jogos = await res.json();
+                // Deduplicar por id
+                const vistos = new Set();
+                todosJogos = todosJogos.filter(j => { if (vistos.has(j.id)) return false; vistos.add(j.id); return true; });
 
-                if (jogos.length === 0) {
-                    container.innerHTML = '<div class="col-12 text-center text-muted p-4"><i class="bi bi-inbox fs-1 d-block mb-3"></i> Nenhum jogo encontrado para os filtros selecionados.</div>';
+                // Ordenar por data e horário
+                todosJogos.sort((a, b) => {
+                    const dA = a.data || '9999-99-99', dB = b.data || '9999-99-99';
+                    if (dA !== dB) return dA.localeCompare(dB);
+                    return (a.horario || '99:99').localeCompare(b.horario || '99:99');
+                });
+
+                agendaJogosCache = todosJogos;
+
+                if (todosJogos.length === 0) {
+                    container.innerHTML = '<div class="col-12 text-center text-muted p-4"><i class="bi bi-inbox fs-1 d-block mb-3"></i>Nenhum jogo encontrado para os filtros selecionados.</div>';
+                    tbodyExp.innerHTML = '';
                     return;
                 }
 
+                // Renderizar cards
                 container.innerHTML = '';
-
-                // Garantir ordenação primária por data e secundária por horário
-                jogos.sort((a, b) => {
-                    const dA = a.data || '9999-99-99';
-                    const dB = b.data || '9999-99-99';
-                    if (dA !== dB) return dA.localeCompare(dB);
-                    
-                    const hA = a.horario || '99:99';
-                    const hB = b.horario || '99:99';
-                    return hA.localeCompare(hB);
-                });
-
-                jogos.forEach(j => {
-                    // Montar badge da categoria/campeonato
-                    let catName = j.rodada?.campeonato?.categoria || 'Categoria não informada';
-                    let campName = j.rodada?.campeonato?.nome || 'Campeonato não informado';
-                    
+                todosJogos.forEach(j => {
+                    const catName = j.rodada?.campeonato?.categoria || '';
+                    const campName = j.rodada?.campeonato?.nome || '';
+                    const badgeTxt = [campName, catName].filter(Boolean).join(' - ') || 'Campeonato';
                     const hora = j.horario || 'A Definir';
                     const local = j.local || 'Local a Definir';
                     const dataStr = j.data ? j.data.split('-').reverse().join('/') : 'Data a Definir';
-                    
-                    const logoM = j.mandanteLogo || j.mandante?.logoUrl ? `<img src="${j.mandanteLogo || j.mandante?.logoUrl}" style="width:48px;height:48px;object-fit:contain;border-radius:50%;" class="border shadow-sm">` : `<div class="rounded-circle border shadow-sm d-flex align-items-center justify-content-center bg-light" style="width:48px;height:48px;"><i class="bi bi-shield-fill text-muted fs-5"></i></div>`;
-                    const logoV = j.visitanteLogo || j.visitante?.logoUrl ? `<img src="${j.visitanteLogo || j.visitante?.logoUrl}" style="width:48px;height:48px;object-fit:contain;border-radius:50%;" class="border shadow-sm">` : `<div class="rounded-circle border shadow-sm d-flex align-items-center justify-content-center bg-light" style="width:48px;height:48px;"><i class="bi bi-shield-fill text-muted fs-5"></i></div>`;
-
-                    const html = `
+                    const gM = j.status === 'Finalizado' ? j.golsMandante : null;
+                    const gV = j.status === 'Finalizado' ? j.golsVisitante : null;
+                    const placarHtml = gM !== null ? `<span class="badge bg-success px-3 py-2 fs-6">${gM} x ${gV}</span>` : `<span class="badge bg-secondary px-2 py-1" style="font-size:0.7rem;">Agendado</span>`;
+                    const logoMUrl = j.mandante?.logoUrl || null;
+                    const logoVUrl = j.visitante?.logoUrl || null;
+                    const mkLogo = url => url
+                        ? `<img src="${url}" style="width:48px;height:48px;object-fit:contain;border-radius:50%;" class="border shadow-sm">`
+                        : `<div class="rounded-circle border shadow-sm d-flex align-items-center justify-content-center bg-light" style="width:48px;height:48px;"><i class="bi bi-shield-fill text-muted fs-5"></i></div>`;
+                    container.innerHTML += `
                     <div class="col-12 col-md-6 col-xl-4">
-                        <div class="card shadow-sm border-0 h-100 rounded-4 overflow-hidden" style="transition: transform 0.2s;">
-                            <div class="card-header border-0 text-center pt-3 pb-2" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
-                                <span class="badge bg-primary text-uppercase px-3 py-2 rounded-pill shadow-sm" style="font-size:0.75rem; letter-spacing: 0.5px;">${campName} - ${catName}</span>
-                                <div class="mt-3 small fw-bold text-secondary d-flex justify-content-center gap-3">
+                        <div class="card shadow-sm border-0 h-100 rounded-4 overflow-hidden">
+                            <div class="card-header border-0 text-center pt-3 pb-2" style="background:linear-gradient(135deg,#f0f4ff 0%,#e2e8ff 100%);">
+                                <span class="badge bg-primary text-uppercase px-3 py-2 rounded-pill shadow-sm" style="font-size:0.72rem;letter-spacing:0.4px;">${badgeTxt}</span>
+                                <div class="mt-2 small fw-bold text-secondary d-flex justify-content-center gap-3">
                                     <span><i class="bi bi-calendar-event text-primary"></i> ${dataStr}</span>
                                     <span><i class="bi bi-clock text-primary"></i> ${hora}</span>
                                 </div>
                             </div>
-                            <div class="card-body px-3 py-4 position-relative">
+                            <div class="card-body px-3 py-4">
                                 <div class="d-flex align-items-center justify-content-between">
-                                    <div class="text-center" style="width:42%;">
-                                        ${logoM}
-                                        <div class="mt-3 fw-bold text-dark text-truncate" style="font-size:0.95rem;" title="${j.mandanteNome}">${j.mandanteNome}</div>
-                                    </div>
-                                    <div class="text-center fw-black text-muted fs-4" style="font-family: 'Inter', sans-serif;">X</div>
-                                    <div class="text-center" style="width:42%;">
-                                        ${logoV}
-                                        <div class="mt-3 fw-bold text-dark text-truncate" style="font-size:0.95rem;" title="${j.visitanteNome}">${j.visitanteNome}</div>
-                                    </div>
+                                    <div class="text-center" style="width:40%;">${mkLogo(logoMUrl)}<div class="mt-2 fw-bold text-dark text-truncate" style="font-size:0.9rem;" title="${j.mandanteNome}">${j.mandanteNome}</div></div>
+                                    <div class="text-center">${placarHtml}</div>
+                                    <div class="text-center" style="width:40%;">${mkLogo(logoVUrl)}<div class="mt-2 fw-bold text-dark text-truncate" style="font-size:0.9rem;" title="${j.visitanteNome}">${j.visitanteNome}</div></div>
                                 </div>
                             </div>
-                            <div class="card-footer bg-white border-top text-center py-3">
-                                <small class="text-muted fw-semibold"><i class="bi bi-geo-alt-fill text-danger me-1"></i> ${local}</small>
+                            <div class="card-footer bg-white border-top text-center py-2">
+                                <small class="text-muted fw-semibold"><i class="bi bi-geo-alt-fill text-danger me-1"></i>${local}</small>
                             </div>
                         </div>
-                    </div>
-                    `;
-                    container.innerHTML += html;
+                    </div>`;
+                });
+
+                // Popular tabela oculta para exportações
+                tbodyExp.innerHTML = '';
+                const grupos = {};
+                todosJogos.forEach(j => {
+                    const campName = j.rodada?.campeonato?.nome || 'Campeonato';
+                    const catName  = j.rodada?.campeonato?.categoria || '';
+                    const key = [campName, catName].filter(Boolean).join(' - ');
+                    if (!grupos[key]) grupos[key] = [];
+                    grupos[key].push(j);
+                });
+                Object.keys(grupos).forEach(key => {
+                    tbodyExp.innerHTML += `<tr><td colspan="6" class="text-center border-0 pt-3 pb-2"><h4 class="mb-0 fw-bold border-bottom border-dark pb-2">${key}</h4></td></tr>`;
+                    tbodyExp.innerHTML += `<tr class="table-light text-muted small text-uppercase"><th class="text-center" style="width:8%">Jogo</th><th class="text-center" style="width:12%">Hora</th><th class="text-end" style="width:25%">Mandante</th><th class="text-center" style="width:15%">Placar</th><th class="text-start" style="width:25%">Visitante</th><th class="text-center" style="width:15%">Chave</th></tr>`;
+                    grupos[key].forEach(j => {
+                        const hr = j.horario || '--:--';
+                        const gM = j.status === 'Finalizado' ? j.golsMandante : '&nbsp;';
+                        const gV = j.status === 'Finalizado' ? j.golsVisitante : '&nbsp;';
+                        const pen = (j.status === 'Finalizado' && j.penaltisMandante != null) ? `<br><small class="text-muted">(${j.penaltisMandante}) x (${j.penaltisVisitante})</small>` : '';
+                        const ch = j.chave || '-';
+                        tbodyExp.innerHTML += `<tr><td class="text-center text-muted fw-bold">#${j.numero||'-'}</td><td class="text-center fw-bold">${hr}</td><td class="text-end fw-bold">${j.mandanteNome}</td><td class="text-center bg-light fw-bold">${gM} X ${gV}${pen}</td><td class="text-start fw-bold">${j.visitanteNome}</td><td class="text-center small fw-bold"><span class="badge bg-secondary-subtle text-secondary">${ch}</span></td></tr>`;
+                    });
                 });
 
             } catch (e) {
@@ -1408,8 +1522,109 @@
             }
         }
 
+        // ── EXPORTAÇÕES DA AGENDA ─────────────────────────────────────
+        function gerarPDFAgenda() {
+            if (!agendaJogosCache.length) { showToast('Busque os jogos antes de exportar.', 'warning'); return; }
+            document.getElementById('agenda-print-area').style.display = 'block';
+            window.print();
+            setTimeout(() => document.getElementById('agenda-print-area').style.display = 'none', 2000);
+        }
+
+        function exportarExcelAgenda() {
+            if (!agendaJogosCache.length) { showToast('Busque os jogos antes de exportar.', 'warning'); return; }
+            try {
+                const table = document.getElementById('tabela-agenda-exportacao').closest('table');
+                const wb = XLSX.utils.table_to_book(table, { sheet: 'Agenda' });
+                XLSX.writeFile(wb, 'agenda_integrada.xlsx');
+                showToast('Excel gerado com sucesso.', 'success');
+            } catch(e) { console.error(e); showToast('Erro ao exportar Excel.', 'danger'); }
+        }
+
+        function exportarWordAgenda() {
+            if (!agendaJogosCache.length) { showToast('Busque os jogos antes de exportar.', 'warning'); return; }
+            try {
+                const area = document.getElementById('tabela-agenda-exportacao').closest('table').outerHTML;
+                const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:Arial}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px;text-align:center;font-size:11pt}th{background:#eee}</style></head><body>${area}</body></html>`;
+                const blob = htmlDocx.asBlob(html);
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'agenda_integrada.docx';
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                showToast('Word gerado com sucesso.', 'success');
+            } catch(e) { console.error(e); showToast('Erro ao exportar Word.', 'danger'); }
+        }
+
+        async function gerarCardRodadaAgenda() {
+            if (!agendaJogosCache.length) { showToast('Busque os jogos antes de gerar o card.', 'warning'); return; }
+            const btn = document.getElementById('btn-card-instagram-agenda');
+            const orig = btn.innerHTML;
+            btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Gerando...';
+            try {
+                const jogosData = agendaJogosCache.map(j => ({
+                    mandante: j.mandanteNome, visitante: j.visitanteNome,
+                    golsM: j.status === 'Finalizado' ? j.golsMandante : null,
+                    golsV: j.status === 'Finalizado' ? j.golsVisitante : null,
+                    penaltisM: j.penaltisMandante ?? undefined, penaltisV: j.penaltisVisitante ?? undefined,
+                    logoM: j.mandante?.logoUrl || null, logoV: j.visitante?.logoUrl || null,
+                }));
+                const nomePref = document.getElementById('pdf-nome-prefeitura')?.innerText || '';
+                const logoSrc = document.getElementById('pdf-logo-prefeitura')?.src || '';
+                const logoDsp = document.getElementById('pdf-logo-prefeitura')?.style?.display;
+                document.getElementById('card-nome-campeonato').innerText = 'Agenda Integrada';
+                document.getElementById('card-nome-rodada').innerText = document.getElementById('input-data-agenda').value || '';
+                const subPref = document.getElementById('card-nome-prefeitura-sub');
+                if (subPref) subPref.innerText = nomePref;
+                const cardLogoTop = document.getElementById('card-logo-prefeitura-top');
+                if (cardLogoTop) { cardLogoTop.src = logoSrc; cardLogoTop.style.display = (logoSrc && logoDsp !== 'none') ? 'block' : 'none'; }
+                const cardFooterLogo = document.getElementById('card-footer-logo');
+                if (cardFooterLogo) { cardFooterLogo.src = logoSrc; cardFooterLogo.style.display = (logoSrc && logoDsp !== 'none') ? 'block' : 'none'; }
+
+                // Reusa o mesmo gerador de linhas do card original
+                const ESCUDO_SVG = sz => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="#aaa" style="flex-shrink:0;background:#fff;border-radius:50%;padding:8px;box-sizing:border-box;border:3px solid #FFB800;"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>`;
+                const mkLogoHtml = (url, sz) => url ? `<img src="${url}" width="${sz}" height="${sz}" crossorigin="anonymous" style="object-fit:contain;border-radius:50%;border:3px solid #FFB800;background:#fff;padding:4px;box-sizing:border-box;flex-shrink:0;" onerror="this.outerHTML='${ESCUDO_SVG(sz).replace(/"/g,"'")}'">` : ESCUDO_SVG(sz);
+                const duasColunas = jogosData.length > 8;
+                const barH = duasColunas ? '52px' : '68px';
+                const scoreH = duasColunas ? '60px' : '76px';
+                const scoreW = duasColunas ? '100px' : '128px';
+                const logoSz = duasColunas ? '56px' : '72px';
+                const scoreFs = duasColunas ? '28px' : '38px';
+                const barFs = duasColunas ? '16px' : '20px';
+                const fSize = (nome, base) => nome.length > 20 ? `${parseInt(base)-2}px` : base;
+                const criarLinha = jogo => {
+                    const final = jogo.golsM !== null && jogo.golsV !== null;
+                    const placarTxt = final ? `${jogo.golsM} - ${jogo.golsV}` : 'vs';
+                    let placarHtml = placarTxt;
+                    if (final && jogo.penaltisM !== undefined && jogo.penaltisM !== null)
+                        placarHtml = `<div style="display:flex;flex-direction:column;align-items:center;line-height:1;"><div>${placarTxt}</div><div style="font-size:14px;color:#FFB800;margin-top:2px;font-weight:700;">(${jogo.penaltisM}) - (${jogo.penaltisV})</div></div>`;
+                    const row = document.createElement('div');
+                    row.style.cssText = `display:flex;align-items:center;justify-content:space-between;width:100%;height:${barH};position:relative;gap:0;`;
+                    row.innerHTML = `<div style="z-index:3;flex-shrink:0;margin-right:-4px;">${mkLogoHtml(jogo.logoM,logoSz)}</div><div style="background:#FFB800;color:#000;height:${barH};flex:1;display:flex;align-items:center;padding:0 12px 0 10px;border-radius:8px 0 0 8px;font-weight:900;font-size:${fSize(jogo.mandante,barFs)};text-transform:uppercase;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${jogo.mandante}</div><div style="background:#0d2a6b;color:${final?'#fff':'#ddd'};height:${scoreH};min-width:${scoreW};display:flex;align-items:center;justify-content:center;font-size:${final?scoreFs:'22px'};font-weight:900;border-radius:5px;border:3px solid #FFB800;box-shadow:0 4px 16px rgba(0,0,0,0.5);z-index:2;flex-shrink:0;">${placarHtml}</div><div style="background:#FFB800;color:#000;height:${barH};flex:1;display:flex;align-items:center;padding:0 10px 0 12px;border-radius:0 8px 8px 0;font-weight:900;font-size:${fSize(jogo.visitante,barFs)};text-transform:uppercase;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;justify-content:flex-end;">${jogo.visitante}</div><div style="z-index:3;flex-shrink:0;margin-left:-4px;">${mkLogoHtml(jogo.logoV,logoSz)}</div>`;
+                    return row;
+                };
+                const container2 = document.getElementById('card-lista-jogos');
+                container2.innerHTML = ''; container2.style.flexDirection = 'column'; container2.style.gap = '14px';
+                if (!duasColunas) { jogosData.forEach(j => container2.appendChild(criarLinha(j))); }
+                else {
+                    const meio = Math.ceil(jogosData.length/2);
+                    container2.style.flexDirection = 'row'; container2.style.gap = '20px';
+                    [jogosData.slice(0,meio), jogosData.slice(meio)].forEach(lista => {
+                        const col = document.createElement('div');
+                        col.style.cssText = 'flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center;';
+                        lista.forEach(j => col.appendChild(criarLinha(j)));
+                        container2.appendChild(col);
+                    });
+                }
+                showToast('Renderizando imagem, aguarde...', 'info');
+                const canvas = await html2canvas(document.getElementById('template-card-instagram'), { useCORS:true, allowTaint:false, scale:1, width:1080, height:1080, backgroundColor:'#01081f', logging:false });
+                const link2 = document.createElement('a');
+                link2.download = 'agenda-card.png'; link2.href = canvas.toDataURL('image/png'); link2.click();
+                showToast('Card gerado com sucesso! 🎉', 'success');
+            } catch(err) { console.error(err); showToast('Erro ao gerar o card.', 'danger'); }
+            finally { btn.disabled = false; btn.innerHTML = orig; }
+        }
+
         window.onload = init;
     </script>
 </body>
 
-</html>
+</html>
