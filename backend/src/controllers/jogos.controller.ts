@@ -4,14 +4,25 @@ import { AuthRequest } from '../middleware/auth.middleware.js';
 
 export const getJogos = async (req: Request, res: Response) => {
     const campIdRaw = req.query.campeonatoId;
+    const campeonatosIdsRaw = req.query.campeonatosIds;
     const rodadaIdRaw = req.query.rodadaId;
     const chaveRaw = req.query.chave;
     const equipeIdRaw = req.query.equipeId;
+    const dataRaw = req.query.data;
 
     const where: any = {};
-    if (campIdRaw) where.rodada = { campeonatoId: parseInt(String(campIdRaw)) };
+    if (campeonatosIdsRaw) {
+        const ids = String(campeonatosIdsRaw).split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+        if (ids.length > 0) {
+            where.rodada = { campeonatoId: { in: ids } };
+        }
+    } else if (campIdRaw) {
+        where.rodada = { campeonatoId: parseInt(String(campIdRaw)) };
+    }
+    
     if (rodadaIdRaw) where.rodadaId = parseInt(String(rodadaIdRaw));
     if (chaveRaw) where.chave = String(chaveRaw);
+    if (dataRaw) where.data = String(dataRaw);
 
     if (equipeIdRaw) {
         const eqId = parseInt(String(equipeIdRaw));
@@ -26,7 +37,7 @@ export const getJogos = async (req: Request, res: Response) => {
             where,
             orderBy: { numero: 'asc' },
             include: {
-                rodada: { include: { campeonato: { select: { categoria: true } } } },
+                rodada: { include: { campeonato: { select: { nome: true, categoria: true } } } },
                 mandante: { select: { id: true, logoUrl: true } },
                 visitante: { select: { id: true, logoUrl: true } }
             }
