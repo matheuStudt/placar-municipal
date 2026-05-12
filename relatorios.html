@@ -323,7 +323,15 @@
                 </div>
 
                 <!-- Tabela oculta p/ exportação -->
-                <div id="agenda-print-area" style="display:none;">
+                <div id="agenda-print-area" style="display:none;" class="card shadow-sm border-0">
+                    <div class="card-header bg-primary text-white text-center" style="padding: 1rem;">
+                        <!-- CABEÇALHO PREFEITURA -->
+                        <img id="pdf-logo-prefeitura-agenda" src="" alt="Logo da Prefeitura" style="max-height: 90px; display: none;" class="img-fluid mb-2">
+                        <h4 class="fw-bold mb-3 text-uppercase" id="pdf-nome-prefeitura-agenda">PREFEITURA MUNICIPAL</h4>
+                        <hr class="border-dark opacity-50 mb-3" style="width: 50%; margin: 0 auto;">
+                        <h3 class="mb-0 fw-bold">AGENDA INTEGRADA DE JOGOS</h3>
+                        <h5 class="mb-0" id="pdf-subtitulo-agenda"></h5>
+                    </div>
                     <table class="table table-hover align-middle mb-0">
                         <tbody id="tabela-agenda-exportacao"></tbody>
                     </table>
@@ -549,11 +557,19 @@
                     const config = await res.json();
                     if (config.nome) {
                         document.getElementById('pdf-nome-prefeitura').innerText = config.nome;
+                        const nomeAgenda = document.getElementById('pdf-nome-prefeitura-agenda');
+                        if (nomeAgenda) nomeAgenda.innerText = config.nome;
                     }
                     if (config.logoUrl) {
                         const img = document.getElementById('pdf-logo-prefeitura');
                         img.src = config.logoUrl;
                         img.style.display = 'inline-block';
+                        
+                        const imgAgenda = document.getElementById('pdf-logo-prefeitura-agenda');
+                        if (imgAgenda) {
+                            imgAgenda.src = config.logoUrl;
+                            imgAgenda.style.display = 'inline-block';
+                        }
                     }
                 }
             } catch (e) {
@@ -1495,22 +1511,39 @@
                 tbodyExp.innerHTML = '';
                 const grupos = {};
                 todosJogos.forEach(j => {
-                    const campName = j.rodada?.campeonato?.nome || 'Campeonato';
-                    const catName  = j.rodada?.campeonato?.categoria || '';
-                    const key = [campName, catName].filter(Boolean).join(' - ');
+                    const localStr = j.local || 'Local a Definir';
+                    const dataStr = j.data ? new Date(j.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data Indefinida';
+                    const key = `${dataStr} - ${localStr}`;
                     if (!grupos[key]) grupos[key] = [];
                     grupos[key].push(j);
                 });
+
+                let isPrimeiro = true;
                 Object.keys(grupos).forEach(key => {
-                    tbodyExp.innerHTML += `<tr><td colspan="6" class="text-center border-0 pt-3 pb-2"><h4 class="mb-0 fw-bold border-bottom border-dark pb-2">${key}</h4></td></tr>`;
-                    tbodyExp.innerHTML += `<tr class="table-light text-muted small text-uppercase"><th class="text-center" style="width:8%">Jogo</th><th class="text-center" style="width:12%">Hora</th><th class="text-end" style="width:25%">Mandante</th><th class="text-center" style="width:15%">Placar</th><th class="text-start" style="width:25%">Visitante</th><th class="text-center" style="width:15%">Chave</th></tr>`;
+                    if (!isPrimeiro) {
+                        tbodyExp.innerHTML += `
+                            <tr style="border-style: hidden;">
+                                <td colspan="6" style="height: 35px; border: none !important;"></td>
+                            </tr>
+                        `;
+                    }
+                    isPrimeiro = false;
+
+                    tbodyExp.innerHTML += `<tr><td colspan="6" class="text-center border-0 pt-3 pb-2" style="background-color: transparent !important;"><h4 class="mb-0 fw-bold border-bottom border-dark pb-2">${key}</h4></td></tr>`;
+                    tbodyExp.innerHTML += `<tr class="table-light text-muted small text-uppercase" style="border-bottom: 2px solid #ccc;"><th class="text-center" style="width:8%">Jogo</th><th class="text-center" style="width:12%">Hora</th><th class="text-end" style="width:25%">Mandante</th><th class="text-center" style="width:15%">Placar</th><th class="text-start" style="width:25%">Visitante</th><th class="text-center" style="width:15%">Chave</th></tr>`;
                     grupos[key].forEach(j => {
                         const hr = j.horario || '--:--';
                         const gM = j.status === 'Finalizado' ? j.golsMandante : '&nbsp;';
                         const gV = j.status === 'Finalizado' ? j.golsVisitante : '&nbsp;';
                         const pen = (j.status === 'Finalizado' && j.penaltisMandante != null) ? `<br><small class="text-muted">(${j.penaltisMandante}) x (${j.penaltisVisitante})</small>` : '';
                         const ch = j.chave || '-';
-                        tbodyExp.innerHTML += `<tr><td class="text-center text-muted fw-bold">#${j.numero||'-'}</td><td class="text-center fw-bold">${hr}</td><td class="text-end fw-bold">${j.mandanteNome}</td><td class="text-center bg-light fw-bold">${gM} X ${gV}${pen}</td><td class="text-start fw-bold">${j.visitanteNome}</td><td class="text-center small fw-bold"><span class="badge bg-secondary-subtle text-secondary">${ch}</span></td></tr>`;
+
+                        const catJogo = j.rodada?.campeonato?.categoria || null;
+                        const catBadge = catJogo
+                            ? `<span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle badge-categoria-print" style="font-size:0.65rem;display:block;margin-top:2px;">${catJogo}</span>`
+                            : '';
+
+                        tbodyExp.innerHTML += `<tr><td class="text-center text-muted fw-bold">#${j.numero||'-'}</td><td class="text-center fw-bold text-secondary">${hr}${catBadge}</td><td class="text-end fw-bold text-dark">${j.mandanteNome}</td><td class="text-center bg-light fw-bold fs-6" style="line-height:1.2;">${gM} X ${gV}${pen}</td><td class="text-start fw-bold text-dark">${j.visitanteNome}</td><td class="text-center small fw-bold border-start"><span class="badge bg-secondary-subtle text-secondary px-2">${ch}</span></td></tr>`;
                     });
                 });
 
