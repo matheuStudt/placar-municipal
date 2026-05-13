@@ -43,15 +43,26 @@
                      (opacity/visibility ainda ocupam espaço físico) */
             .sidebar,
             .top-navbar,
-            .btn-print-hide,
             .main-content-overlay,
             .modal,
             .modal-backdrop,
             footer,
             nav,
             [data-bs-toggle],
-            #menu-container {
+            #menu-container,
+            #agenda-cards-container { /* Adicionado para não sair no PDF */
                 display: none !important;
+            }
+
+            /* Garante que a tabela compacta da agenda seja exibida no PDF/Impressão */
+            #agenda-print-area {
+                display: block !important;
+                width: 100% !important;
+            }
+            
+            /* Ajuste para que a tabela ocupe a largura total no PDF */
+            #agenda-print-area table {
+                width: 100% !important;
             }
 
             /* 4 ── Área de conteúdo principal */
