@@ -327,8 +327,8 @@
                 </div>
 
                 <!-- Cards resultado -->
-                <div id="agenda-cards-container" class="row g-3">
-                    <div class="col-12 text-center text-muted p-4">
+                <div id="agenda-cards-container" style="display:flex;flex-direction:column;gap:10px;">
+                    <div class="text-center text-muted p-4">
                         <i class="bi bi-calendar2-week fs-1 d-block mb-2 opacity-25"></i>Adicione campeonatos e clique em Buscar Jogos.
                     </div>
                 </div>
@@ -1477,45 +1477,63 @@
                     return;
                 }
 
-                // Renderizar cards
+                // Renderizar cards — layout idêntico ao card de exportação oficial
                 container.innerHTML = '';
+                const ESCUDO_AGENDA = sz => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="#aaa" style="flex-shrink:0;background:#fff;border-radius:50%;padding:6px;box-sizing:border-box;border:2px solid #e0e0e0;"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>`;
+                const mkLogoAgenda = (url, sz) => url
+                    ? `<img src="${url}" width="${sz}" height="${sz}" style="object-fit:contain;border-radius:50%;border:2px solid #e0e0e0;background:#fff;padding:3px;box-sizing:border-box;flex-shrink:0;">`
+                    : ESCUDO_AGENDA(sz);
                 todosJogos.forEach(j => {
                     const catName = j.rodada?.campeonato?.categoria || '';
                     const campName = j.rodada?.campeonato?.nome || '';
-                    const badgeTxt = [campName, catName].filter(Boolean).join(' - ') || 'Campeonato';
+                    const badgeTxt = [campName, catName].filter(Boolean).join(' — ') || 'Campeonato';
                     const hora = j.horario || 'A Definir';
                     const local = j.local || 'Local a Definir';
                     const dataStr = j.data ? j.data.split('-').reverse().join('/') : 'Data a Definir';
                     const gM = j.status === 'Finalizado' ? j.golsMandante : null;
                     const gV = j.status === 'Finalizado' ? j.golsVisitante : null;
-                    const placarHtml = gM !== null ? `<span class="badge bg-success px-3 py-2 fs-6">${gM} x ${gV}</span>` : `<span class="badge bg-secondary px-2 py-1" style="font-size:0.7rem;">Agendado</span>`;
+                    const penHtml = (j.status === 'Finalizado' && j.penaltisMandante != null)
+                        ? `<div style="font-size:0.65rem;color:#FFB800;font-weight:700;margin-top:2px;">(${j.penaltisMandante})-(${j.penaltisVisitante})</div>`
+                        : '';
+                    const placarTxt = gM !== null ? `${gM} - ${gV}` : 'VS';
                     const logoMUrl = j.mandante?.logoUrl || null;
                     const logoVUrl = j.visitante?.logoUrl || null;
-                    const mkLogo = url => url
-                        ? `<img src="${url}" style="width:48px;height:48px;object-fit:contain;border-radius:50%;" class="border shadow-sm">`
-                        : `<div class="rounded-circle border shadow-sm d-flex align-items-center justify-content-center bg-light" style="width:48px;height:48px;"><i class="bi bi-shield-fill text-muted fs-5"></i></div>`;
-                    container.innerHTML += `
-                    <div class="col-12 col-md-6 col-xl-4">
-                        <div class="card shadow-sm border-0 h-100 rounded-4 overflow-hidden">
-                            <div class="card-header border-0 text-center pt-3 pb-2" style="background:linear-gradient(135deg,#f0f4ff 0%,#e2e8ff 100%);">
-                                <span class="badge bg-primary text-uppercase px-3 py-2 rounded-pill shadow-sm" style="font-size:0.72rem;letter-spacing:0.4px;">${badgeTxt}</span>
-                                <div class="mt-2 small fw-bold text-secondary d-flex justify-content-center gap-3">
-                                    <span><i class="bi bi-calendar-event text-primary"></i> ${dataStr}</span>
-                                    <span><i class="bi bi-clock text-primary"></i> ${hora}</span>
-                                </div>
+                    const LOGO_SZ = 52;
+
+                    const card = document.createElement('div');
+                    card.style.cssText = 'width:100%;';
+                    card.innerHTML = `
+                        <!-- Cabeçalho do card: campeonato + data/hora/local -->
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;padding:6px 12px 4px;background:#f0f4ff;border-radius:12px 12px 0 0;border:1px solid #dde3f5;border-bottom:none;">
+                            <span style="background:#1a3a8f;color:#fff;font-size:0.68rem;font-weight:700;letter-spacing:0.4px;padding:3px 10px;border-radius:20px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%;">${badgeTxt}</span>
+                            <span style="font-size:0.72rem;color:#555;font-weight:600;white-space:nowrap;">
+                                <i class="bi bi-calendar-event" style="color:#1a3a8f;"></i> ${dataStr}
+                                &nbsp;<i class="bi bi-clock" style="color:#1a3a8f;"></i> ${hora}
+                            </span>
+                        </div>
+                        <!-- Linha amarela do jogo -->
+                        <div style="display:flex;align-items:center;justify-content:space-between;background:#FFB800;border-radius:0 0 0 0;padding:8px 12px;gap:0;border:1px solid #e0a800;border-top:none;border-bottom:none;">
+                            <!-- Bloco Esquerdo: Logo + Nome Mandante -->
+                            <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;overflow:hidden;">
+                                ${mkLogoAgenda(logoMUrl, LOGO_SZ)}
+                                <span style="font-weight:900;font-size:0.92rem;color:#000;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${j.mandanteNome}">${j.mandanteNome}</span>
                             </div>
-                            <div class="card-body px-3 py-4">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="text-center" style="width:40%;">${mkLogo(logoMUrl)}<div class="mt-2 fw-bold text-dark text-truncate" style="font-size:0.9rem;" title="${j.mandanteNome}">${j.mandanteNome}</div></div>
-                                    <div class="text-center">${placarHtml}</div>
-                                    <div class="text-center" style="width:40%;">${mkLogo(logoVUrl)}<div class="mt-2 fw-bold text-dark text-truncate" style="font-size:0.9rem;" title="${j.visitanteNome}">${j.visitanteNome}</div></div>
-                                </div>
+                            <!-- Bloco Central: Placar -->
+                            <div style="background:#0d2a6b;color:#fff;min-width:90px;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:${gM !== null ? '1.2rem' : '0.85rem'};font-weight:900;border-radius:8px;border:3px solid #FFB800;box-shadow:0 3px 10px rgba(0,0,0,0.4);flex-shrink:0;margin:0 10px;line-height:1.1;">
+                                ${placarTxt}${penHtml}
                             </div>
-                            <div class="card-footer bg-white border-top text-center py-2">
-                                <small class="text-muted fw-semibold"><i class="bi bi-geo-alt-fill text-danger me-1"></i>${local}</small>
+                            <!-- Bloco Direito: Nome Visitante + Logo -->
+                            <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;overflow:hidden;justify-content:flex-end;">
+                                <span style="font-weight:900;font-size:0.92rem;color:#000;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;" title="${j.visitanteNome}">${j.visitanteNome}</span>
+                                ${mkLogoAgenda(logoVUrl, LOGO_SZ)}
                             </div>
                         </div>
-                    </div>`;
+                        <!-- Rodapé: local -->
+                        <div style="background:#fff;border:1px solid #dde3f5;border-top:none;border-radius:0 0 12px 12px;padding:5px 12px;text-align:center;">
+                            <small style="color:#555;font-weight:600;"><i class="bi bi-geo-alt-fill" style="color:#dc3545;"></i> ${local}</small>
+                        </div>
+                    `;
+                    container.appendChild(card);
                 });
 
                 // Popular tabela oculta para exportações
