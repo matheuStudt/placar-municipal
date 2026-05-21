@@ -1642,38 +1642,35 @@
                 // Reusa o mesmo gerador de linhas do card original
                 const ESCUDO_SVG = sz => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="#aaa" style="flex-shrink:0;background:#fff;border-radius:50%;padding:8px;box-sizing:border-box;border:3px solid #FFB800;"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>`;
                 const mkLogoHtml = (url, sz) => url ? `<img src="${url}" width="${sz}" height="${sz}" crossorigin="anonymous" style="object-fit:contain;border-radius:50%;border:3px solid #FFB800;background:#fff;padding:4px;box-sizing:border-box;flex-shrink:0;" onerror="this.outerHTML='${ESCUDO_SVG(sz).replace(/"/g,"'")}'">` : ESCUDO_SVG(sz);
-                const duasColunas = jogosData.length > 8;
-                const barH = duasColunas ? '52px' : '68px';
-                const scoreH = duasColunas ? '60px' : '76px';
-                const scoreW = duasColunas ? '100px' : '128px';
-                const logoSz = duasColunas ? '56px' : '72px';
-                const scoreFs = duasColunas ? '28px' : '38px';
-                const barFs = duasColunas ? '16px' : '20px';
-                const fSize = (nome, base) => nome.length > 20 ? `${parseInt(base)-2}px` : base;
+                // Tamanhos adaptativos por quantidade de jogos (sempre coluna única)
+                const n = jogosData.length;
+                const barH   = n <= 5  ? '80px' : n <= 8  ? '68px' : n <= 12 ? '54px' : '44px';
+                const scoreH = n <= 5  ? '88px' : n <= 8  ? '76px' : n <= 12 ? '62px' : '50px';
+                const scoreW = n <= 5  ? '140px': n <= 8  ? '120px': n <= 12 ? '100px': '86px';
+                const logoSz = n <= 5  ? '80px' : n <= 8  ? '68px' : n <= 12 ? '54px' : '44px';
+                const scoreFs= n <= 5  ? '42px' : n <= 8  ? '36px' : n <= 12 ? '28px' : '22px';
+                const barFs  = n <= 5  ? '22px' : n <= 8  ? '19px' : n <= 12 ? '16px' : '13px';
+                const gapPx  = n <= 5  ? '14px' : n <= 8  ? '10px' : n <= 12 ? '7px'  : '5px';
+                const fSize  = (nome, base) => nome.length > 20 ? `${parseInt(base)-2}px` : base;
+
                 const criarLinha = jogo => {
                     const final = jogo.golsM !== null && jogo.golsV !== null;
                     const placarTxt = final ? `${jogo.golsM} - ${jogo.golsV}` : 'vs';
                     let placarHtml = placarTxt;
                     if (final && jogo.penaltisM !== undefined && jogo.penaltisM !== null)
-                        placarHtml = `<div style="display:flex;flex-direction:column;align-items:center;line-height:1;"><div>${placarTxt}</div><div style="font-size:14px;color:#FFB800;margin-top:2px;font-weight:700;">(${jogo.penaltisM}) - (${jogo.penaltisV})</div></div>`;
+                        placarHtml = `<div style="display:flex;flex-direction:column;align-items:center;line-height:1;"><div>${placarTxt}</div><div style="font-size:13px;color:#FFB800;margin-top:2px;font-weight:700;">(${jogo.penaltisM}) - (${jogo.penaltisV})</div></div>`;
                     const row = document.createElement('div');
                     row.style.cssText = `display:flex;align-items:center;justify-content:space-between;width:100%;height:${barH};position:relative;gap:0;`;
-                    row.innerHTML = `<div style="z-index:3;flex-shrink:0;margin-right:-4px;">${mkLogoHtml(jogo.logoM,logoSz)}</div><div style="background:#FFB800;color:#000;height:${barH};flex:1;display:flex;align-items:center;padding:0 12px 0 10px;border-radius:8px 0 0 8px;font-weight:900;font-size:${fSize(jogo.mandante,barFs)};text-transform:uppercase;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${jogo.mandante}</div><div style="background:#0d2a6b;color:${final?'#fff':'#ddd'};height:${scoreH};min-width:${scoreW};display:flex;align-items:center;justify-content:center;font-size:${final?scoreFs:'22px'};font-weight:900;border-radius:5px;border:3px solid #FFB800;box-shadow:0 4px 16px rgba(0,0,0,0.5);z-index:2;flex-shrink:0;">${placarHtml}</div><div style="background:#FFB800;color:#000;height:${barH};flex:1;display:flex;align-items:center;padding:0 10px 0 12px;border-radius:0 8px 8px 0;font-weight:900;font-size:${fSize(jogo.visitante,barFs)};text-transform:uppercase;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;justify-content:flex-end;">${jogo.visitante}</div><div style="z-index:3;flex-shrink:0;margin-left:-4px;">${mkLogoHtml(jogo.logoV,logoSz)}</div>`;
+                    row.innerHTML = `<div style="z-index:3;flex-shrink:0;margin-right:-4px;">${mkLogoHtml(jogo.logoM,logoSz)}</div><div style="background:#FFB800;color:#000;height:${barH};flex:1;display:flex;align-items:center;padding:0 12px 0 10px;border-radius:8px 0 0 8px;font-weight:900;font-size:${fSize(jogo.mandante,barFs)};text-transform:uppercase;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${jogo.mandante}</div><div style="background:#0d2a6b;color:${final?'#fff':'#ddd'};height:${scoreH};min-width:${scoreW};display:flex;align-items:center;justify-content:center;font-size:${final?scoreFs:'20px'};font-weight:900;border-radius:5px;border:3px solid #FFB800;box-shadow:0 4px 16px rgba(0,0,0,0.5);z-index:2;flex-shrink:0;">${placarHtml}</div><div style="background:#FFB800;color:#000;height:${barH};flex:1;display:flex;align-items:center;padding:0 10px 0 12px;border-radius:0 8px 8px 0;font-weight:900;font-size:${fSize(jogo.visitante,barFs)};text-transform:uppercase;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;justify-content:flex-end;">${jogo.visitante}</div><div style="z-index:3;flex-shrink:0;margin-left:-4px;">${mkLogoHtml(jogo.logoV,logoSz)}</div>`;
                     return row;
                 };
+
+                // Sempre coluna única — sem divisão em 2 colunas
                 const container2 = document.getElementById('card-lista-jogos');
-                container2.innerHTML = ''; container2.style.flexDirection = 'column'; container2.style.gap = '14px';
-                if (!duasColunas) { jogosData.forEach(j => container2.appendChild(criarLinha(j))); }
-                else {
-                    const meio = Math.ceil(jogosData.length/2);
-                    container2.style.flexDirection = 'row'; container2.style.gap = '20px';
-                    [jogosData.slice(0,meio), jogosData.slice(meio)].forEach(lista => {
-                        const col = document.createElement('div');
-                        col.style.cssText = 'flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center;';
-                        lista.forEach(j => col.appendChild(criarLinha(j)));
-                        container2.appendChild(col);
-                    });
-                }
+                container2.innerHTML = '';
+                container2.style.flexDirection = 'column';
+                container2.style.gap = gapPx;
+                jogosData.forEach(j => container2.appendChild(criarLinha(j)));
                 showToast('Renderizando imagem, aguarde...', 'info');
                 const canvas = await html2canvas(document.getElementById('template-card-instagram'), { useCORS:true, allowTaint:false, scale:1, width:1080, height:1080, backgroundColor:'#01081f', logging:false });
                 const link2 = document.createElement('a');
