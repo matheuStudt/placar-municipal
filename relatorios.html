@@ -1477,63 +1477,95 @@
                     return;
                 }
 
-                // Renderizar cards — layout idêntico ao card de exportação oficial
+                // ── Renderizar em formato de tabela (idêntico à Exportação Oficial) ──
                 container.innerHTML = '';
-                const ESCUDO_AGENDA = sz => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="#aaa" style="flex-shrink:0;background:#fff;border-radius:50%;padding:6px;box-sizing:border-box;border:2px solid #e0e0e0;"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>`;
-                const mkLogoAgenda = (url, sz) => url
-                    ? `<img src="${url}" width="${sz}" height="${sz}" style="object-fit:contain;border-radius:50%;border:2px solid #e0e0e0;background:#fff;padding:3px;box-sizing:border-box;flex-shrink:0;">`
-                    : ESCUDO_AGENDA(sz);
-                todosJogos.forEach(j => {
-                    const catName = j.rodada?.campeonato?.categoria || '';
-                    const campName = j.rodada?.campeonato?.nome || '';
-                    const badgeTxt = [campName, catName].filter(Boolean).join(' — ') || 'Campeonato';
-                    const hora = j.horario || 'A Definir';
-                    const local = j.local || 'Local a Definir';
-                    const dataStr = j.data ? j.data.split('-').reverse().join('/') : 'Data a Definir';
-                    const gM = j.status === 'Finalizado' ? j.golsMandante : null;
-                    const gV = j.status === 'Finalizado' ? j.golsVisitante : null;
-                    const penHtml = (j.status === 'Finalizado' && j.penaltisMandante != null)
-                        ? `<div style="font-size:0.65rem;color:#FFB800;font-weight:700;margin-top:2px;">(${j.penaltisMandante})-(${j.penaltisVisitante})</div>`
-                        : '';
-                    const placarTxt = gM !== null ? `${gM} - ${gV}` : 'VS';
-                    const logoMUrl = j.mandante?.logoUrl || null;
-                    const logoVUrl = j.visitante?.logoUrl || null;
-                    const LOGO_SZ = 52;
 
-                    const card = document.createElement('div');
-                    card.style.cssText = 'width:100%;';
-                    card.innerHTML = `
-                        <!-- Cabeçalho do card: campeonato + data/hora/local -->
-                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;padding:6px 12px 4px;background:#f0f4ff;border-radius:12px 12px 0 0;border:1px solid #dde3f5;border-bottom:none;">
-                            <span style="background:#1a3a8f;color:#fff;font-size:0.68rem;font-weight:700;letter-spacing:0.4px;padding:3px 10px;border-radius:20px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%;">${badgeTxt}</span>
-                            <span style="font-size:0.72rem;color:#555;font-weight:600;white-space:nowrap;">
-                                <i class="bi bi-calendar-event" style="color:#1a3a8f;"></i> ${dataStr}
-                                &nbsp;<i class="bi bi-clock" style="color:#1a3a8f;"></i> ${hora}
-                            </span>
-                        </div>
-                        <!-- Linha amarela do jogo -->
-                        <div style="display:flex;align-items:center;justify-content:space-between;background:#FFB800;border-radius:0 0 0 0;padding:8px 12px;gap:0;border:1px solid #e0a800;border-top:none;border-bottom:none;">
-                            <!-- Bloco Esquerdo: Logo + Nome Mandante -->
-                            <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;overflow:hidden;">
-                                ${mkLogoAgenda(logoMUrl, LOGO_SZ)}
-                                <span style="font-weight:900;font-size:0.92rem;color:#000;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${j.mandanteNome}">${j.mandanteNome}</span>
-                            </div>
-                            <!-- Bloco Central: Placar -->
-                            <div style="background:#0d2a6b;color:#fff;min-width:90px;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:${gM !== null ? '1.2rem' : '0.85rem'};font-weight:900;border-radius:8px;border:3px solid #FFB800;box-shadow:0 3px 10px rgba(0,0,0,0.4);flex-shrink:0;margin:0 10px;line-height:1.1;">
-                                ${placarTxt}${penHtml}
-                            </div>
-                            <!-- Bloco Direito: Nome Visitante + Logo -->
-                            <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;overflow:hidden;justify-content:flex-end;">
-                                <span style="font-weight:900;font-size:0.92rem;color:#000;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;" title="${j.visitanteNome}">${j.visitanteNome}</span>
-                                ${mkLogoAgenda(logoVUrl, LOGO_SZ)}
-                            </div>
-                        </div>
-                        <!-- Rodapé: local -->
-                        <div style="background:#fff;border:1px solid #dde3f5;border-top:none;border-radius:0 0 12px 12px;padding:5px 12px;text-align:center;">
-                            <small style="color:#555;font-weight:600;"><i class="bi bi-geo-alt-fill" style="color:#dc3545;"></i> ${local}</small>
-                        </div>
-                    `;
-                    container.appendChild(card);
+                // Agrupar por Rodada + Data + Local
+                const gruposVis = {};
+                todosJogos.forEach(j => {
+                    const localStr   = j.local || 'Local a Definir';
+                    const dataFmt    = j.data ? new Date(j.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data Indefinida';
+                    const rodadaLbl  = j.rodada?.nome || (j.rodada?.numero ? `Rodada ${j.rodada.numero}` : 'Rodada');
+                    const key = `${rodadaLbl}||${dataFmt}||${localStr}`;
+                    if (!gruposVis[key]) gruposVis[key] = [];
+                    gruposVis[key].push(j);
+                });
+
+                Object.keys(gruposVis).forEach((key, ki) => {
+                    const [rodadaLbl, dataFmt, localStr] = key.split('||');
+
+                    // Espaçador entre grupos (exceto o primeiro)
+                    if (ki > 0) {
+                        const spacer = document.createElement('div');
+                        spacer.style.height = '24px';
+                        container.appendChild(spacer);
+                    }
+
+                    // Título do grupo
+                    const titulo = document.createElement('div');
+                    titulo.innerHTML = `
+                        <h4 class="mb-0 fw-bold pb-2 border-bottom border-dark text-center">
+                            ${rodadaLbl} | ${dataFmt} | ${localStr}
+                        </h4>`;
+                    container.appendChild(titulo);
+
+                    // Tabela do grupo
+                    const wrapper = document.createElement('div');
+                    wrapper.style.cssText = 'overflow-x:auto;margin-top:4px;';
+
+                    // Sub-agrupar por chave
+                    const subGrupos = {};
+                    gruposVis[key].forEach(j => {
+                        const ch = j.chave || '-';
+                        if (!subGrupos[ch]) subGrupos[ch] = [];
+                        subGrupos[ch].push(j);
+                    });
+
+                    let tableHtml = `<table class="table table-hover align-middle mb-0" style="background:#fff;">`;
+                    Object.keys(subGrupos).forEach(chave => {
+                        // Cabeçalho
+                        tableHtml += `
+                            <thead>
+                                <tr class="table-light text-muted small text-uppercase" style="border-bottom:2px solid #ccc;">
+                                    <th class="text-center fw-bold" style="width:8%">Jogo</th>
+                                    <th class="text-center fw-bold" style="width:12%">Hora</th>
+                                    <th class="text-end fw-bold"   style="width:25%">Mandante</th>
+                                    <th class="text-center fw-bold" style="width:15%">Placar</th>
+                                    <th class="text-start fw-bold"  style="width:25%">Visitante</th>
+                                    <th class="text-center fw-bold" style="width:15%">Chave</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                        subGrupos[chave].forEach(j => {
+                            const hr       = j.horario || '--:--';
+                            const gM       = j.status === 'Finalizado' ? j.golsMandante : '&nbsp;';
+                            const gV       = j.status === 'Finalizado' ? j.golsVisitante : '&nbsp;';
+                            const pen      = (j.status === 'Finalizado' && j.penaltisMandante != null)
+                                ? `<br><small class="text-muted">(${j.penaltisMandante}) x (${j.penaltisVisitante})</small>` : '';
+                            const ch       = j.chave || '-';
+                            const catJogo  = j.rodada?.campeonato?.categoria || j.rodada?.campeonato?.nome || null;
+                            const catBadge = catJogo
+                                ? `<span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle" style="font-size:0.65rem;display:block;margin-top:3px;white-space:nowrap;">${catJogo}</span>`
+                                : '';
+                            tableHtml += `
+                                <tr style="border-bottom:1px solid #f0f0f0;">
+                                    <td class="text-center text-muted fw-bold">#${j.numero || '-'}</td>
+                                    <td class="text-center fw-bold text-secondary" style="white-space:nowrap;">
+                                        ${hr}${catBadge}
+                                    </td>
+                                    <td class="text-end fw-bold text-dark">${j.mandanteNome}</td>
+                                    <td class="text-center bg-light fw-bold fs-6" style="line-height:1.2;">${gM} X ${gV}${pen}</td>
+                                    <td class="text-start fw-bold text-dark">${j.visitanteNome}</td>
+                                    <td class="text-center small fw-bold border-start">
+                                        <span class="badge bg-secondary-subtle text-secondary px-2">${ch}</span>
+                                    </td>
+                                </tr>`;
+                        });
+                        tableHtml += `</tbody>`;
+                    });
+                    tableHtml += `</table>`;
+                    wrapper.innerHTML = tableHtml;
+                    container.appendChild(wrapper);
                 });
 
                 // Popular tabela oculta para exportações
