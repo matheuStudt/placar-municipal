@@ -1150,6 +1150,14 @@
                             box-shadow: 0 12px 24px rgba(0,0,0,0.12) !important;
                             border-color: var(--accent) !important;
                         }
+                        @keyframes floatTrophy {
+                            0% { transform: translateY(0px) rotate(0deg); }
+                            50% { transform: translateY(-6px) rotate(3deg); }
+                            100% { transform: translateY(0px) rotate(0deg); }
+                        }
+                        .float-trophy {
+                            animation: floatTrophy 2.5s ease-in-out infinite;
+                        }
                     </style>
                     <div class="bracket-wrapper" style="overflow-x: auto; padding-bottom: 20px; margin-top: 10px;">
                         <div class="bracket-container" style="display: flex; gap: 40px; min-width: min-content;">
@@ -1195,7 +1203,101 @@
                     });
 
                     mmHtml += '</div></div>';
-                    containerMataMata.innerHTML = mmHtml;
+
+                    // Identificar se há campeão
+                    let campeao = null;
+                    const finalRound = rounds.find(r => 
+                        r.rodadaNome?.toLowerCase().includes('final') && 
+                        !r.rodadaNome?.toLowerCase().includes('semi') && 
+                        !r.rodadaNome?.toLowerCase().includes('quarta') && 
+                        !r.rodadaNome?.toLowerCase().includes('oitava')
+                    ) || (rounds.length > 0 ? rounds[rounds.length - 1] : null);
+
+                    if (finalRound && finalRound.jogos.length > 0 && finalRound.jogos.every(j => j.status === 'Finalizado')) {
+                        if (finalRound.jogos.length === 1) {
+                            const j = finalRound.jogos[0];
+                            const gM = j.golsMandante !== null && j.golsMandante !== undefined ? j.golsMandante : 0;
+                            const gV = j.golsVisitante !== null && j.golsVisitante !== undefined ? j.golsVisitante : 0;
+                            if (gM > gV) {
+                                campeao = { nome: j.mandanteNome, logoUrl: j.mandante?.logoUrl };
+                            } else if (gV > gM) {
+                                campeao = { nome: j.visitanteNome, logoUrl: j.visitante?.logoUrl };
+                            } else {
+                                const pM = j.penaltisMandante;
+                                const pV = j.penaltisVisitante;
+                                if (pM !== null && pM !== undefined && pV !== null && pV !== undefined) {
+                                    if (pM > pV) campeao = { nome: j.mandanteNome, logoUrl: j.mandante?.logoUrl };
+                                    else if (pV > pM) campeao = { nome: j.visitanteNome, logoUrl: j.visitante?.logoUrl };
+                                }
+                            }
+                        } else if (finalRound.jogos.length === 2) {
+                            const j1 = finalRound.jogos[0];
+                            const j2 = finalRound.jogos[1];
+                            const eqAId = j1.mandanteId;
+                            const eqBId = j1.visitanteId;
+
+                            if (eqAId && eqBId) {
+                                let golsA = (j1.mandanteId === eqAId ? (j1.golsMandante || 0) : (j1.golsVisitante || 0)) +
+                                            (j2.mandanteId === eqAId ? (j2.golsMandante || 0) : (j2.golsVisitante || 0));
+                                let golsB = (j1.mandanteId === eqBId ? (j1.golsMandante || 0) : (j1.golsVisitante || 0)) +
+                                            (j2.mandanteId === eqBId ? (j2.golsMandante || 0) : (j2.golsVisitante || 0));
+
+                                if (golsA > golsB) {
+                                    const logo = j1.mandanteId === eqAId ? j1.mandante?.logoUrl : j1.visitante?.logoUrl;
+                                    const nome = j1.mandanteId === eqAId ? j1.mandanteNome : j1.visitanteNome;
+                                    campeao = { nome, logoUrl: logo };
+                                } else if (golsB > golsA) {
+                                    const logo = j1.mandanteId === eqBId ? j1.mandante?.logoUrl : j1.visitante?.logoUrl;
+                                    const nome = j1.mandanteId === eqBId ? j1.mandanteNome : j1.visitanteNome;
+                                    campeao = { nome, logoUrl: logo };
+                                } else {
+                                    const pM1 = j1.penaltisMandante || 0;
+                                    const pV1 = j1.penaltisVisitante || 0;
+                                    const pM2 = j2.penaltisMandante || 0;
+                                    const pV2 = j2.penaltisVisitante || 0;
+
+                                    let penA = (j1.mandanteId === eqAId ? pM1 : pV1) + (j2.mandanteId === eqAId ? pM2 : pV2);
+                                    let penB = (j1.mandanteId === eqBId ? pM1 : pV1) + (j2.mandanteId === eqBId ? pM2 : pV2);
+
+                                    if (penA > penB) {
+                                        const logo = j1.mandanteId === eqAId ? j1.mandante?.logoUrl : j1.visitante?.logoUrl;
+                                        const nome = j1.mandanteId === eqAId ? j1.mandanteNome : j1.visitanteNome;
+                                        campeao = { nome, logoUrl: logo };
+                                    } else if (penB > penA) {
+                                        const logo = j1.mandanteId === eqBId ? j1.mandante?.logoUrl : j1.visitante?.logoUrl;
+                                        const nome = j1.mandanteId === eqBId ? j1.mandanteNome : j1.visitanteNome;
+                                        campeao = { nome, logoUrl: logo };
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    let bannerHtml = '';
+                    if (campeao) {
+                        bannerHtml = `
+                        <div class="campeao-banner text-center mb-4 p-4 rounded-4 shadow" style="background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: white; border: 3px solid #f59e0b; position: relative; overflow: hidden; max-width: 600px; margin: 0 auto 30px auto;">
+                            <div style="position: absolute; top: -30px; right: -30px; opacity: 0.15; font-size: 8rem; pointer-events: none;">
+                                <i class="bi bi-trophy-fill text-white"></i>
+                            </div>
+                            <div class="d-flex flex-column align-items-center position-relative" style="z-index: 1;">
+                                <div class="mb-2">
+                                    <i class="bi bi-trophy-fill fs-1 text-white float-trophy" style="display: inline-block;"></i>
+                                </div>
+                                <h3 class="fw-bold text-uppercase tracking-wider mb-2" style="font-size: 1.5rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">🏆 CAMPEÃO 🏆</h3>
+                                <div class="d-flex align-items-center justify-content-center gap-3 my-2 flex-wrap">
+                                    ${campeao.logoUrl 
+                                        ? `<img src="${campeao.logoUrl}" alt="${campeao.nome}" style="width: 70px; height: 70px; object-fit: contain; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15)); background: white; border-radius: 50%; padding: 6px;">`
+                                        : `<i class="bi bi-shield-shaded display-4 text-white" style="font-size: 3rem;"></i>`}
+                                    <h2 class="fw-extrabold m-0 text-white text-uppercase" style="font-size: 2rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">${campeao.nome}</h2>
+                                </div>
+                                <p class="mb-0 text-white-50 fw-semibold small text-uppercase" style="letter-spacing: 1px;">Parabéns à equipe vencedora!</p>
+                            </div>
+                        </div>
+                        `;
+                    }
+
+                    containerMataMata.innerHTML = bannerHtml + mmHtml;
                 } else {
                     containerMataMata.innerHTML = `<div class="empty-state"><i class="bi bi-diagram-3"></i><p>Ainda não há jogos definidos para o mata-mata.</p></div>`;
                 }
