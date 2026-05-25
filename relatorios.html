@@ -1601,7 +1601,7 @@
                                     <th class="text-end fw-bold"   style="width:25%">Mandante</th>
                                     <th class="text-center fw-bold" style="width:15%">Placar</th>
                                     <th class="text-start fw-bold"  style="width:25%">Visitante</th>
-                                    <th class="text-center fw-bold" style="width:15%">Chave</th>
+                                    <th class="text-center fw-bold border-end" style="width:15%">Chave</th>
                                 </tr>
                             </thead>
                             <tbody>`;
@@ -1625,7 +1625,7 @@
                                     <td class="text-end fw-bold text-dark">${j.mandanteNome}</td>
                                     <td class="text-center bg-light fw-bold fs-6" style="line-height:1.2;">${gM} X ${gV}${pen}</td>
                                     <td class="text-start fw-bold text-dark">${j.visitanteNome}</td>
-                                    <td class="text-center small fw-bold border-start">
+                                    <td class="text-center small fw-bold border-start border-end">
                                         <span class="badge bg-secondary-subtle text-secondary px-2">${ch}</span>
                                     </td>
                                 </tr>`;
@@ -1660,7 +1660,7 @@
                     isPrimeiro = false;
 
                     tbodyExp.innerHTML += `<tr><td colspan="6" class="text-center border-0 pt-3 pb-2" style="background-color: transparent !important;"><h4 class="mb-0 fw-bold border-bottom border-dark pb-2">${key}</h4></td></tr>`;
-                    tbodyExp.innerHTML += `<tr class="table-light text-muted small text-uppercase" style="border-bottom: 2px solid #ccc;"><th class="text-center" style="width:8%">Jogo</th><th class="text-center" style="width:12%">Hora</th><th class="text-end" style="width:25%">Mandante</th><th class="text-center" style="width:15%">Placar</th><th class="text-start" style="width:25%">Visitante</th><th class="text-center" style="width:15%">Chave</th></tr>`;
+                    tbodyExp.innerHTML += `<tr class="table-light text-muted small text-uppercase" style="border-bottom: 2px solid #ccc;"><th class="text-center" style="width:8%">Jogo</th><th class="text-center" style="width:12%">Hora</th><th class="text-end" style="width:25%">Mandante</th><th class="text-center" style="width:15%">Placar</th><th class="text-start" style="width:25%">Visitante</th><th class="text-center border-end" style="width:15%;border-right:1px solid #ccc">Chave</th></tr>`;
                     grupos[key].forEach(j => {
                         const hr = j.horario || '--:--';
                         const gM = j.status === 'Finalizado' ? j.golsMandante : '&nbsp;';
@@ -1673,7 +1673,7 @@
                             ? `<span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle badge-categoria-print" style="font-size:0.65rem;display:block;margin-top:2px;">${catJogo}</span>`
                             : '';
 
-                        tbodyExp.innerHTML += `<tr><td class="text-center text-muted fw-bold">#${j.numero || '-'}</td><td class="text-center fw-bold text-secondary">${hr}${catBadge}</td><td class="text-end fw-bold text-dark">${j.mandanteNome}</td><td class="text-center bg-light fw-bold fs-6" style="line-height:1.2;">${gM} X ${gV}${pen}</td><td class="text-start fw-bold text-dark">${j.visitanteNome}</td><td class="text-center small fw-bold border-start"><span class="badge bg-secondary-subtle text-secondary px-2">${ch}</span></td></tr>`;
+                        tbodyExp.innerHTML += `<tr><td class="text-center text-muted fw-bold">#${j.numero || '-'}</td><td class="text-center fw-bold text-secondary">${hr}${catBadge}</td><td class="text-end fw-bold text-dark">${j.mandanteNome}</td><td class="text-center bg-light fw-bold fs-6" style="line-height:1.2;">${gM} X ${gV}${pen}</td><td class="text-start fw-bold text-dark">${j.visitanteNome}</td><td class="text-center small fw-bold border-start border-end" style="border-right:1px solid #ccc"><span class="badge bg-secondary-subtle text-secondary px-2">${ch}</span></td></tr>`;
                     });
                 });
 
