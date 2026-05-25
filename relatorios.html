@@ -51,7 +51,8 @@
             [data-bs-toggle],
             #menu-container,
             #agenda-cards-container,
-            .btn-print-hide { /* Oculta filtros/pesquisa e UI na impressão */
+            .btn-print-hide {
+                /* Oculta filtros/pesquisa e UI na impressão */
                 display: none !important;
             }
 
@@ -60,7 +61,7 @@
                 display: block !important;
                 width: 100% !important;
             }
-            
+
             /* Ajuste para que a tabela ocupe a largura total no PDF */
             #agenda-print-area table {
                 width: 100% !important;
@@ -193,12 +194,16 @@
 
         <ul class="nav nav-tabs mb-4 btn-print-hide" id="relatoriosTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active fw-bold" id="exportacao-tab" data-bs-toggle="tab" data-bs-target="#exportacao" type="button" role="tab" aria-controls="exportacao" aria-selected="true" style="color:#212529 !important;">
+                <button class="nav-link active fw-bold" id="exportacao-tab" data-bs-toggle="tab"
+                    data-bs-target="#exportacao" type="button" role="tab" aria-controls="exportacao"
+                    aria-selected="true" style="color:#212529 !important;">
                     <i class="bi bi-file-earmark-bar-graph me-2"></i>Exportação Oficial
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link fw-bold" id="agenda-tab" data-bs-toggle="tab" data-bs-target="#agenda" type="button" role="tab" aria-controls="agenda" aria-selected="false" style="color:#212529 !important;">
+                <button class="nav-link fw-bold" id="agenda-tab" data-bs-toggle="tab" data-bs-target="#agenda"
+                    type="button" role="tab" aria-controls="agenda" aria-selected="false"
+                    style="color:#212529 !important;">
                     <i class="bi bi-calendar-event me-2"></i>Agenda Integrada
                 </button>
             </li>
@@ -208,74 +213,86 @@
             <!-- ABA EXPORTAÇÃO (ORIGINAL) -->
             <div class="tab-pane fade show active" id="exportacao" role="tabpanel" aria-labelledby="exportacao-tab">
                 <div class="d-flex justify-content-between align-items-center mb-4 btn-print-hide">
-            <h2 class="fw-bold">Exportação de Relatórios</h2>
-            <div class="d-flex gap-2">
-                <div class="dropdown">
-                    <button class="btn btn-dark fw-bold shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="btn-card-instagram">
-                        <i class="bi bi-instagram me-2"></i> Gerar Card
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-dark shadow">
-                        <li><a class="dropdown-item fw-semibold" href="#" onclick="gerarCardRodada()">Card de Resultados</a></li>
-                        <li><a class="dropdown-item fw-semibold" href="#" onclick="identificarETipoCard()">Card de Classificação/Mata-Mata</a></li>
-                    </ul>
-                </div>
-                <div class="dropdown">
-                    <button class="btn btn-primary fw-bold shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-box-arrow-up me-2"></i> Exportar
-                    </button>
-                    <ul class="dropdown-menu shadow">
-                        <li><a class="dropdown-item fw-semibold text-danger" href="#" onclick="gerarPDF()"><i class="bi bi-file-earmark-pdf me-2"></i> PDF</a></li>
-                        <li><a class="dropdown-item fw-semibold text-success" href="#" onclick="exportarExcel()"><i class="bi bi-file-earmark-excel me-2"></i> Excel</a></li>
-                        <li><a class="dropdown-item fw-semibold text-primary" href="#" onclick="exportarWord()"><i class="bi bi-file-earmark-word me-2"></i> Word</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Ferramentas de Filtro (Somente no Viewport) -->
-        <div class="card shadow-sm border-0 mb-4 btn-print-hide">
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold text-muted">CAMPEONATO</label>
-                        <select id="select-campeonato" class="form-select form-select-lg"
-                            onchange="carregarRodadas()"></select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold text-muted">RODADA</label>
-                        <select id="select-rodada" class="form-select form-select-lg" onchange="carregarJogos()">
-                            <option value="">Selecione um Campeonato Primeiro...</option>
-                        </select>
+                    <h2 class="fw-bold">Exportação de Relatórios</h2>
+                    <div class="d-flex gap-2">
+                        <div class="dropdown">
+                            <button class="btn btn-dark fw-bold shadow-sm dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false" id="btn-card-instagram">
+                                <i class="bi bi-instagram me-2"></i> Gerar Card
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark shadow">
+                                <li><a class="dropdown-item fw-semibold" href="#" onclick="gerarCardRodada()">Card de
+                                        Resultados</a></li>
+                                <li><a class="dropdown-item fw-semibold" href="#" onclick="identificarETipoCard()">Card
+                                        de Classificação/Mata-Mata</a></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-primary fw-bold shadow-sm dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-box-arrow-up me-2"></i> Exportar
+                            </button>
+                            <ul class="dropdown-menu shadow">
+                                <li><a class="dropdown-item fw-semibold text-danger" href="#" onclick="gerarPDF()"><i
+                                            class="bi bi-file-earmark-pdf me-2"></i> PDF</a></li>
+                                <li><a class="dropdown-item fw-semibold text-success" href="#"
+                                        onclick="exportarExcel()"><i class="bi bi-file-earmark-excel me-2"></i>
+                                        Excel</a></li>
+                                <li><a class="dropdown-item fw-semibold text-primary" href="#"
+                                        onclick="exportarWord()"><i class="bi bi-file-earmark-word me-2"></i> Word</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Tabela (Mostrada no PDF também) -->
-        <div class="card shadow-sm border-0" id="print-area">
-            <div class="card-header bg-primary text-white d-none d-print-block text-center" style="padding: 1rem;">
-                <!-- NOVO CABEÇALHO PREFEITURA -->
-                <img id="pdf-logo-prefeitura" src="" alt="Logo da Prefeitura" style="max-height: 90px; display: none;"
-                    class="img-fluid mb-2">
-                <h4 class="fw-bold mb-3 text-uppercase" id="pdf-nome-prefeitura">PREFEITURA MUNICIPAL</h4>
-                <hr class="border-dark opacity-50 mb-3" style="width: 50%; margin: 0 auto;">
+                <!-- Ferramentas de Filtro (Somente no Viewport) -->
+                <div class="card shadow-sm border-0 mb-4 btn-print-hide">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">CAMPEONATO</label>
+                                <select id="select-campeonato" class="form-select form-select-lg"
+                                    onchange="carregarRodadas()"></select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">RODADA</label>
+                                <select id="select-rodada" class="form-select form-select-lg"
+                                    onchange="carregarJogos()">
+                                    <option value="">Selecione um Campeonato Primeiro...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <h3 class="mb-0 fw-bold" id="pdf-titulo-campeonato">Tabela Oficial</h3>
-                <p class="mb-0" id="pdf-subtitulo-rodada">Todos os Jogos</p>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <tbody id="tabela-jogos-relatorio">
-                        <tr>
-                            <td colspan="6" class="text-center text-muted p-4">Selecione o campeonato e a rodada para
-                                exibir.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                <!-- Tabela (Mostrada no PDF também) -->
+                <div class="card shadow-sm border-0" id="print-area">
+                    <div class="card-header bg-primary text-white d-none d-print-block text-center"
+                        style="padding: 1rem;">
+                        <!-- NOVO CABEÇALHO PREFEITURA -->
+                        <img id="pdf-logo-prefeitura" src="" alt="Logo da Prefeitura"
+                            style="max-height: 90px; display: none;" class="img-fluid mb-2">
+                        <h4 class="fw-bold mb-3 text-uppercase" id="pdf-nome-prefeitura">PREFEITURA MUNICIPAL</h4>
+                        <hr class="border-dark opacity-50 mb-3" style="width: 50%; margin: 0 auto;">
 
-        </div>
+                        <h3 class="mb-0 fw-bold" id="pdf-titulo-campeonato">Tabela Oficial</h3>
+                        <p class="mb-0" id="pdf-subtitulo-rodada">Todos os Jogos</p>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <tbody id="tabela-jogos-relatorio">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted p-4">Selecione o campeonato e a rodada
+                                        para
+                                        exibir.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
 
             <!-- ABA AGENDA INTEGRADA -->
             <div class="tab-pane fade" id="agenda" role="tabpanel" aria-labelledby="agenda-tab">
@@ -285,21 +302,30 @@
                     <h2 class="fw-bold mb-0">Agenda Integrada</h2>
                     <div class="d-flex gap-2 flex-wrap">
                         <div class="dropdown">
-                            <button class="btn btn-dark fw-bold shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="btn-card-instagram-agenda">
+                            <button class="btn btn-dark fw-bold shadow-sm dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false" id="btn-card-instagram-agenda">
                                 <i class="bi bi-instagram me-2"></i>Gerar Card
                             </button>
                             <ul class="dropdown-menu dropdown-menu-dark shadow">
-                                <li><a class="dropdown-item fw-semibold" href="#" onclick="gerarCardRodadaAgenda()">Card de Resultados</a></li>
+                                <li><a class="dropdown-item fw-semibold" href="#" onclick="gerarCardRodadaAgenda()">Card
+                                        de Resultados</a></li>
                             </ul>
                         </div>
                         <div class="dropdown">
-                            <button class="btn btn-outline-secondary fw-bold shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn btn-outline-secondary fw-bold shadow-sm dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-box-arrow-up me-2"></i>Exportar
                             </button>
                             <ul class="dropdown-menu shadow">
-                                <li><a class="dropdown-item fw-semibold text-danger" href="#" onclick="gerarPDFAgenda()"><i class="bi bi-file-earmark-pdf me-2"></i>PDF</a></li>
-                                <li><a class="dropdown-item fw-semibold text-success" href="#" onclick="exportarExcelAgenda()"><i class="bi bi-file-earmark-excel me-2"></i>Excel</a></li>
-                                <li><a class="dropdown-item fw-semibold text-primary" href="#" onclick="exportarWordAgenda()"><i class="bi bi-file-earmark-word me-2"></i>Word</a></li>
+                                <li><a class="dropdown-item fw-semibold text-danger" href="#"
+                                        onclick="gerarPDFAgenda()"><i class="bi bi-file-earmark-pdf me-2"></i>PDF</a>
+                                </li>
+                                <li><a class="dropdown-item fw-semibold text-success" href="#"
+                                        onclick="exportarExcelAgenda()"><i
+                                            class="bi bi-file-earmark-excel me-2"></i>Excel</a></li>
+                                <li><a class="dropdown-item fw-semibold text-primary" href="#"
+                                        onclick="exportarWordAgenda()"><i
+                                            class="bi bi-file-earmark-word me-2"></i>Word</a></li>
                             </ul>
                         </div>
                         <button class="btn btn-primary shadow-sm fw-bold" onclick="carregarAgendaIntegrada()">
@@ -310,7 +336,8 @@
 
                 <!-- Filtros dinâmicos -->
                 <div class="card shadow-sm border-0 mb-4 btn-print-hide">
-                    <div class="card-header bg-transparent fw-bold text-muted small py-2">FILTROS DE CAMPEONATOS E RODADAS</div>
+                    <div class="card-header bg-transparent fw-bold text-muted small py-2">FILTROS DE CAMPEONATOS E
+                        RODADAS</div>
                     <div class="card-body">
                         <div id="agenda-filtros-lista">
                             <!-- linhas de filtro injetadas via JS -->
@@ -321,7 +348,8 @@
                             </button>
                             <div>
                                 <label class="form-label small fw-bold text-muted mb-1">DATA (Opcional)</label>
-                                <input type="date" id="input-data-agenda" class="form-control form-control-sm" style="min-width:160px;">
+                                <input type="date" id="input-data-agenda" class="form-control form-control-sm"
+                                    style="min-width:160px;">
                             </div>
                         </div>
                     </div>
@@ -330,7 +358,8 @@
                 <!-- Cards resultado -->
                 <div id="agenda-cards-container" style="display:flex;flex-direction:column;gap:10px;">
                     <div class="text-center text-muted p-4">
-                        <i class="bi bi-calendar2-week fs-1 d-block mb-2 opacity-25"></i>Adicione campeonatos e clique em Buscar Jogos.
+                        <i class="bi bi-calendar2-week fs-1 d-block mb-2 opacity-25"></i>Adicione campeonatos e clique
+                        em Buscar Jogos.
                     </div>
                 </div>
 
@@ -338,8 +367,10 @@
                 <div id="agenda-print-area" style="display:none;" class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white text-center" style="padding: 1rem;">
                         <!-- CABEÇALHO PREFEITURA -->
-                        <img id="pdf-logo-prefeitura-agenda" src="" alt="Logo da Prefeitura" style="max-height: 90px; display: none;" class="img-fluid mb-2">
-                        <h4 class="fw-bold mb-3 text-uppercase" id="pdf-nome-prefeitura-agenda">PREFEITURA MUNICIPAL</h4>
+                        <img id="pdf-logo-prefeitura-agenda" src="" alt="Logo da Prefeitura"
+                            style="max-height: 90px; display: none;" class="img-fluid mb-2">
+                        <h4 class="fw-bold mb-3 text-uppercase" id="pdf-nome-prefeitura-agenda">PREFEITURA MUNICIPAL
+                        </h4>
                         <hr class="border-dark opacity-50 mb-3" style="width: 50%; margin: 0 auto;">
                         <h3 class="mb-0 fw-bold">AGENDA INTEGRADA DE JOGOS</h3>
                         <h5 class="mb-0" id="pdf-subtitulo-agenda"></h5>
@@ -372,23 +403,42 @@
         box-sizing: border-box;
         padding: 40px;
     ">
-        <div style="text-align:center; width:100%; margin-bottom:20px; display:flex; flex-direction:column; align-items:center; gap:10px;">
-            <img id="card-class-logo-prefeitura-top" src="" alt="Logo Prefeitura" style="width:90px; height:90px; object-fit:contain; display:none; border-radius:50%; background:rgba(255,255,255,0.08); border:3px solid rgba(255,215,0,0.4); padding:6px; box-sizing:border-box;">
-            <div id="card-class-nome-campeonato" style="font-size: 48px; font-weight: 900; color: #ffffff; text-transform: uppercase; letter-spacing: 2px; line-height: 1.05; text-shadow: 0 2px 12px rgba(0,0,0,0.8);">CAMPEONATO</div>
-            <div id="card-class-nome-prefeitura-sub" style="color:#FFB800; font-size:14px; letter-spacing:3px; text-transform:uppercase; font-weight:400; font-family:Arial, sans-serif;"></div>
-            <span id="card-class-nome-rodada" style="display: inline-block; background: #FFB800; color: #000; padding: 7px 32px; border-radius: 50px; font-weight: 900; font-size: 20px; letter-spacing: 3px; text-transform: uppercase; margin-top:4px;">FASE DE GRUPOS</span>
-        </div>
-        <div id="card-class-container" style="width: 100%; flex: 1; display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px; justify-content: center; align-items: flex-start; overflow: hidden; padding: 10px;">
-        </div>
-        <div style="width: 100%; margin-top: 16px; display: flex; align-items: center; justify-content: space-between; border-top: 2px solid #333; padding-top: 14px;">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <div style="width:36px; height:36px; background:#FFD700; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-                </div>
-                <div><div style="color:#FFD700; font-weight:800; font-size:15px; line-height:1;">SÚMULA DIGITAL</div><div style="color:#666; font-size:11px; letter-spacing:1px;">gerado por súmula digital</div></div>
+        <div
+            style="text-align:center; width:100%; margin-bottom:20px; display:flex; flex-direction:column; align-items:center; gap:10px;">
+            <img id="card-class-logo-prefeitura-top" src="" alt="Logo Prefeitura"
+                style="width:90px; height:90px; object-fit:contain; display:none; border-radius:50%; background:rgba(255,255,255,0.08); border:3px solid rgba(255,215,0,0.4); padding:6px; box-sizing:border-box;">
+            <div id="card-class-nome-campeonato"
+                style="font-size: 48px; font-weight: 900; color: #ffffff; text-transform: uppercase; letter-spacing: 2px; line-height: 1.05; text-shadow: 0 2px 12px rgba(0,0,0,0.8);">
+                CAMPEONATO</div>
+            <div id="card-class-nome-prefeitura-sub"
+                style="color:#FFB800; font-size:14px; letter-spacing:3px; text-transform:uppercase; font-weight:400; font-family:Arial, sans-serif;">
             </div>
-            <div id="card-class-nome-prefeitura" style="color:#FFB800; font-size:12px; letter-spacing:2px; text-transform:uppercase; text-align:center;"></div>
-            <img id="card-class-footer-logo" src="" alt="Logo Prefeitura" style="max-height:48px; max-width:80px; display:none; object-fit:contain; opacity:0.85;">
+            <span id="card-class-nome-rodada"
+                style="display: inline-block; background: #FFB800; color: #000; padding: 7px 32px; border-radius: 50px; font-weight: 900; font-size: 20px; letter-spacing: 3px; text-transform: uppercase; margin-top:4px;">FASE
+                DE GRUPOS</span>
+        </div>
+        <div id="card-class-container"
+            style="width: 100%; flex: 1; display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px; justify-content: center; align-items: flex-start; overflow: hidden; padding: 10px;">
+        </div>
+        <div
+            style="width: 100%; margin-top: 16px; display: flex; align-items: center; justify-content: space-between; border-top: 2px solid #333; padding-top: 14px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div
+                    style="width:36px; height:36px; background:#FFD700; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#000">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+                    </svg>
+                </div>
+                <div>
+                    <div style="color:#FFD700; font-weight:800; font-size:15px; line-height:1;">SÚMULA DIGITAL</div>
+                    <div style="color:#666; font-size:11px; letter-spacing:1px;">gerado por súmula digital</div>
+                </div>
+            </div>
+            <div id="card-class-nome-prefeitura"
+                style="color:#FFB800; font-size:12px; letter-spacing:2px; text-transform:uppercase; text-align:center;">
+            </div>
+            <img id="card-class-footer-logo" src="" alt="Logo Prefeitura"
+                style="max-height:48px; max-width:80px; display:none; object-fit:contain; opacity:0.85;">
             <div id="card-class-footer-sem-logo" style="width:80px;"></div>
         </div>
     </div>
@@ -411,23 +461,41 @@
         box-sizing: border-box;
         padding: 40px;
     ">
-        <div style="text-align:center; width:100%; margin-bottom:20px; display:flex; flex-direction:column; align-items:center; gap:10px;">
-            <img id="card-mm-logo-prefeitura-top" src="" alt="Logo Prefeitura" style="width:90px; height:90px; object-fit:contain; display:none; border-radius:50%; background:rgba(255,255,255,0.08); border:3px solid rgba(255,215,0,0.4); padding:6px; box-sizing:border-box;">
-            <div id="card-mm-nome-campeonato" style="font-size: 48px; font-weight: 900; color: #ffffff; text-transform: uppercase; letter-spacing: 2px; line-height: 1.05; text-shadow: 0 2px 12px rgba(0,0,0,0.8);">CAMPEONATO</div>
-            <div id="card-mm-nome-prefeitura-sub" style="color:#FFB800; font-size:14px; letter-spacing:3px; text-transform:uppercase; font-weight:400; font-family:Arial, sans-serif;"></div>
-            <span id="card-mm-nome-rodada" style="display: inline-block; background: #FFB800; color: #000; padding: 7px 32px; border-radius: 50px; font-weight: 900; font-size: 20px; letter-spacing: 3px; text-transform: uppercase; margin-top:4px;">MATA-MATA</span>
-        </div>
-        <div id="card-mm-container" style="width: 100%; flex: 1; display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px; justify-content: center; align-items: center; overflow: hidden; padding: 10px;">
-        </div>
-        <div style="width: 100%; margin-top: 16px; display: flex; align-items: center; justify-content: space-between; border-top: 2px solid #333; padding-top: 14px;">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <div style="width:36px; height:36px; background:#FFD700; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-                </div>
-                <div><div style="color:#FFD700; font-weight:800; font-size:15px; line-height:1;">SÚMULA DIGITAL</div><div style="color:#666; font-size:11px; letter-spacing:1px;">gerado por súmula digital</div></div>
+        <div
+            style="text-align:center; width:100%; margin-bottom:20px; display:flex; flex-direction:column; align-items:center; gap:10px;">
+            <img id="card-mm-logo-prefeitura-top" src="" alt="Logo Prefeitura"
+                style="width:90px; height:90px; object-fit:contain; display:none; border-radius:50%; background:rgba(255,255,255,0.08); border:3px solid rgba(255,215,0,0.4); padding:6px; box-sizing:border-box;">
+            <div id="card-mm-nome-campeonato"
+                style="font-size: 48px; font-weight: 900; color: #ffffff; text-transform: uppercase; letter-spacing: 2px; line-height: 1.05; text-shadow: 0 2px 12px rgba(0,0,0,0.8);">
+                CAMPEONATO</div>
+            <div id="card-mm-nome-prefeitura-sub"
+                style="color:#FFB800; font-size:14px; letter-spacing:3px; text-transform:uppercase; font-weight:400; font-family:Arial, sans-serif;">
             </div>
-            <div id="card-mm-nome-prefeitura" style="color:#FFB800; font-size:12px; letter-spacing:2px; text-transform:uppercase; text-align:center;"></div>
-            <img id="card-mm-footer-logo" src="" alt="Logo Prefeitura" style="max-height:48px; max-width:80px; display:none; object-fit:contain; opacity:0.85;">
+            <span id="card-mm-nome-rodada"
+                style="display: inline-block; background: #FFB800; color: #000; padding: 7px 32px; border-radius: 50px; font-weight: 900; font-size: 20px; letter-spacing: 3px; text-transform: uppercase; margin-top:4px;">MATA-MATA</span>
+        </div>
+        <div id="card-mm-container"
+            style="width: 100%; flex: 1; display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px; justify-content: center; align-items: center; overflow: hidden; padding: 10px;">
+        </div>
+        <div
+            style="width: 100%; margin-top: 16px; display: flex; align-items: center; justify-content: space-between; border-top: 2px solid #333; padding-top: 14px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div
+                    style="width:36px; height:36px; background:#FFD700; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#000">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+                    </svg>
+                </div>
+                <div>
+                    <div style="color:#FFD700; font-weight:800; font-size:15px; line-height:1;">SÚMULA DIGITAL</div>
+                    <div style="color:#666; font-size:11px; letter-spacing:1px;">gerado por súmula digital</div>
+                </div>
+            </div>
+            <div id="card-mm-nome-prefeitura"
+                style="color:#FFB800; font-size:12px; letter-spacing:2px; text-transform:uppercase; text-align:center;">
+            </div>
+            <img id="card-mm-footer-logo" src="" alt="Logo Prefeitura"
+                style="max-height:48px; max-width:80px; display:none; object-fit:contain; opacity:0.85;">
             <div id="card-mm-footer-sem-logo" style="width:80px;"></div>
         </div>
     </div>
@@ -576,7 +644,7 @@
                         const img = document.getElementById('pdf-logo-prefeitura');
                         img.src = config.logoUrl;
                         img.style.display = 'inline-block';
-                        
+
                         const imgAgenda = document.getElementById('pdf-logo-prefeitura-agenda');
                         if (imgAgenda) {
                             imgAgenda.src = config.logoUrl;
@@ -744,7 +812,7 @@
                                 <th class="text-end" style="width: 25%">Mandante</th>
                                 <th class="text-center" style="width: 15%">Placar</th>
                                 <th class="text-start" style="width: 25%">Visitante</th>
-                                <th class="text-center" style="width: 15%">Chave</th>
+                                <th class="text-center border-end" style="width: 15%">Chave</th>
                             </tr>
                         `;
 
@@ -753,7 +821,7 @@
                             const hr = j.horario || '--:--';
                             const gM = j.status === 'Finalizado' ? j.golsMandante : '&nbsp;&nbsp;';
                             const gV = j.status === 'Finalizado' ? j.golsVisitante : '&nbsp;&nbsp;';
-                            
+
                             let penaltisHtml = '';
                             if (j.status === 'Finalizado' && j.penaltisMandante !== null && j.penaltisMandante !== undefined) {
                                 penaltisHtml = `<br><small class="text-muted" style="font-size:0.75rem;">(${j.penaltisMandante}) x (${j.penaltisVisitante})</small>`;
@@ -1157,10 +1225,10 @@
         async function gerarCardClassificacao(campId, rodada) {
             const selCamp = document.getElementById('select-campeonato');
             const nomeCampeonato = selCamp.options[selCamp.selectedIndex]?.text || 'Campeonato';
-            
+
             document.getElementById('card-class-nome-campeonato').innerText = nomeCampeonato;
             document.getElementById('card-class-nome-rodada').innerText = rodada.nome || `Rodada ${rodada.numero}`;
-            
+
             const nomePref = document.getElementById('pdf-nome-prefeitura')?.innerText || '';
             const subPref = document.getElementById('card-class-nome-prefeitura-sub');
             if (subPref) subPref.innerText = nomePref;
@@ -1169,7 +1237,7 @@
 
             const logoSrc = document.getElementById('pdf-logo-prefeitura')?.src;
             const logoDsp = document.getElementById('pdf-logo-prefeitura')?.style?.display;
-            
+
             const topLogo = document.getElementById('card-class-logo-prefeitura-top');
             if (topLogo) {
                 if (logoSrc && logoDsp !== 'none') { topLogo.src = logoSrc; topLogo.style.display = 'block'; }
@@ -1199,21 +1267,21 @@
                     const chs = [...new Set(equipes.map(e => e.chave).filter(c => c))].sort();
                     if (chs.length > 0) chaves = chs;
                 }
-            } catch (e) {}
+            } catch (e) { }
 
             let htmlFinal = '';
             for (const chave of chaves) {
                 let url = `${API}/campeonatos/${campId}/classificacao`;
                 if (chave) url += `?chave=${encodeURIComponent(chave)}`;
-                
+
                 try {
                     const res = await fetch(url);
                     const data = await res.json();
-                    
+
                     if (!data || data.length === 0) continue;
 
                     const labelChave = chave ? (chave.includes('Chave') ? chave : 'Chave ' + chave) : 'Classificação Geral';
-                    
+
                     let tableHtml = `
                     <div style="background: rgba(255,255,255,0.05); border: 2px solid #FFB800; border-radius: 12px; padding: 12px; min-width: 450px; flex: 1;">
                         <h4 style="color: #FFB800; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase; font-size: 22px; text-align: center;">${labelChave}</h4>
@@ -1238,13 +1306,13 @@
                         const bg = i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent';
                         tableHtml += `
                             <tr style="background: ${bg}; font-size: 15px; text-align: center; font-weight: 600;">
-                                <td style="padding: 8px 6px; text-align: left; color:#FFB800;">${i+1}º</td>
+                                <td style="padding: 8px 6px; text-align: left; color:#FFB800;">${i + 1}º</td>
                                 <td style="padding: 8px 6px; text-align: left; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.nome.toUpperCase()}</td>
                                 <td style="padding: 8px 6px; color:#FFB800;">${t.p}</td>
                                 <td style="padding: 8px 6px;">${t.j}</td>
                                 <td style="padding: 8px 6px;">${t.v}</td>
-                                <td style="padding: 8px 6px;">${t.e||0}</td>
-                                <td style="padding: 8px 6px;">${t.d||0}</td>
+                                <td style="padding: 8px 6px;">${t.e || 0}</td>
+                                <td style="padding: 8px 6px;">${t.d || 0}</td>
                                 <td style="padding: 8px 6px;">${t.sg}</td>
                             </tr>
                         `;
@@ -1273,10 +1341,10 @@
         async function gerarCardMataMata(campId, rodada) {
             const selCamp = document.getElementById('select-campeonato');
             const nomeCampeonato = selCamp.options[selCamp.selectedIndex]?.text || 'Campeonato';
-            
+
             document.getElementById('card-mm-nome-campeonato').innerText = nomeCampeonato;
             document.getElementById('card-mm-nome-rodada').innerText = rodada.nome || `Mata-Mata`;
-            
+
             const nomePref = document.getElementById('pdf-nome-prefeitura')?.innerText || '';
             const subPref = document.getElementById('card-mm-nome-prefeitura-sub');
             if (subPref) subPref.innerText = nomePref;
@@ -1318,7 +1386,7 @@
                 }
 
                 let htmlFinal = '<div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; width: 100%;">';
-                
+
                 jogos.forEach(j => {
                     const finalizado = j.status === 'Finalizado';
                     const gm = finalizado ? j.golsMandante : '-';
@@ -1355,7 +1423,7 @@
                     </div>
                     `;
                 });
-                
+
                 htmlFinal += '</div>';
                 container.innerHTML = htmlFinal;
 
@@ -1388,7 +1456,7 @@
                     <label class="form-label small fw-bold text-muted mb-1">CAMPEONATO</label>
                     <select class="form-select form-select-sm agenda-sel-camp" onchange="carregarRodadaFiltro(this)">
                         <option value="">Selecione...</option>
-                        ${agendaCampsList.map(c => `<option value="${c.id}" ${String(c.id)===String(campId)?'selected':''}>${formatarNomeCampeonato(c)}</option>`).join('')}
+                        ${agendaCampsList.map(c => `<option value="${c.id}" ${String(c.id) === String(campId) ? 'selected' : ''}>${formatarNomeCampeonato(c)}</option>`).join('')}
                     </select>
                 </div>
                 <div class="col">
@@ -1423,7 +1491,7 @@
                 selRod.innerHTML = '<option value="todas">Todas as Rodadas</option>';
                 rodadas.forEach(r => selRod.innerHTML += `<option value="${r.id}">${r.nome}</option>`);
                 if (preSelectRodadaId) selRod.value = preSelectRodadaId;
-            } catch(e) { selRod.innerHTML = '<option value="todas">Todas as Rodadas</option>'; }
+            } catch (e) { selRod.innerHTML = '<option value="todas">Todas as Rodadas</option>'; }
         }
 
         // ── AGENDA: buscar e renderizar ───────────────────────────────
@@ -1484,9 +1552,9 @@
                 // Agrupar por Rodada + Data + Local
                 const gruposVis = {};
                 todosJogos.forEach(j => {
-                    const localStr   = j.local || 'Local a Definir';
-                    const dataFmt    = j.data ? new Date(j.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data Indefinida';
-                    const rodadaLbl  = j.rodada?.nome || (j.rodada?.numero ? `Rodada ${j.rodada.numero}` : 'Rodada');
+                    const localStr = j.local || 'Local a Definir';
+                    const dataFmt = j.data ? new Date(j.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data Indefinida';
+                    const rodadaLbl = j.rodada?.nome || (j.rodada?.numero ? `Rodada ${j.rodada.numero}` : 'Rodada');
                     const key = `${rodadaLbl}||${dataFmt}||${localStr}`;
                     if (!gruposVis[key]) gruposVis[key] = [];
                     gruposVis[key].push(j);
@@ -1538,13 +1606,13 @@
                             </thead>
                             <tbody>`;
                         subGrupos[chave].forEach(j => {
-                            const hr       = j.horario || '--:--';
-                            const gM       = j.status === 'Finalizado' ? j.golsMandante : '&nbsp;';
-                            const gV       = j.status === 'Finalizado' ? j.golsVisitante : '&nbsp;';
-                            const pen      = (j.status === 'Finalizado' && j.penaltisMandante != null)
+                            const hr = j.horario || '--:--';
+                            const gM = j.status === 'Finalizado' ? j.golsMandante : '&nbsp;';
+                            const gV = j.status === 'Finalizado' ? j.golsVisitante : '&nbsp;';
+                            const pen = (j.status === 'Finalizado' && j.penaltisMandante != null)
                                 ? `<br><small class="text-muted">(${j.penaltisMandante}) x (${j.penaltisVisitante})</small>` : '';
-                            const ch       = j.chave || '-';
-                            const catJogo  = j.rodada?.campeonato?.categoria || j.rodada?.campeonato?.nome || null;
+                            const ch = j.chave || '-';
+                            const catJogo = j.rodada?.campeonato?.categoria || j.rodada?.campeonato?.nome || null;
                             const catBadge = catJogo
                                 ? `<span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle" style="font-size:0.65rem;display:block;margin-top:3px;white-space:nowrap;">${catJogo}</span>`
                                 : '';
@@ -1605,7 +1673,7 @@
                             ? `<span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle badge-categoria-print" style="font-size:0.65rem;display:block;margin-top:2px;">${catJogo}</span>`
                             : '';
 
-                        tbodyExp.innerHTML += `<tr><td class="text-center text-muted fw-bold">#${j.numero||'-'}</td><td class="text-center fw-bold text-secondary">${hr}${catBadge}</td><td class="text-end fw-bold text-dark">${j.mandanteNome}</td><td class="text-center bg-light fw-bold fs-6" style="line-height:1.2;">${gM} X ${gV}${pen}</td><td class="text-start fw-bold text-dark">${j.visitanteNome}</td><td class="text-center small fw-bold border-start"><span class="badge bg-secondary-subtle text-secondary px-2">${ch}</span></td></tr>`;
+                        tbodyExp.innerHTML += `<tr><td class="text-center text-muted fw-bold">#${j.numero || '-'}</td><td class="text-center fw-bold text-secondary">${hr}${catBadge}</td><td class="text-end fw-bold text-dark">${j.mandanteNome}</td><td class="text-center bg-light fw-bold fs-6" style="line-height:1.2;">${gM} X ${gV}${pen}</td><td class="text-start fw-bold text-dark">${j.visitanteNome}</td><td class="text-center small fw-bold border-start"><span class="badge bg-secondary-subtle text-secondary px-2">${ch}</span></td></tr>`;
                     });
                 });
 
@@ -1630,7 +1698,7 @@
                 const wb = XLSX.utils.table_to_book(table, { sheet: 'Agenda' });
                 XLSX.writeFile(wb, 'agenda_integrada.xlsx');
                 showToast('Excel gerado com sucesso.', 'success');
-            } catch(e) { console.error(e); showToast('Erro ao exportar Excel.', 'danger'); }
+            } catch (e) { console.error(e); showToast('Erro ao exportar Excel.', 'danger'); }
         }
 
         function exportarWordAgenda() {
@@ -1644,7 +1712,7 @@
                 a.download = 'agenda_integrada.docx';
                 document.body.appendChild(a); a.click(); document.body.removeChild(a);
                 showToast('Word gerado com sucesso.', 'success');
-            } catch(e) { console.error(e); showToast('Erro ao exportar Word.', 'danger'); }
+            } catch (e) { console.error(e); showToast('Erro ao exportar Word.', 'danger'); }
         }
 
         async function gerarCardRodadaAgenda() {
@@ -1674,17 +1742,17 @@
 
                 // Reusa o mesmo gerador de linhas do card original
                 const ESCUDO_SVG = sz => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="#aaa" style="flex-shrink:0;background:#fff;border-radius:50%;padding:8px;box-sizing:border-box;border:3px solid #FFB800;"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>`;
-                const mkLogoHtml = (url, sz) => url ? `<img src="${url}" width="${sz}" height="${sz}" crossorigin="anonymous" style="object-fit:contain;border-radius:50%;border:3px solid #FFB800;background:#fff;padding:4px;box-sizing:border-box;flex-shrink:0;" onerror="this.outerHTML='${ESCUDO_SVG(sz).replace(/"/g,"'")}'">` : ESCUDO_SVG(sz);
+                const mkLogoHtml = (url, sz) => url ? `<img src="${url}" width="${sz}" height="${sz}" crossorigin="anonymous" style="object-fit:contain;border-radius:50%;border:3px solid #FFB800;background:#fff;padding:4px;box-sizing:border-box;flex-shrink:0;" onerror="this.outerHTML='${ESCUDO_SVG(sz).replace(/"/g, "'")}'">` : ESCUDO_SVG(sz);
                 // Tamanhos adaptativos por quantidade de jogos (sempre coluna única)
                 const n = jogosData.length;
-                const barH   = n <= 5  ? '80px' : n <= 8  ? '68px' : n <= 12 ? '54px' : '44px';
-                const scoreH = n <= 5  ? '88px' : n <= 8  ? '76px' : n <= 12 ? '62px' : '50px';
-                const scoreW = n <= 5  ? '140px': n <= 8  ? '120px': n <= 12 ? '100px': '86px';
-                const logoSz = n <= 5  ? '80px' : n <= 8  ? '68px' : n <= 12 ? '54px' : '44px';
-                const scoreFs= n <= 5  ? '42px' : n <= 8  ? '36px' : n <= 12 ? '28px' : '22px';
-                const barFs  = n <= 5  ? '22px' : n <= 8  ? '19px' : n <= 12 ? '16px' : '13px';
-                const gapPx  = n <= 5  ? '14px' : n <= 8  ? '10px' : n <= 12 ? '7px'  : '5px';
-                const fSize  = (nome, base) => nome.length > 20 ? `${parseInt(base)-2}px` : base;
+                const barH = n <= 5 ? '80px' : n <= 8 ? '68px' : n <= 12 ? '54px' : '44px';
+                const scoreH = n <= 5 ? '88px' : n <= 8 ? '76px' : n <= 12 ? '62px' : '50px';
+                const scoreW = n <= 5 ? '140px' : n <= 8 ? '120px' : n <= 12 ? '100px' : '86px';
+                const logoSz = n <= 5 ? '80px' : n <= 8 ? '68px' : n <= 12 ? '54px' : '44px';
+                const scoreFs = n <= 5 ? '42px' : n <= 8 ? '36px' : n <= 12 ? '28px' : '22px';
+                const barFs = n <= 5 ? '22px' : n <= 8 ? '19px' : n <= 12 ? '16px' : '13px';
+                const gapPx = n <= 5 ? '14px' : n <= 8 ? '10px' : n <= 12 ? '7px' : '5px';
+                const fSize = (nome, base) => nome.length > 20 ? `${parseInt(base) - 2}px` : base;
 
                 const criarLinha = jogo => {
                     const final = jogo.golsM !== null && jogo.golsV !== null;
@@ -1694,7 +1762,7 @@
                         placarHtml = `<div style="display:flex;flex-direction:column;align-items:center;line-height:1;"><div>${placarTxt}</div><div style="font-size:13px;color:#FFB800;margin-top:2px;font-weight:700;">(${jogo.penaltisM}) - (${jogo.penaltisV})</div></div>`;
                     const row = document.createElement('div');
                     row.style.cssText = `display:flex;align-items:center;justify-content:space-between;width:100%;height:${barH};position:relative;gap:0;`;
-                    row.innerHTML = `<div style="z-index:3;flex-shrink:0;margin-right:-4px;">${mkLogoHtml(jogo.logoM,logoSz)}</div><div style="background:#FFB800;color:#000;height:${barH};flex:1;display:flex;align-items:center;padding:0 12px 0 10px;border-radius:8px 0 0 8px;font-weight:900;font-size:${fSize(jogo.mandante,barFs)};text-transform:uppercase;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${jogo.mandante}</div><div style="background:#0d2a6b;color:${final?'#fff':'#ddd'};height:${scoreH};min-width:${scoreW};display:flex;align-items:center;justify-content:center;font-size:${final?scoreFs:'20px'};font-weight:900;border-radius:5px;border:3px solid #FFB800;box-shadow:0 4px 16px rgba(0,0,0,0.5);z-index:2;flex-shrink:0;">${placarHtml}</div><div style="background:#FFB800;color:#000;height:${barH};flex:1;display:flex;align-items:center;padding:0 10px 0 12px;border-radius:0 8px 8px 0;font-weight:900;font-size:${fSize(jogo.visitante,barFs)};text-transform:uppercase;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;justify-content:flex-end;">${jogo.visitante}</div><div style="z-index:3;flex-shrink:0;margin-left:-4px;">${mkLogoHtml(jogo.logoV,logoSz)}</div>`;
+                    row.innerHTML = `<div style="z-index:3;flex-shrink:0;margin-right:-4px;">${mkLogoHtml(jogo.logoM, logoSz)}</div><div style="background:#FFB800;color:#000;height:${barH};flex:1;display:flex;align-items:center;padding:0 12px 0 10px;border-radius:8px 0 0 8px;font-weight:900;font-size:${fSize(jogo.mandante, barFs)};text-transform:uppercase;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${jogo.mandante}</div><div style="background:#0d2a6b;color:${final ? '#fff' : '#ddd'};height:${scoreH};min-width:${scoreW};display:flex;align-items:center;justify-content:center;font-size:${final ? scoreFs : '20px'};font-weight:900;border-radius:5px;border:3px solid #FFB800;box-shadow:0 4px 16px rgba(0,0,0,0.5);z-index:2;flex-shrink:0;">${placarHtml}</div><div style="background:#FFB800;color:#000;height:${barH};flex:1;display:flex;align-items:center;padding:0 10px 0 12px;border-radius:0 8px 8px 0;font-weight:900;font-size:${fSize(jogo.visitante, barFs)};text-transform:uppercase;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;justify-content:flex-end;">${jogo.visitante}</div><div style="z-index:3;flex-shrink:0;margin-left:-4px;">${mkLogoHtml(jogo.logoV, logoSz)}</div>`;
                     return row;
                 };
 
@@ -1705,11 +1773,11 @@
                 container2.style.gap = gapPx;
                 jogosData.forEach(j => container2.appendChild(criarLinha(j)));
                 showToast('Renderizando imagem, aguarde...', 'info');
-                const canvas = await html2canvas(document.getElementById('template-card-instagram'), { useCORS:true, allowTaint:false, scale:1, width:1080, height:1080, backgroundColor:'#01081f', logging:false });
+                const canvas = await html2canvas(document.getElementById('template-card-instagram'), { useCORS: true, allowTaint: false, scale: 1, width: 1080, height: 1080, backgroundColor: '#01081f', logging: false });
                 const link2 = document.createElement('a');
                 link2.download = 'agenda-card.png'; link2.href = canvas.toDataURL('image/png'); link2.click();
                 showToast('Card gerado com sucesso! 🎉', 'success');
-            } catch(err) { console.error(err); showToast('Erro ao gerar o card.', 'danger'); }
+            } catch (err) { console.error(err); showToast('Erro ao gerar o card.', 'danger'); }
             finally { btn.disabled = false; btn.innerHTML = orig; }
         }
 
@@ -1717,4 +1785,4 @@
     </script>
 </body>
 
-</html>
+</html>
