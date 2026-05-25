@@ -167,6 +167,13 @@
                 background: #eee !important;
                 color: #000 !important;
             }
+
+            /* 9 ── Garante que o overflow dos wrappers de tabela não corte
+                     a borda direita da última coluna no PDF/Impressão */
+            .table-responsive,
+            div[style*="overflow-x"] {
+                overflow: visible !important;
+            }
         }
     </style>
 
