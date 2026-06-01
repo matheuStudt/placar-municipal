@@ -140,13 +140,14 @@
     </div>
 
     <script src="components/sidebar.js"></script>
+    <script src="frontend/js/auth-guard.js"></script>
     <script src="frontend/js/main.js"></script>
     <script>
 
         let prefeituraId = null;
 
         async function init() {
-            const user = checkSession();
+            const user = requireAuth();
             if (!user) return;
 
             prefeituraId = user.prefeituraId;

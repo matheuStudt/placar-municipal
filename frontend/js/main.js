@@ -23,84 +23,33 @@ function logout() {
     window.location.href = 'login.html';
 }
 
-// 4. Session Check & Personalization
+// 4. Personalização de sessão (sem redirect — use requireAuth() de auth-guard.js para rotas protegidas)
 function checkSession() {
     const session = localStorage.getItem('usuario');
-    const token = localStorage.getItem('authToken');
+    const token   = localStorage.getItem('authToken');
 
-    const publicPages = ['login.html', 'portal.html', 'equipe.html', 'detalhes-jogo.html', 'atleta.html', 'atletas.html'];
-    const currentUrl = window.location.href;
-    const isPublic = publicPages.some(page => currentUrl.includes(page));
+    if (!session || !token) return null;
 
-    if (!session || !token) {
-        if (!isPublic) {
-            window.location.href = 'login.html';
-        }
-        return null;
-    }
+    let user;
+    try { user = JSON.parse(session); } catch { return null; }
 
-    const user = JSON.parse(session);
-
-    // Atualiza nomes da prefeitura se os elementos existirem
-    const nomeParaExibir = user.prefeituraNome || "Sua Prefeitura";
+    // Injeta nome da prefeitura nos elementos marcados
+    const nomeParaExibir = user.prefeituraNome || 'Sua Prefeitura';
 
     document.querySelectorAll('.prefeitura-nome').forEach(el => {
         el.textContent = nomeParaExibir;
     });
 
     const titulo = document.getElementById('titulo-painel-header');
-    if (titulo) {
-        titulo.textContent = nomeParaExibir;
-    }
+    if (titulo) titulo.textContent = nomeParaExibir;
 
-    // Especial para dashboard index.html
     const tituloDashboard = document.getElementById('titulo-painel');
-    if (tituloDashboard) {
-        tituloDashboard.textContent = `Painel de ${nomeParaExibir}`;
-    }
+    if (tituloDashboard) tituloDashboard.textContent = `Painel de ${nomeParaExibir}`;
 
     return user;
 }
-/*
-// 5. Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    // Garante modo claro
-    document.documentElement.setAttribute('data-bs-theme', 'light');
-    document.body.setAttribute('data-bs-theme', 'light');
-
-    // Sessão - apenas se não for login
-    if (!window.location.href.includes('login.html')) {
-        checkSession();
-    }
-
-    // Cria o container de toasts se ainda não existir
-    if (!document.getElementById('toast-container')) {
-        const container = document.createElement('div');
-        container.id = 'toast-container';
-        container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
-        container.style.zIndex = '9999';
-        document.body.appendChild(container);
-    }
-});*/
-
-// 3. Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    // NOTA: O tema (dark/light) é gerenciado exclusivamente pelo theme.js.
-    // Não sobrescrever data-bs-theme aqui para preservar a preferência do usuário.
-
-    // Verifica se a página atual é pública
-    const publicPages = ['login.html', 'portal.html', 'equipe.html', 'detalhes-jogo.html', 'atleta.html', 'atletas.html'];
-    const currentUrl = window.location.href;
-    const isPublic = publicPages.some(page => currentUrl.includes(page));
-
-    // Sessão - verifica login apenas para telas protegidas
-    const user = checkSession();
-
-    // Se for página pública e não tiver usuário, não faz mais nada de personalização de admin
-    if (isPublic && !user) return;
-
-    // Se tiver usuário (mesmo em página pública), o checkSession já cuidou da personalização básica
-});
+// NOTA: A proteção de rotas foi centralizada em auth-guard.js (requireAuth).
+// main.js não faz mais redirect automático — cada página protegida chama requireAuth() no seu init().
 
 /**
  * Exibe uma notificação Toast Bootstrap.
