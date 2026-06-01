@@ -342,7 +342,7 @@
         });
 
         async function excluirCategoria(id) {
-            if (!confirm("Excluir esta categoria?")) return;
+            if (!(await confirmAction("Excluir esta categoria?"))) return;
             try {
                 const res = await fetch(`${API}/categorias/${id}`, { method: 'DELETE' });
                 if (!res.ok) throw new Error();
@@ -351,8 +351,10 @@
         }
 
         async function carregarCampeonatos() {
+            const body = document.getElementById('tabela-campeonatos');
+            body.innerHTML = Array(4).fill('<tr><td colspan="6"><div class="skeleton" style="height: 38px; border-radius: 4px; opacity:0.5;"></div></td></tr>').join('');
             try {
-                const res = await fetch(`${API}/campeonatos?prefeituraId=${prefeituraId}`);
+                const res = await fetchAPI(`${API}/campeonatos?prefeituraId=${prefeituraId}`);
                 const data = await res.json();
                 
                 // Agora data é { campeonatos: [], limiteCampeonatos: X }
@@ -432,7 +434,10 @@
                         </td>
                     </tr>`;
                 });
-            } catch (e) { console.error("Erro ao carregar:", e); }
+            } catch (e) {
+                console.error('Erro ao carregar campeonatos:', e);
+                renderErroTabela('tabela-campeonatos', 6, 'carregarCampeonatos()');
+            }
         }
 
         // --- FUNÇÕES DE INSCRIÇÃO ---
@@ -591,14 +596,14 @@
         });
 
         async function excluirRodada(id, campId) {
-            if (confirm("Excluir esta rodada?")) {
+            if (await confirmAction("Excluir esta rodada?")) {
                 await fetch(`${API}/rodadas/${id}`, { method: 'DELETE' });
                 atualizarListaRodadas(campId);
             }
         }
 
         async function gerarChaveamento(campId) {
-            if (!confirm('Atenção: Isso irá gerar as novas partidas. Tem certeza que deseja prosseguir?')) return;
+            if (!(await confirmAction('Atenção: Isso irá gerar as novas partidas. Tem certeza que deseja prosseguir?'))) return;
 
             // Encontra o botão que disparou a ação e aplica o estado de carregamento
             const btn = document.querySelector(`button[onclick="gerarChaveamento(${campId})"]`);
@@ -680,7 +685,7 @@
         }
 
         async function excluirCamp(id) {
-            if (confirm("Deseja excluir este campeonato?")) {
+            if (await confirmAction("Deseja excluir este campeonato?")) {
                 await fetch(`${API}/campeonatos/${id}`, { method: 'DELETE' });
                 carregarCampeonatos();
             }

@@ -273,7 +273,7 @@
                 let url = `${API}/jogos?campeonatoId=${campId}`;
                 if (rodadaId) url += `&rodadaId=${rodadaId}`;
 
-                const res = await fetch(url);
+                const res = await fetchAPI(url);
                 const jogos = await res.json();
                 container.innerHTML = '';
 
@@ -346,7 +346,10 @@
                         </div>
                     </div>`;
                 });
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.error('Erro ao carregar jogos:', e);
+                renderErroContainer('lista-jogos', 'carregarJogos(campeonatoAtual)');
+            }
         }
 
         let equipesCache = [];
@@ -532,7 +535,7 @@
         }
 
         async function excluirJogo(id) {
-            if (confirm("Deseja realmente excluir este jogo? Esta ação é irreversível.")) {
+            if (await confirmAction("Deseja realmente excluir este jogo? Esta ação é irreversível.")) {
                 const res = await fetch(`${API}/jogos/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
                 if (res.ok) {
                     carregarJogos(campeonatoAtual);

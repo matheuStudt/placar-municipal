@@ -138,10 +138,11 @@
         }
 
         async function carregarPerfis() {
+            const body = document.getElementById('tabela-perfis');
+            body.innerHTML = Array(3).fill('<tr><td colspan="4"><div class="skeleton" style="height: 38px; border-radius: 4px; opacity:0.5;"></div></td></tr>').join('');
             try {
-                const res = await fetch(`${API}/perfis`, { headers: getAuthHeaders() });
+                const res = await fetchAPI(`${API}/perfis`, { headers: getAuthHeaders() });
                 const perfis = await res.json();
-                const body = document.getElementById('tabela-perfis');
                 body.innerHTML = '';
 
                 perfis.forEach(p => {
@@ -163,7 +164,10 @@
                         </td>
                     </tr>`;
                 });
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.error('Erro ao carregar perfis:', e);
+                renderErroTabela('tabela-perfis', 4, 'carregarPerfis()');
+            }
         }
 
         function prepararNovo() {
@@ -222,7 +226,7 @@
         });
 
         async function excluirPerfil(id) {
-            if (!confirm('Deseja excluir este perfil? Usuários vinculados ficarão sem permissões.')) return;
+            if (!(await confirmAction('Deseja excluir este perfil? Usuários vinculados ficarão sem permissões.'))) return;
             const res = await fetch(`${API}/perfis/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
             if (res.ok) carregarPerfis();
         }

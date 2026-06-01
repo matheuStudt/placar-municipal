@@ -178,11 +178,16 @@
         async function carregarAtletas() {
             const body = document.getElementById('tabela-atletas');
             body.innerHTML = Array(6).fill('<tr><td colspan="4"><div class="skeleton" style="height: 38px; border-radius: 4px; opacity:0.5;"></div></td></tr>').join('');
-            const res = await fetch(`${API}/atletas?prefeituraId=${prefeituraId}`);
-            atletasCache = await res.json();
-            // Ordenar por nome crescente
-            atletasCache.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }));
-            filtrarAtletas();
+            try {
+                const res = await fetchAPI(`${API}/atletas?prefeituraId=${prefeituraId}`);
+                atletasCache = await res.json();
+                // Ordenar por nome crescente
+                atletasCache.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }));
+                filtrarAtletas();
+            } catch (e) {
+                console.error('Erro ao carregar atletas:', e);
+                renderErroTabela('tabela-atletas', 4, 'carregarAtletas()');
+            }
         }
 
         function filtrarAtletas() {
@@ -294,7 +299,7 @@
         }
 
         async function excluirAtleta(id) {
-            if (confirm("Deseja realmente excluir este atleta? Isso também o removerá de qualquer equipe.")) {
+            if (await confirmAction("Deseja realmente excluir este atleta? Isso também o removerá de qualquer equipe.")) {
                 const res = await fetch(`${API}/atletas/${id}?prefeituraId=${prefeituraId}`, { method: 'DELETE', headers: getAuthHeaders() });
                 if (!res.ok) {
                     const data = await res.json().catch(() => ({}));

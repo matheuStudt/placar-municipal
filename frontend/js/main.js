@@ -161,3 +161,129 @@ function formatarNomeCampeonato(c, limit = 40) {
 
     return formatado.trim();
 }
+
+/**
+ * Exibe um modal de confirmação no padrão Bootstrap (Ação Destrutiva).
+ * @param {string} mensagem - O texto de confirmação a ser exibido.
+ * @returns {Promise<boolean>} - Resolve com true se o usuário confirmar, false se cancelar.
+ */
+function confirmAction(mensagem) {
+    return new Promise((resolve) => {
+        const id = 'confirm-modal-' + Date.now();
+        const modalHtml = `
+            <div class="modal fade" id="${id}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title fw-bold">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>Atenção
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4 text-center">
+                            <p class="mb-0 fs-5">${mensagem}</p>
+                        </div>
+                        <div class="modal-footer border-0 d-flex justify-content-center gap-2 pb-4">
+                            <button type="button" class="btn btn-light fw-bold px-4 shadow-sm" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-danger fw-bold px-4 shadow-sm btn-confirmar">Confirmar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modalEl = document.getElementById(id);
+        const modalBS = new bootstrap.Modal(modalEl);
+        
+        let confirmado = false;
+        
+        modalEl.querySelector('.btn-confirmar').addEventListener('click', () => {
+            confirmado = true;
+            modalBS.hide();
+        });
+        
+        modalEl.addEventListener('hidden.bs.modal', () => {
+            modalEl.remove();
+            resolve(confirmado);
+        });
+        
+        modalBS.show();
+    });
+}
+
+// ─── FETCH COM TIMEOUT E TRATAMENTO DE ERRO ───────────────────────────────
+/**
+ * Wrapper sobre fetch que adiciona timeout e converte erros HTTP em exceções.
+ * @param {string} url
+ * @param {RequestInit} [options]
+ * @param {number} [timeoutMs=10000]
+ * @returns {Promise<Response>}
+ */
+async function fetchAPI(url, options = {}, timeoutMs = 10000) {
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        const res = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(tid);
+        if (!res.ok) {
+            const err = new Error(`HTTP ${res.status}`);
+            err.status = res.status;
+            throw err;
+        }
+        return res;
+    } catch (e) {
+        clearTimeout(tid);
+        if (e.name === 'AbortError') {
+            const te = new Error('Timeout: o servidor demorou demais para responder.');
+            te.isTimeout = true;
+            throw te;
+        }
+        throw e;
+    }
+}
+
+/**
+ * Renderiza uma linha de erro com botão "Tentar novamente" dentro de um <tbody>.
+ * @param {string} tbodyId     ID do elemento <tbody>
+ * @param {number} colspan     Número de colunas da tabela
+ * @param {string} retryFnCall Chamada de função como string, ex: 'carregarAtletas()'
+ */
+function renderErroTabela(tbodyId, colspan, retryFnCall) {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="${colspan}" class="text-center py-5">
+                <div class="d-flex flex-column align-items-center gap-2">
+                    <i class="bi bi-wifi-off fs-2 text-danger opacity-75"></i>
+                    <span class="fw-bold text-danger">Falha ao carregar os dados</span>
+                    <span class="text-muted small">Verifique a conexão com o servidor ou tente novamente.</span>
+                    <button class="btn btn-outline-primary btn-sm mt-1" onclick="${retryFnCall}">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Tentar novamente
+                    </button>
+                </div>
+            </td>
+        </tr>`;
+}
+
+/**
+ * Renderiza um estado de erro com botão "Tentar novamente" dentro de um <div> container.
+ * Usado em páginas que exibem cards em vez de tabelas (ex: lista-jogos em jogos.html).
+ * @param {string} containerId ID do elemento container
+ * @param {string} retryFnCall Chamada de função como string
+ */
+function renderErroContainer(containerId, retryFnCall) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = `
+        <div class="col-12 text-center py-5">
+            <div class="d-flex flex-column align-items-center gap-2">
+                <i class="bi bi-wifi-off fs-2 text-danger opacity-75"></i>
+                <span class="fw-bold text-danger">Falha ao carregar os dados</span>
+                <span class="text-muted small">Verifique a conexão com o servidor ou tente novamente.</span>
+                <button class="btn btn-outline-primary btn-sm mt-1" onclick="${retryFnCall}">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Tentar novamente
+                </button>
+            </div>
+        </div>`;
+}

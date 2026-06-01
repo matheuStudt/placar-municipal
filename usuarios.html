@@ -138,10 +138,11 @@
         }
 
         async function carregarUsuarios() {
+            const body = document.getElementById('tabela-usuarios');
+            body.innerHTML = Array(3).fill('<tr><td colspan="4"><div class="skeleton" style="height: 38px; border-radius: 4px; opacity:0.5;"></div></td></tr>').join('');
             try {
-                const res = await fetch(`${API}/usuarios-gestao`, { headers: getAuthHeaders() });
+                const res = await fetchAPI(`${API}/usuarios-gestao`, { headers: getAuthHeaders() });
                 const users = await res.json();
-                const body = document.getElementById('tabela-usuarios');
                 body.innerHTML = '';
 
                 users.forEach(u => {
@@ -163,7 +164,10 @@
                         </td>
                     </tr>`;
                 });
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.error('Erro ao carregar usuários:', e);
+                renderErroTabela('tabela-usuarios', 4, 'carregarUsuarios()');
+            }
         }
 
         function prepararNovo() {
@@ -226,7 +230,7 @@
         });
 
         async function excluirUsuario(id) {
-            if (!confirm('Deseja realmente excluir este usuário?')) return;
+            if (!(await confirmAction('Deseja realmente excluir este usuário?'))) return;
             const res = await fetch(`${API}/usuarios-gestao/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
             if (res.ok) carregarUsuarios();
         }

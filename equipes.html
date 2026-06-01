@@ -381,7 +381,7 @@
         });
 
         async function excluirCategoria(id) {
-            if (!confirm("Tem certeza que deseja excluir esta categoria? Equipes já cadastradas com este nome não serão afetadas, mas a opção não aparecerá mais no seletor.")) return;
+            if (!(await confirmAction("Tem certeza que deseja excluir esta categoria? Equipes já cadastradas com este nome não serão afetadas, mas a opção não aparecerá mais no seletor."))) return;
 
             try {
                 const res = await fetch(`${API}/categorias/${id}`, { method: 'DELETE' });
@@ -394,7 +394,7 @@
 
         async function carregarEquipes() {
             const tabela = document.getElementById('tabela-equipes');
-            tabela.innerHTML = Array(5).fill('<tr><td colspan="6"><div class="skeleton" style="height: 38px; border-radius: 4px; opacity:0.5;"></div></td></tr>').join('');
+            tabela.innerHTML = Array(5).fill('<tr><td colspan="7"><div class="skeleton" style="height: 38px; border-radius: 4px; opacity:0.5;"></div></td></tr>').join('');
             try {
                 const filtroSelect = document.getElementById('filtro-categoria-equipes');
                 let url = `${API}/equipes?prefeituraId=${prefeituraId}`;
@@ -402,7 +402,7 @@
                     url += `&categoria=${encodeURIComponent(filtroSelect.value)}`;
                 }
 
-                const res = await fetch(url);
+                const res = await fetchAPI(url);
                 const equipes = await res.json();
                 // Adicione esta linha para ordenar de A a Z
                 equipes.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }));
@@ -442,7 +442,10 @@
                         </td>
                     </tr>`;
                 });
-            } catch (e) { console.error("Erro ao carregar:", e); }
+            } catch (e) {
+                console.error('Erro ao carregar equipes:', e);
+                renderErroTabela('tabela-equipes', 7, 'carregarEquipes()');
+            }
         }
 
         function novaEquipe() {
@@ -495,7 +498,7 @@
         }
 
         async function excluirEquipe(id) {
-            if (confirm("Deseja realmente excluir esta equipe? Isso removerá todos os vínculos com atletas.")) {
+            if (await confirmAction("Deseja realmente excluir esta equipe? Isso removerá todos os vínculos com atletas.")) {
 
                 const res = await fetch(`${API}/equipes/${id}`, { method: 'DELETE' });
                 if (!res.ok) {
@@ -677,14 +680,14 @@
         }
 
         async function removerAtleta(vinculoId, equipeId) {
-            if (!confirm("Deseja remover este atleta da equipe?")) return;
+            if (!(await confirmAction("Deseja remover este atleta da equipe?"))) return;
             await fetch(`${API}/vinculos/${vinculoId}`, { method: 'DELETE', headers: getAuthHeaders() });
             atualizarListaElenco(equipeId);
         }
 
         async function limparElencoDaEquipe() {
             const equipeId = document.getElementById('equipe-id-vinculo').value;
-            if (!confirm("Atenção! Deseja remover TODOS os atletas vinculados a esta equipe?")) return;
+            if (!(await confirmAction("Atenção! Deseja remover TODOS os atletas vinculados a esta equipe?"))) return;
             const res = await fetch(`${API}/equipes/${equipeId}/elenco`, { method: 'DELETE', headers: getAuthHeaders() });
             if (res.ok) {
                 atualizarListaElenco(equipeId);
