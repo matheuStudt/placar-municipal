@@ -1,16 +1,27 @@
 import { prisma } from '../prisma.js';
 export const getJogos = async (req, res) => {
     const campIdRaw = req.query.campeonatoId;
+    const campeonatosIdsRaw = req.query.campeonatosIds;
     const rodadaIdRaw = req.query.rodadaId;
     const chaveRaw = req.query.chave;
     const equipeIdRaw = req.query.equipeId;
+    const dataRaw = req.query.data;
     const where = {};
-    if (campIdRaw)
+    if (campeonatosIdsRaw) {
+        const ids = String(campeonatosIdsRaw).split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+        if (ids.length > 0) {
+            where.rodada = { campeonatoId: { in: ids } };
+        }
+    }
+    else if (campIdRaw) {
         where.rodada = { campeonatoId: parseInt(String(campIdRaw)) };
+    }
     if (rodadaIdRaw)
         where.rodadaId = parseInt(String(rodadaIdRaw));
     if (chaveRaw)
         where.chave = String(chaveRaw);
+    if (dataRaw)
+        where.data = String(dataRaw);
     if (equipeIdRaw) {
         const eqId = parseInt(String(equipeIdRaw));
         where.OR = [
@@ -23,7 +34,7 @@ export const getJogos = async (req, res) => {
             where,
             orderBy: { numero: 'asc' },
             include: {
-                rodada: { include: { campeonato: { select: { categoria: true } } } },
+                rodada: { include: { campeonato: { select: { nome: true, categoria: true } } } },
                 mandante: { select: { id: true, logoUrl: true } },
                 visitante: { select: { id: true, logoUrl: true } }
             }
@@ -214,5 +225,69 @@ export const deleteJogo = async (req, res) => {
     catch (e) {
         console.error('[DELETE] Erro ao excluir jogo:', e);
         res.status(404).json({ error: 'Jogo não encontrado ou erro ao excluir.' });
+    }
+};
+// ── Reprogramar Rodada (efeito dominó) ──────────────────────────────────────
+export const reprogramarRodada = async (req, res) => {
+    const { campeonatoId, rodadaId, dias, efeitoDomino } = req.body;
+    if (!campeonatoId || !rodadaId || typeof dias !== 'number' || dias < 1) {
+        return res.status(400).json({ error: 'Parâmetros obrigatórios ausentes ou inválidos.' });
+    }
+    const campId = parseInt(String(campeonatoId));
+    const rodId = parseInt(String(rodadaId));
+    try {
+        // 1. Resolve o número da rodada selecionada para aplicar o filtro gte (dominó)
+        const rodadaRef = await prisma.rodada.findUnique({
+            where: { id: rodId },
+            select: { numero: true, campeonatoId: true }
+        });
+        if (!rodadaRef || rodadaRef.campeonatoId !== campId) {
+            return res.status(404).json({ error: 'Rodada não encontrada neste campeonato.' });
+        }
+        const numeroRef = rodadaRef.numero;
+        // 2. Monta o filtro de rodadas afetadas (dominó ou apenas a selecionada)
+        const filtroRodada = efeitoDomino
+            ? { campeonatoId: campId, numero: { gte: numeroRef } }
+            : { campeonatoId: campId, numero: numeroRef };
+        // 3. Busca jogos pendentes/agendados — jogos finalizados e WO NÃO são tocados
+        const STATUS_BLOQUEADOS = ['Finalizado', 'WO'];
+        const jogosAfetados = await prisma.jogo.findMany({
+            where: {
+                rodada: filtroRodada,
+                status: { notIn: STATUS_BLOQUEADOS }
+            },
+            select: { id: true, data: true }
+        });
+        if (jogosAfetados.length === 0) {
+            return res.status(404).json({
+                error: 'Nenhum jogo agendado/pendente encontrado para esta reprogramação.'
+            });
+        }
+        // 4. Gera as operações de update: incrementa a data (String YYYY-MM-DD) por N dias
+        const operacoesUpdate = jogosAfetados.map((jogo) => {
+            const [ano, mes, dia] = jogo.data.split('-').map(Number);
+            const dt = new Date(ano, mes - 1, dia);
+            dt.setDate(dt.getDate() + dias);
+            const novaData = [
+                dt.getFullYear(),
+                String(dt.getMonth() + 1).padStart(2, '0'),
+                String(dt.getDate()).padStart(2, '0')
+            ].join('-');
+            return prisma.jogo.update({
+                where: { id: jogo.id },
+                data: { data: novaData }
+            });
+        });
+        // 5. Executa em transação atômica
+        await prisma.$transaction(operacoesUpdate);
+        const escopo = efeitoDomino ? `rodada ${numeroRef} em diante` : `rodada ${numeroRef}`;
+        return res.status(200).json({
+            message: `Sucesso! ${jogosAfetados.length} jogo(s) da ${escopo} adiado(s) em ${dias} dia(s).`,
+            jogosAtualizados: jogosAfetados.length
+        });
+    }
+    catch (e) {
+        console.error('[reprogramarRodada] Erro:', e);
+        return res.status(500).json({ error: 'Erro interno ao processar a reprogramação.' });
     }
 };

@@ -1,10 +1,15 @@
 import { prisma } from '../prisma.js';
+import { GoogleGenAI } from '@google/genai';
 export const getEquipes = async (req, res) => {
     const prefeituraId = req.query.prefeituraId ? parseInt(String(req.query.prefeituraId)) : undefined;
+    const categoria = req.query.categoria ? String(req.query.categoria) : undefined;
     try {
-        const equipes = await prisma.equipe.findMany({
-            where: prefeituraId ? { prefeituraId } : {}
-        });
+        const where = {};
+        if (prefeituraId)
+            where.prefeituraId = prefeituraId;
+        if (categoria)
+            where.categoria = categoria;
+        const equipes = await prisma.equipe.findMany({ where });
         res.json(equipes);
     }
     catch (e) {
@@ -17,9 +22,9 @@ export const createEquipe = async (req, res) => {
         const nova = await prisma.equipe.create({
             data: {
                 nome,
-                responsavel,
-                telefone,
-                local,
+                responsavel: responsavel && String(responsavel).trim() ? String(responsavel).trim() : null,
+                telefone: telefone && String(telefone).trim() ? String(telefone).trim() : null,
+                local: local || null,
                 logoUrl: logoUrl || null,
                 categoria: categoria || null,
                 prefeituraId: parseInt(String(prefeituraId)) || 1
@@ -49,7 +54,14 @@ export const updateEquipe = async (req, res) => {
     try {
         const atualizada = await prisma.equipe.update({
             where: { id },
-            data: { nome, responsavel, telefone, local, logoUrl: logoUrl || null, categoria: categoria || null }
+            data: {
+                nome,
+                responsavel: responsavel !== undefined ? (String(responsavel).trim() || null) : undefined,
+                telefone: telefone !== undefined ? (String(telefone).trim() || null) : undefined,
+                local: local || null,
+                logoUrl: logoUrl || null,
+                categoria: categoria || null
+            }
         });
         res.json(atualizada);
     }
@@ -102,5 +114,117 @@ export const limparElenco = async (req, res) => {
     }
     catch (e) {
         res.status(500).json({ error: "Erro ao limpar elenco" });
+    }
+};
+export const escanearLista = async (req, res) => {
+    try {
+        const file = req.file;
+        const prefeituraIdStr = req.query.prefeituraId;
+        if (!prefeituraIdStr)
+            return res.status(400).json({ error: "Prefeitura ID não fornecido." });
+        if (!file)
+            return res.status(400).json({ error: "Nenhum arquivo enviado." });
+        const prefeituraId = parseInt(String(prefeituraIdStr));
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey)
+            return res.status(500).json({ error: "GEMINI_API_KEY não configurada no servidor." });
+        const ai = new GoogleGenAI({ apiKey });
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: [
+                {
+                    role: 'user',
+                    parts: [
+                        {
+                            inlineData: {
+                                data: file.buffer.toString("base64"),
+                                mimeType: file.mimetype
+                            }
+                        },
+                        {
+                            text: 'Extraia os nomes dos jogadores desta lista de inscrição. Ignore cabeçalhos e números. Retorne APENAS um array JSON no formato: [{"nome": "NOME COMPLETO EM MAIÚSCULO"}].'
+                        }
+                    ]
+                }
+            ]
+        });
+        let text = response.text || "[]";
+        text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+        let extractedNames = [];
+        try {
+            extractedNames = JSON.parse(text);
+        }
+        catch (e) {
+            console.error("Erro no parse do JSON do Gemini:", text);
+            return res.status(400).json({ error: "A IA não retornou um formato JSON válido." });
+        }
+        const resultados = [];
+        for (const item of extractedNames) {
+            const atleta = await prisma.atleta.findFirst({
+                where: {
+                    prefeituraId,
+                    nome: { equals: item.nome, mode: 'insensitive' }
+                }
+            });
+            if (atleta) {
+                resultados.push({ nome: item.nome, status: 'EXISTENTE', atletaId: atleta.id });
+            }
+            else {
+                resultados.push({ nome: item.nome, status: 'NOVO' });
+            }
+        }
+        res.json(resultados);
+    }
+    catch (e) {
+        console.error("Erro no escanearLista:", e);
+        res.status(500).json({ error: "Erro interno no OCR." });
+    }
+};
+export const vincularLote = async (req, res) => {
+    const equipeId = parseInt(String(req.params.id));
+    const { prefeituraId, atletas } = req.body;
+    if (!prefeituraId || !equipeId || !atletas || !Array.isArray(atletas)) {
+        return res.status(400).json({ error: "Dados inválidos." });
+    }
+    try {
+        await prisma.$transaction(async (tx) => {
+            const idsParaVincular = [];
+            for (const item of atletas) {
+                if (item.status === 'NOVO') {
+                    const novoAtleta = await tx.atleta.create({
+                        data: {
+                            nome: item.nome,
+                            prefeituraId: parseInt(String(prefeituraId))
+                        }
+                    });
+                    idsParaVincular.push(novoAtleta.id);
+                }
+                else if (item.status === 'EXISTENTE' && item.atletaId) {
+                    idsParaVincular.push(item.atletaId);
+                }
+            }
+            const existentes = await tx.vinculo.findMany({
+                where: {
+                    equipeId,
+                    atletaId: { in: idsParaVincular }
+                }
+            });
+            const idsExistentes = existentes.map(v => v.atletaId);
+            const idsNovosVinculos = idsParaVincular.filter(id => !idsExistentes.includes(id));
+            if (idsNovosVinculos.length > 0) {
+                await tx.vinculo.createMany({
+                    data: idsNovosVinculos.map(atletaId => ({
+                        equipeId,
+                        atletaId,
+                        tipo: "Atleta"
+                    }))
+                });
+            }
+        });
+        res.json({ success: true, message: "Lote vinculado com sucesso!" });
+    }
+    catch (e) {
+        console.error("Erro no vincularLote:", e);
+        res.status(500).json({ error: "Erro ao processar lote." });
     }
 };

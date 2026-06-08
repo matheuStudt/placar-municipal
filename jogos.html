@@ -77,7 +77,12 @@
                         <option value="">Todas as Rodadas</option>
                     </select>
                 </div>
-                <div class="col-md-4 mt-3 mt-md-0 text-md-end">
+                <div class="col-md-4 mt-3 mt-md-0 text-md-end d-flex gap-2">
+                    <button id="btn-reprogramar-rodada" class="btn btn-warning fw-bold flex-shrink-0 py-2"
+                        data-bs-toggle="modal" data-bs-target="#modalReprogramarRodada"
+                        disabled title="Selecione uma rodada específica para habilitar">
+                        <i class="bi bi-calendar-range-fill"></i>
+                    </button>
                     <button id="btn-novo-jogo" class="btn btn-primary fw-bold w-100 py-2" data-bs-toggle="modal"
                         data-bs-target="#modalNovoJogo" onclick="prepararNovoJogo()" disabled>
                         <i class="bi bi-calendar-plus me-2"></i> Adicionar Partida
@@ -93,6 +98,51 @@
         </div>
     </main>
     </div>
+    </div>
+
+    <!-- ── Modal: Reprogramar Rodada ──────────────────────────────────── -->
+    <div class="modal fade" id="modalReprogramarRodada" tabindex="-1" aria-labelledby="modalReprogramarRodadaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header bg-warning text-dark border-0">
+                    <h5 class="modal-title fw-bold" id="modalReprogramarRodadaLabel">
+                        <i class="bi bi-calendar-range-fill me-2"></i> Reprogramar Rodada
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="reprogramar-rodada-info" class="alert alert-secondary small mb-3 py-2"></div>
+                    <form id="formReprogramar">
+                        <div class="mb-4">
+                            <label for="diasAdiar" class="form-label fw-bold text-secondary">Adiar jogos em quantos dias?</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-plus-minus"></i></span>
+                                <input type="number" class="form-control form-control-lg text-center fw-bold"
+                                    id="diasAdiar" value="7" min="1" required>
+                                <span class="input-group-text">dias</span>
+                            </div>
+                            <div class="form-text text-muted">O padrão de 7 dias adia a rodada exatamente para a próxima semana.</div>
+                        </div>
+                        <div class="form-check form-switch p-3 bg-light rounded border border-warning-subtle">
+                            <input class="form-check-input ms-0 me-2" type="checkbox" id="empurrarProximas" role="switch">
+                            <label class="form-check-label fw-bold text-primary" for="empurrarProximas">
+                                🔄 Aplicar efeito dominó nas próximas rodadas
+                            </label>
+                            <div class="form-text text-muted small mt-1">
+                                Se marcado, todas as rodadas <strong>posteriores</strong> deste campeonato também serão
+                                adiadas pelo mesmo número de dias, preservando o espaçamento entre elas.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 bg-light">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning px-4 fw-bold" id="btnConfirmarReprogramacao">
+                        <i class="bi bi-check-circle me-1"></i> Confirmar Alteração
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="modal fade" id="modalNovoJogo" tabindex="-1" aria-hidden="true">
@@ -260,6 +310,9 @@
 
         function mudouRodadaFiltro() {
             carregarJogos(campeonatoAtual);
+            // Habilita o botão de reprogramar somente quando uma rodada específica está selecionada
+            const rodadaId = document.getElementById('select-rodada-filtro').value;
+            document.getElementById('btn-reprogramar-rodada').disabled = !rodadaId;
         }
 
         // 3. Carrega apenas os jogos do campeonato selecionado
@@ -665,6 +718,77 @@
             btn.disabled = true;
             window.location.href = `sumula.html?jogoId=${jogoId}`;
         }
+
+        // ── Helpers para o modal de reprogramação ──────────────────────────
+        function obterCampeonatoIdAtivo() {
+            return campeonatoAtual || null;
+        }
+
+        function obterRodadaIdAtiva() {
+            const v = document.getElementById('select-rodada-filtro').value;
+            return v ? parseInt(v, 10) : null;
+        }
+
+        function obterNomeRodadaAtiva() {
+            const sel = document.getElementById('select-rodada-filtro');
+            return sel.options[sel.selectedIndex]?.text || 'Rodada selecionada';
+        }
+
+        function atualizarListaJogos() {
+            carregarJogos(campeonatoAtual);
+        }
+
+        // Preenche o aviso informativo ao abrir o modal
+        document.getElementById('modalReprogramarRodada').addEventListener('show.bs.modal', () => {
+            const nomeRodada = obterNomeRodadaAtiva();
+            const infoEl = document.getElementById('reprogramar-rodada-info');
+            infoEl.innerHTML = `<i class="bi bi-info-circle me-1"></i> Você está prestes a reprogramar: <strong>${nomeRodada}</strong>. Apenas jogos com status <em>Agendado</em> serão afetados.`;
+            document.getElementById('empurrarProximas').checked = false;
+            document.getElementById('diasAdiar').value = '7';
+        });
+
+        // ── Confirmação da reprogramação ────────────────────────────────────
+        document.getElementById('btnConfirmarReprogramacao').addEventListener('click', async () => {
+            const campeonatoId = obterCampeonatoIdAtivo();
+            const rodadaId     = obterRodadaIdAtiva();
+            const dias         = parseInt(document.getElementById('diasAdiar').value, 10);
+            const efeitoDomino = document.getElementById('empurrarProximas').checked;
+
+            if (!campeonatoId || !rodadaId || isNaN(dias) || dias < 1) {
+                showToast('Selecione uma rodada específica e informe um número de dias válido.', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('btnConfirmarReprogramacao');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Processando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API}/jogos/reprogramar-rodada`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ campeonatoId, rodadaId, dias, efeitoDomino })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const modalEl = document.getElementById('modalReprogramarRodada');
+                    bootstrap.Modal.getInstance(modalEl)?.hide();
+                    showToast(data.message || 'Rodada(s) reprogramada(s) com sucesso! 🎉', 'success');
+                    atualizarListaJogos();
+                } else {
+                    showToast(data.error || 'Erro ao processar a reprogramação.', 'danger');
+                }
+            } catch (error) {
+                console.error('[reprogramarRodada] Erro na requisição:', error);
+                showToast('Erro de comunicação com o servidor.', 'danger');
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        });
 
         window.onload = init;
     </script>

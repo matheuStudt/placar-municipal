@@ -29,7 +29,19 @@ console.log('[SERVER] SUPABASE_URL:', process.env.SUPABASE_URL || '⚠️  não 
 console.log('--- SERVER STARTING ---');
 const app = express();
 app.use(cors());
-app.use(express.json());
+// Middleware condicional: ignora o body-parser para a rota de OCR
+app.use((req, res, next) => {
+    if (req.originalUrl.includes('/api/equipes/escanear-lista')) {
+        next();
+    }
+    else {
+        express.json({ limit: '10mb' })(req, res, (err) => {
+            if (err)
+                return next(err);
+            express.urlencoded({ limit: '10mb', extended: true })(req, res, next);
+        });
+    }
+});
 // Servir arquivos estáticos do frontend
 const frontendPath = path.join(__dirname, '../../frontend');
 app.use(express.static(frontendPath));
