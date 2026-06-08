@@ -39,9 +39,11 @@ export const login = async (req: Request, res: Response) => {
             return res.status(401).json({ error: 'Credenciais inválidas' });
         }
 
+        const userRole = user.prefeituraId === null ? 'SUPER_ADMIN' : (user.role || 'COMUM');
+
         // Gerar token JWT com role incluso
         const token = jwt.sign(
-            { id: user.id, email: user.email, prefeituraId: user.prefeituraId, role: user.role || 'COMUM' },
+            { id: user.id, email: user.email, prefeituraId: user.prefeituraId, role: userRole },
             JWT_SECRET,
             { expiresIn: JWT_EXPIRES_IN }
         );
@@ -65,7 +67,7 @@ export const login = async (req: Request, res: Response) => {
             token,
             id: user.id,
             email: user.email,
-            role: user.role || 'COMUM',
+            role: userRole,
             prefeituraId: user.prefeituraId,
             prefeituraNome: user.prefeitura?.nome || 'Prefeitura Não Vinculada',
             prefeituraSlug: user.prefeitura?.slug || '',

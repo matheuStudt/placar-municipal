@@ -32,8 +32,9 @@ export const login = async (req, res) => {
         if (!senhaValida) {
             return res.status(401).json({ error: 'Credenciais inválidas' });
         }
+        const userRole = user.prefeituraId === null ? 'SUPER_ADMIN' : (user.role || 'COMUM');
         // Gerar token JWT com role incluso
-        const token = jwt.sign({ id: user.id, email: user.email, prefeituraId: user.prefeituraId, role: user.role || 'COMUM' }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+        const token = jwt.sign({ id: user.id, email: user.email, prefeituraId: user.prefeituraId, role: userRole }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
         // Define as permissões para o frontend
         // MASTER → acesso total
         // COMUM com perfil → permissões definidas no perfil
@@ -54,7 +55,7 @@ export const login = async (req, res) => {
             token,
             id: user.id,
             email: user.email,
-            role: user.role || 'COMUM',
+            role: userRole,
             prefeituraId: user.prefeituraId,
             prefeituraNome: user.prefeitura?.nome || 'Prefeitura Não Vinculada',
             prefeituraSlug: user.prefeitura?.slug || '',

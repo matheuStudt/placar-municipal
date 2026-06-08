@@ -235,8 +235,16 @@
 
         // Verificação de segurança centralizada via auth-guard.js
         function verificarAcesso() {
-            const user = requireAuth({ adminOnly: true });
+            const user = requireAuth();
             if (!user) return;
+
+            // Rota admin.html sem guarda de role
+            // Qualquer usuário logado pode acessar /admin.html. Verificar no JS de carregamento se role === 'SUPER_ADMIN' e redirecionar caso contrário.
+            if (user.role !== 'SUPER_ADMIN') {
+                window.location.replace('index.html');
+                return;
+            }
+
             adminId = user.id;
             console.log('ID do Administrador carregado:', adminId);
 

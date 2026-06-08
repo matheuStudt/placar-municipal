@@ -102,7 +102,8 @@ export const createUsuario = async (req: Request, res: Response) => {
             data: {
                 email,
                 senha: senhaHash,
-                prefeituraId: prefeituraId ? parseInt(String(prefeituraId)) : null
+                prefeituraId: prefeituraId ? parseInt(String(prefeituraId)) : null,
+                role: prefeituraId ? 'COMUM' : 'SUPER_ADMIN'
             }
         });
         res.status(201).json({ id: u.id, email: u.email, prefeituraId: u.prefeituraId });
@@ -115,7 +116,11 @@ export const updateUsuario = async (req: Request, res: Response) => {
     const id = parseInt(String(req.params.id));
     const { email, senha, prefeituraId } = req.body;
     try {
-        const dataToUpdate: any = { email, prefeituraId: prefeituraId ? parseInt(String(prefeituraId)) : null };
+        const dataToUpdate: any = { 
+            email, 
+            prefeituraId: prefeituraId ? parseInt(String(prefeituraId)) : null,
+            role: prefeituraId ? 'COMUM' : 'SUPER_ADMIN'
+        };
         if (senha) {
             dataToUpdate.senha = await bcrypt.hash(String(senha), SALT_ROUNDS);
         }

@@ -24,7 +24,7 @@ export const verificarPermissao = (modulo) => {
             return;
         }
         // Verificação rápida pelo token (se aplicável)
-        if (req.user.role === 'MASTER' || req.user.role === 'ADMIN') {
+        if (req.user.role === 'MASTER' || req.user.role === 'ADMIN' || req.user.role === 'SUPER_ADMIN') {
             next();
             return;
         }
@@ -37,8 +37,8 @@ export const verificarPermissao = (modulo) => {
                 res.status(401).json({ error: 'Usuário não encontrado.' });
                 return;
             }
-            // Bypass direto no banco: Donos de tenant ou perfis master têm passe livre total
-            if (usuario.role === 'MASTER' || usuario.role === 'ADMIN') {
+            // Bypass direto no banco: Donos de tenant, perfis master ou super admin têm passe livre total
+            if (usuario.role === 'MASTER' || usuario.role === 'ADMIN' || usuario.role === 'SUPER_ADMIN' || usuario.prefeituraId === null) {
                 next();
                 return;
             }
