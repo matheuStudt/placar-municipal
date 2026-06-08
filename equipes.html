@@ -414,7 +414,7 @@
                     <tr>
                         <td class="px-3">
                             ${eq.logoUrl
-                            ? `<img src="${eq.logoUrl}" alt="${eq.nome}" style="width:36px;height:36px;object-fit:contain;border-radius:6px;">`
+                            ? `<img src="${sanitizeImgSrc(eq.logoUrl)}" alt="${eq.nome}" style="width:36px;height:36px;object-fit:contain;border-radius:6px;">`
                             : `<div style="width:36px;height:36px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;"><i class="bi bi-shield text-muted"></i></div>`
                         }
                         </td>                        
@@ -488,8 +488,9 @@
             const prev = document.getElementById('logo-preview');
             const prevContainer = document.getElementById('logo-preview-container');
             if (eq.logoUrl) {
-                prev.src = eq.logoUrl;
-                prevContainer.style.display = 'block';
+                const safeUrl = sanitizeImgSrc(eq.logoUrl);
+                prev.src = safeUrl;
+                prevContainer.style.display = safeUrl ? 'block' : 'none';
             } else {
                 prevContainer.style.display = 'none';
             }

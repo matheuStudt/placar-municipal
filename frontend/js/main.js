@@ -287,3 +287,27 @@ function renderErroContainer(containerId, retryFnCall) {
             </div>
         </div>`;
 }
+
+/**
+ * Sanitiza uma URL antes de atribuí-la a um atributo <img src> via innerHTML ou .src.
+ *
+ * Estratégia: usa um <a> auxiliar para que o browser normalize e decodifique
+ * a URL (incluindo %3A, \n, \t, etc.) antes de verificarmos o protocolo.
+ * Isso previne bypass via codificação (ex: javascript%3Aalert(1)).
+ *
+ * @param {string|null|undefined} url - URL bruta vinda da API.
+ * @returns {string} URL segura, ou '' para bloquear a injeção.
+ */
+function sanitizeImgSrc(url) {
+    if (!url || typeof url !== 'string') return '';
+    const trimmed = url.trim();
+    if (!trimmed) return '';
+    try {
+        // Usa URL constructor — normaliza encoding e detecta esquema real
+        const parsed = new URL(trimmed);
+        if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return '';
+        return trimmed;
+    } catch {
+        return ''; // URL malformada
+    }
+}

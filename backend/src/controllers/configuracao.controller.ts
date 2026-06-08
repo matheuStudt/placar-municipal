@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../prisma.js';
+import { sanitizeLogoUrl } from '../utils/sanitize.js';
 
 export const getConfiguracao = async (req: Request, res: Response) => {
     const slug = req.query.slug;
@@ -28,7 +29,7 @@ export const updateConfiguracao = async (req: Request, res: Response) => {
     try {
         const pref = await prisma.prefeitura.update({
             where: { id: parseInt(String(id)) || 1 },
-            data: { nome, logoUrl, corPrimaria, corSecundaria }
+            data: { nome, logoUrl: sanitizeLogoUrl(logoUrl), corPrimaria, corSecundaria }
         });
         res.json(pref);
     } catch (e) {

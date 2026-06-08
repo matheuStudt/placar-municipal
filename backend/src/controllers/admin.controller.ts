@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma.js';
 import bcrypt from 'bcrypt';
+import { sanitizeLogoUrl } from '../utils/sanitize.js';
 
 const SALT_ROUNDS = 10;
 
@@ -35,7 +36,7 @@ export const createPrefeitura = async (req: Request, res: Response) => {
             data: { 
                 nome, 
                 slug, 
-                logoUrl, 
+                logoUrl: sanitizeLogoUrl(logoUrl), 
                 corPrimaria: corPrimaria || "#0d6efd", 
                 corSecundaria: corSecundaria || "#6c757d",
                 limiteCampeonatos: limiteCampeonatos ? parseInt(String(limiteCampeonatos)) : 3
@@ -51,7 +52,7 @@ export const updatePrefeitura = async (req: Request, res: Response) => {
     const id = parseInt(String(req.params.id));
     const { nome, slug, logoUrl, corPrimaria, corSecundaria, limiteCampeonatos } = req.body;
     try {
-        const dataUpdate: any = { nome, slug, logoUrl, corPrimaria, corSecundaria };
+        const dataUpdate: any = { nome, slug, logoUrl: sanitizeLogoUrl(logoUrl), corPrimaria, corSecundaria };
         if (limiteCampeonatos !== undefined && limiteCampeonatos !== null) {
             dataUpdate.limiteCampeonatos = parseInt(String(limiteCampeonatos));
         }

@@ -1,5 +1,6 @@
 import { prisma } from '../prisma.js';
 import { GoogleGenAI } from '@google/genai';
+import { sanitizeLogoUrl } from '../utils/sanitize.js';
 export const getEquipes = async (req, res) => {
     const prefeituraId = req.query.prefeituraId ? parseInt(String(req.query.prefeituraId)) : undefined;
     const categoria = req.query.categoria ? String(req.query.categoria) : undefined;
@@ -25,7 +26,7 @@ export const createEquipe = async (req, res) => {
                 responsavel: responsavel && String(responsavel).trim() ? String(responsavel).trim() : null,
                 telefone: telefone && String(telefone).trim() ? String(telefone).trim() : null,
                 local: local || null,
-                logoUrl: logoUrl || null,
+                logoUrl: sanitizeLogoUrl(logoUrl),
                 categoria: categoria || null,
                 prefeituraId: parseInt(String(prefeituraId)) || 1
             }
@@ -59,7 +60,7 @@ export const updateEquipe = async (req, res) => {
                 responsavel: responsavel !== undefined ? (String(responsavel).trim() || null) : undefined,
                 telefone: telefone !== undefined ? (String(telefone).trim() || null) : undefined,
                 local: local || null,
-                logoUrl: logoUrl || null,
+                logoUrl: sanitizeLogoUrl(logoUrl),
                 categoria: categoria || null
             }
         });

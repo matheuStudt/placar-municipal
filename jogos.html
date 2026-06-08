@@ -354,7 +354,7 @@
                                 <div class="d-flex flex-column gap-2">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center gap-2" style="max-width: 70%;">
-                                            ${j.mandante?.logoUrl ? `<img src="${j.mandante.logoUrl}" alt="" style="width:30px;height:30px;object-fit:contain;">` : `<div style="width:30px;height:30px;" class="bg-light rounded-circle border d-flex align-items-center justify-content-center flex-shrink-0"><i class="bi bi-shield-fill text-secondary" style="font-size: 0.8rem;"></i></div>`}
+                                            ${j.mandante?.logoUrl ? `<img src="${sanitizeImgSrc(j.mandante.logoUrl)}" alt="" style="width:30px;height:30px;object-fit:contain;">` : `<div style="width:30px;height:30px;" class="bg-light rounded-circle border d-flex align-items-center justify-content-center flex-shrink-0"><i class="bi bi-shield-fill text-secondary" style="font-size: 0.8rem;"></i></div>`}
                                             <span class="text-wrap lh-sm fw-bold">${j.mandanteNome}</span>
                                         </div>
                                         <div class="d-flex align-items-center gap-2">
@@ -365,7 +365,7 @@
 
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center gap-2" style="max-width: 70%;">
-                                            ${j.visitante?.logoUrl ? `<img src="${j.visitante.logoUrl}" alt="" style="width:30px;height:30px;object-fit:contain;">` : `<div style="width:30px;height:30px;" class="bg-light rounded-circle border d-flex align-items-center justify-content-center flex-shrink-0"><i class="bi bi-shield-fill text-secondary" style="font-size: 0.8rem;"></i></div>`}
+                                            ${j.visitante?.logoUrl ? `<img src="${sanitizeImgSrc(j.visitante.logoUrl)}" alt="" style="width:30px;height:30px;object-fit:contain;">` : `<div style="width:30px;height:30px;" class="bg-light rounded-circle border d-flex align-items-center justify-content-center flex-shrink-0"><i class="bi bi-shield-fill text-secondary" style="font-size: 0.8rem;"></i></div>`}
                                             <span class="text-wrap lh-sm fw-bold">${j.visitanteNome}</span>
                                         </div>
                                         <div class="d-flex align-items-center gap-2">

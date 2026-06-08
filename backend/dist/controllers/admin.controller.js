@@ -1,5 +1,6 @@
 import { prisma } from '../prisma.js';
 import bcrypt from 'bcrypt';
+import { sanitizeLogoUrl } from '../utils/sanitize.js';
 const SALT_ROUNDS = 10;
 export const checkSuperAdmin = async (req, res, next) => {
     const adminId = parseInt(String(req.headers['x-admin-id'] || req.query.adminId || req.body?.adminId));
@@ -31,7 +32,7 @@ export const createPrefeitura = async (req, res) => {
             data: {
                 nome,
                 slug,
-                logoUrl,
+                logoUrl: sanitizeLogoUrl(logoUrl),
                 corPrimaria: corPrimaria || "#0d6efd",
                 corSecundaria: corSecundaria || "#6c757d",
                 limiteCampeonatos: limiteCampeonatos ? parseInt(String(limiteCampeonatos)) : 3
@@ -47,7 +48,7 @@ export const updatePrefeitura = async (req, res) => {
     const id = parseInt(String(req.params.id));
     const { nome, slug, logoUrl, corPrimaria, corSecundaria, limiteCampeonatos } = req.body;
     try {
-        const dataUpdate = { nome, slug, logoUrl, corPrimaria, corSecundaria };
+        const dataUpdate = { nome, slug, logoUrl: sanitizeLogoUrl(logoUrl), corPrimaria, corSecundaria };
         if (limiteCampeonatos !== undefined && limiteCampeonatos !== null) {
             dataUpdate.limiteCampeonatos = parseInt(String(limiteCampeonatos));
         }
