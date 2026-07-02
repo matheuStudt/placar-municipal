@@ -186,8 +186,8 @@
                         <input type="hidden" id="inscricao-camp-id">
                         <div class="row g-2">
                             <div class="col-12 col-md-7">
-                                <label class="form-label small fw-bold text-muted">EQUIPE</label>
-                                <select id="select-equipes-inscricao" class="form-select" required></select>
+                                <label class="form-label small fw-bold text-muted">EQUIPES (Segure CTRL para várias)</label>
+                                <select id="select-equipes-inscricao" class="form-select" multiple style="height: 120px;" required></select>
                             </div>
                             <div class="col-12 col-md-5">
                                 <label class="form-label small fw-bold text-muted">CHAVE (GRUPO)</label>
@@ -458,7 +458,7 @@
             const resEq = await fetch(url);
             const equipes = await resEq.json();
             const select = document.getElementById('select-equipes-inscricao');
-            select.innerHTML = '<option value="">Escolha uma equipe...</option>';
+            select.innerHTML = '<option value="" disabled>Selecione as equipes...</option>';
             equipes.forEach(eq => select.innerHTML += `<option value="${eq.id}">${eq.nome}</option>`);
 
             atualizarListaInscritos(id);
@@ -508,18 +508,39 @@
         document.getElementById('form-inscricao').addEventListener('submit', async (e) => {
             e.preventDefault();
             const campId = document.getElementById('inscricao-camp-id').value;
-            await fetch(`${API}/participacoes`, {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({
-                    campeonatoId: campId,
-                    equipeId: document.getElementById('select-equipes-inscricao').value,
-                    chave: document.getElementById('inscricao-chave').value
-                })
-            });
-            document.getElementById('form-inscricao').reset();
-            document.getElementById('inscricao-camp-id').value = campId;
-            atualizarListaInscritos(campId);
+            const selectEl = document.getElementById('select-equipes-inscricao');
+            const chave = document.getElementById('inscricao-chave').value;
+            const selectedOptions = Array.from(selectEl.selectedOptions).map(opt => opt.value);
+            
+            if (selectedOptions.length === 0) return;
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> INSCREVENDO...';
+
+            try {
+                for (const equipeId of selectedOptions) {
+                    if (!equipeId) continue; // Ignora opção placeholder se houver
+                    await fetch(`${API}/participacoes`, {
+                        method: 'POST',
+                        headers: getAuthHeaders(),
+                        body: JSON.stringify({
+                            campeonatoId: campId,
+                            equipeId: equipeId,
+                            chave: chave
+                        })
+                    });
+                }
+            } catch (error) {
+                console.error("Erro ao inscrever equipes:", error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                document.getElementById('form-inscricao').reset();
+                document.getElementById('inscricao-camp-id').value = campId;
+                atualizarListaInscritos(campId);
+            }
         });
 
         // --- FUNÇÕES DE RODADAS ---
