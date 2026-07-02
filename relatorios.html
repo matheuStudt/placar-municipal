@@ -1013,20 +1013,21 @@
                 }
 
                 // ── 5. Montar linhas de jogo — estilo Interbairros ────────
-                const LIMITE_1COL = 6;
+                const LIMITE_1COL = 8;
                 const duasColunas = jogosData.length > LIMITE_1COL;
+                const n = jogosData.length;
                 const container = document.getElementById('card-lista-jogos');
                 container.innerHTML = '';
                 container.style.flexDirection = 'column';
-                container.style.gap = '14px';
+                container.style.gap = (!duasColunas && n > 6) ? '10px' : '14px';
                 container.style.alignItems = '';
 
                 // Tamanhos adaptativos
-                const barH = duasColunas ? '52px' : '68px';
-                const scoreH = duasColunas ? '60px' : '76px';
-                const scoreW = duasColunas ? '100px' : '128px';
-                const logoSz = duasColunas ? '56px' : '72px';
-                const scoreFs = duasColunas ? '28px' : '38px';
+                const barH = duasColunas ? '52px' : (n > 6 ? '56px' : '68px');
+                const scoreH = duasColunas ? '60px' : (n > 6 ? '64px' : '76px');
+                const scoreW = duasColunas ? '100px' : (n > 6 ? '100px' : '128px');
+                const logoSz = duasColunas ? '56px' : (n > 6 ? '56px' : '72px');
+                const scoreFs = duasColunas ? '28px' : (n > 6 ? '30px' : '38px');
 
                 const ESCUDO_SVG = (sz) =>
                     `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="#aaa" ` +
@@ -1053,7 +1054,7 @@
                     const placarTxt = finalizado ? `${jogo.golsM} - ${jogo.golsV}` : 'vs';
                     const placarFs = finalizado ? scoreFs : '22px';
                     const placarClr = finalizado ? '#ffffff' : '#dddddd';
-                    const barFs = duasColunas ? '16px' : '20px';
+                    const barFs = duasColunas ? '16px' : (n > 6 ? '16px' : '20px');
 
                     let placarHtml = placarTxt;
                     if (finalizado && jogo.penaltisM !== undefined && jogo.penaltisM !== null) {
