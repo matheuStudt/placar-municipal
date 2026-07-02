@@ -410,7 +410,8 @@
          ══════════════════════════════════════════════ -->
     <div id="template-card-classificacao" style="
         width: 1080px;
-        height: 1080px;
+        min-height: 1080px;
+        height: auto;
         position: absolute;
         left: -9999px;
         top: 0;
@@ -468,7 +469,8 @@
          ══════════════════════════════════════════════ -->
     <div id="template-card-matamata" style="
         width: 1080px;
-        height: 1080px;
+        min-height: 1080px;
+        height: auto;
         position: absolute;
         left: -9999px;
         top: 0;
@@ -526,7 +528,8 @@
          ══════════════════════════════════════════════ -->
     <div id="template-card-instagram" style="
         width: 1080px;
-        height: 1080px;
+        min-height: 1080px;
+        height: auto;
         position: absolute;
         left: -9999px;
         top: 0;
@@ -1120,7 +1123,6 @@
                     allowTaint: false,
                     scale: 1,
                     width: 1080,
-                    height: 1080,
                     backgroundColor: '#01081f',
                     logging: false,
                 });
@@ -1350,7 +1352,7 @@
             container.innerHTML = htmlFinal || '<div style="color:#fff;font-size:24px;">Nenhum dado de classificação disponível.</div>';
 
             const canvas = await html2canvas(document.getElementById('template-card-classificacao'), {
-                useCORS: true, allowTaint: false, scale: 1, width: 1080, height: 1080, backgroundColor: '#01081f', logging: false
+                useCORS: true, allowTaint: false, scale: 1, width: 1080, backgroundColor: '#01081f', logging: false
             });
             const link = document.createElement('a');
             link.download = `classificacao-${rodada.nome?.replace(/\s+/g, '-').toLowerCase() || 'grupos'}.png`;
@@ -1454,7 +1456,7 @@
             }
 
             const canvas = await html2canvas(document.getElementById('template-card-matamata'), {
-                useCORS: true, allowTaint: false, scale: 1, width: 1080, height: 1080, backgroundColor: '#01081f', logging: false
+                useCORS: true, allowTaint: false, scale: 1, width: 1080, backgroundColor: '#01081f', logging: false
             });
             const link = document.createElement('a');
             link.download = `matamata-${rodada.nome?.replace(/\s+/g, '-').toLowerCase() || 'eliminatorias'}.png`;
@@ -1794,7 +1796,7 @@
                 container2.style.gap = gapPx;
                 jogosData.forEach(j => container2.appendChild(criarLinha(j)));
                 showToast('Renderizando imagem, aguarde...', 'info');
-                const canvas = await html2canvas(document.getElementById('template-card-instagram'), { useCORS: true, allowTaint: false, scale: 1, width: 1080, height: 1080, backgroundColor: '#01081f', logging: false });
+                const canvas = await html2canvas(document.getElementById('template-card-instagram'), { useCORS: true, allowTaint: false, scale: 1, width: 1080, backgroundColor: '#01081f', logging: false });
                 const link2 = document.createElement('a');
                 link2.download = 'agenda-card.png'; link2.href = canvas.toDataURL('image/png'); link2.click();
                 showToast('Card gerado com sucesso! 🎉', 'success');
