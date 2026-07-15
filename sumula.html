@@ -955,8 +955,7 @@
                     cards.forEach(c => {
                         const nomeElem = c.querySelector('.text-truncate');
                         if (!nomeElem) return;
-                        let nomeArr = nomeElem.innerText.trim().split(' ');
-                        let nome = nomeArr[0] + (nomeArr.length > 1 ? ' ' + nomeArr[1] : '');
+                        let nome = nomeElem.innerText.trim();
                         
                         const gols = parseInt(c.querySelector('.gol-count').innerText) || 0;
                         const gc = parseInt(c.querySelector('.gc-count').innerText) || 0;
@@ -964,16 +963,19 @@
                         const vm = parseInt(c.querySelector('.vm-count').innerText) || 0;
                         
                         let markers = '';
-                        if (gols > 0) markers += `<span class="gol">⚽${gols > 1 ? `(${gols})` : ''}</span>`;
-                        if (gc > 0) markers += `<span class="gol">⚽(GC)${gc > 1 ? `(${gc})` : ''}</span>`;
-                        if (am > 0) markers += `<span class="card-icon amarelo"></span>${am > 1 ? `(${am})` : ''}`;
-                        if (vm > 0) markers += `<span class="card-icon vermelho"></span>`;
+                        if (gols > 0) markers += `<span class="gol" style="margin-left:0; margin-right:4px;">⚽${gols > 1 ? `(${gols})` : ''}</span>`;
+                        if (gc > 0) markers += `<span class="gol" style="margin-left:0; margin-right:4px;">⚽(GC)${gc > 1 ? `(${gc})` : ''}</span>`;
+                        if (am > 0) markers += `<span class="card-icon amarelo" style="margin-left:0; margin-right:4px;"></span>${am > 1 ? `<span style="margin-right:4px; font-size:0.9em;">(${am})</span>` : ''}`;
+                        if (vm > 0) markers += `<span class="card-icon vermelho" style="margin-left:0; margin-right:4px;"></span>`;
                         
                         if (markers) {
-                            eventos.push(`<div class="scorer-item"><span>${nome}</span>${markers}</div>`);
+                            eventos.push({ nome, html: `<div class="scorer-item">${markers}<span>${nome}</span></div>` });
                         }
                     });
-                    return eventos.join('');
+                    
+                    eventos.sort((a, b) => a.nome.localeCompare(b.nome));
+                    
+                    return eventos.map(e => e.html).join('');
                 }
                 const detalhesMandante = getEstatisticasHtml('mandante');
                 const detalhesVisitante = getEstatisticasHtml('visitante');
