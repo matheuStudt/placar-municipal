@@ -900,12 +900,26 @@
                 // --- Dados do jogo ---
                 const nomeMandante = jogoAtivo.mandanteNome || 'MANDANTE';
                 const nomeVisitante = jogoAtivo.visitanteNome || 'VISITANTE';
-                const logoMandante = jogoAtivo.mandanteLogo || jogoAtivo.logoMandante || null;
-                const logoVisitante = jogoAtivo.visitanteLogo || jogoAtivo.logoVisitante || null;
+                const logoMandante = jogoAtivo.mandante?.logoUrl || jogoAtivo.mandanteLogo || jogoAtivo.logoMandante || null;
+                const logoVisitante = jogoAtivo.visitante?.logoUrl || jogoAtivo.visitanteLogo || jogoAtivo.logoVisitante || null;
                 const campeonato = document.getElementById('select-campeonato');
                 const nomeCamp = campeonato.options[campeonato.selectedIndex]?.text || 'Campeonato';
                 const rodada = document.getElementById('select-rodada');
                 const nomeRodada = rodada.options[rodada.selectedIndex]?.text || '';
+
+                // Busca configuração da prefeitura para exibir logo e nome no card
+                let prefNome = '';
+                let prefLogoHtml = '';
+                try {
+                    const resConf = await fetch(`${API}/configuracao?prefeituraId=${prefeituraId}`);
+                    if (resConf.ok) {
+                        const config = await resConf.json();
+                        prefNome = config.nome || '';
+                        if (config.logoUrl) {
+                            prefLogoHtml = `<img src="${config.logoUrl}" crossorigin="anonymous" style="width: 90px; height: 90px; object-fit: contain; border-radius: 50%; background: rgba(255,255,255,0.08); border: 3px solid rgba(255,215,0,0.4); padding: 6px; box-sizing: border-box; margin-bottom: 10px;">`;
+                        }
+                    }
+                } catch(e) { console.error("Erro config prefeitura:", e); }
 
                 // Formata a data do jogo
                 let dataFormatada = '';
@@ -976,7 +990,12 @@
                     <div class="card-stripe-top"></div>
                     <div class="card-stripe-bot"></div>
                     <div class="card-content">
-                        <div class="card-badge">⚽ Resultado Final</div>
+                        <div style="text-align:center; width:100%; margin-bottom:20px; display:flex; flex-direction:column; align-items:center; gap:8px;">
+                            ${prefLogoHtml}
+                            <div style="font-size: 40px; font-weight: 900; color: #ffffff; text-transform: uppercase; letter-spacing: 2px; line-height: 1.05; text-shadow: 0 2px 12px rgba(0,0,0,0.8);">${nomeCamp}</div>
+                            <div style="color: #FFB800; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; font-weight: 400; font-family: Arial, sans-serif;">${prefNome}</div>
+                        </div>
+                        <div class="card-badge" style="margin-bottom: 24px;">⚽ Resultado Final</div>
                         <div class="card-teams">
                             <div class="card-team">
                                 <div class="team-logo-wrap">${buildLogoHtml(logoMandante, nomeMandante)}</div>
