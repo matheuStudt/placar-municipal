@@ -384,6 +384,8 @@
                 const res = await fetch(`${API}/equipes/${equipeId}/elenco`);
                 const elenco = await res.json();
 
+                elenco.sort((a, b) => a.nome.localeCompare(b.nome));
+
                 if (elenco.length === 0) {
                     container.innerHTML = '<div class="elenco-item justify-content-center text-muted py-5"><i class="bi bi-person-x me-2"></i>Nenhum atleta cadastrado nesta equipe.</div>';
                     return;
