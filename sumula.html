@@ -114,7 +114,7 @@
         }
         #card-resultado-template .card-teams {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             width: 100%;
             gap: 0;
@@ -990,19 +990,18 @@
                     <div class="card-stripe-top"></div>
                     <div class="card-stripe-bot"></div>
                     <div class="card-content">
-                        <div style="text-align:center; width:100%; margin-bottom:20px; display:flex; flex-direction:column; align-items:center; gap:8px;">
+                        <div style="text-align:center; width:100%; margin-bottom:40px; display:flex; flex-direction:column; align-items:center; gap:8px;">
                             ${prefLogoHtml}
                             <div style="font-size: 40px; font-weight: 900; color: #ffffff; text-transform: uppercase; letter-spacing: 2px; line-height: 1.05; text-shadow: 0 2px 12px rgba(0,0,0,0.8);">${nomeCamp}</div>
                             <div style="color: #FFB800; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; font-weight: 400; font-family: Arial, sans-serif;">${prefNome}</div>
                         </div>
-                        <div class="card-badge" style="margin-bottom: 24px;">⚽ Resultado Final</div>
                         <div class="card-teams">
                             <div class="card-team">
                                 <div class="team-logo-wrap">${buildLogoHtml(logoMandante, nomeMandante)}</div>
                                 <div class="team-name">${nomeMandante}</div>
                                 <div class="team-scorers">${detalhesMandante}</div>
                             </div>
-                            <div class="card-vs-block">
+                            <div class="card-vs-block" style="margin-top: 25px;">
                                 <div style="display:flex;align-items:center;gap:12px;">
                                     <div class="card-score">${golsM}</div>
                                     <div class="card-score-sep">×</div>
@@ -1016,10 +1015,6 @@
                                 <div class="team-name">${nomeVisitante}</div>
                                 <div class="team-scorers">${detalhesVisitante}</div>
                             </div>
-                        </div>
-                        <div class="card-divider"></div>
-                        <div class="card-meta">
-                            ${metaParts.map((p, i) => i === 0 ? `<span>${p}</span>` : `<span class="dot"></span><span>${p}</span>`).join('')}
                         </div>
                     </div>
                     <div class="card-watermark">SÚMULA DIGITAL</div>
