@@ -686,6 +686,92 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Template oculto para geração do card de resultado -->
+    <div id="card-resultado-template" style="
+        position: absolute; left: -9999px; top: -9999px;
+        width: 1080px; height: 1080px;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        background: linear-gradient(145deg, #0f172a 0%, #1e3a8a 40%, #1e40af 70%, #0f172a 100%);
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        overflow: hidden; box-sizing: border-box;
+    "></div>
+
+    <style>
+        #card-resultado-template .card-bg-glow {
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 20% 80%, rgba(59,130,246,0.25) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 80% 20%, rgba(99,102,241,0.2) 0%, transparent 55%);
+            pointer-events: none;
+        }
+        #card-resultado-template .card-stripe-top,
+        #card-resultado-template .card-stripe-bot {
+            position: absolute; left: 0; right: 0; height: 8px;
+            background: linear-gradient(90deg, #3b82f6, #6366f1, #3b82f6);
+        }
+        #card-resultado-template .card-stripe-top { top: 0; }
+        #card-resultado-template .card-stripe-bot { bottom: 0; }
+        #card-resultado-template .card-content {
+            position: relative; z-index: 2; width: 100%;
+            display: flex; flex-direction: column; align-items: center; gap: 0; padding: 0 60px;
+        }
+        #card-resultado-template .card-teams {
+            display: flex; align-items: flex-start; justify-content: center; width: 100%; gap: 0; margin-bottom: 40px;
+        }
+        #card-resultado-template .card-team {
+            display: flex; flex-direction: column; align-items: center; flex: 1; gap: 18px;
+        }
+        #card-resultado-template .team-logo-wrap {
+            width: 200px; height: 200px; border-radius: 50%;
+            background: rgba(255,255,255,0.08); border: 3px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        #card-resultado-template .team-logo-wrap img { width: 160px; height: 160px; object-fit: contain; }
+        #card-resultado-template .team-logo-wrap .team-initials {
+            font-size: 64px; font-weight: 900; color: rgba(255,255,255,0.6); line-height: 1;
+        }
+        #card-resultado-template .team-name {
+            font-size: 28px; font-weight: 800; color: #fff; text-transform: uppercase;
+            text-align: center; letter-spacing: 1px; line-height: 1.2; max-width: 280px;
+        }
+        #card-resultado-template .card-vs-block {
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            padding: 0 30px; flex-shrink: 0; margin-top: 25px;
+        }
+        #card-resultado-template .card-score {
+            font-size: 128px; font-weight: 900; color: #fff; line-height: 1;
+            letter-spacing: -4px; text-shadow: 0 4px 32px rgba(99,182,255,0.5);
+        }
+        #card-resultado-template .card-score-sep {
+            font-size: 80px; font-weight: 300; color: rgba(255,255,255,0.35); line-height: 1;
+        }
+        #card-resultado-template .card-vs-label {
+            font-size: 20px; font-weight: 700; letter-spacing: 6px;
+            color: rgba(255,255,255,0.3); text-transform: uppercase;
+        }
+        #card-resultado-template .team-scorers {
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            margin-top: 5px; font-size: 17px; font-weight: 500;
+            color: rgba(255,255,255,0.85); text-align: center; width: 100%;
+        }
+        #card-resultado-template .scorer-item {
+            display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+        }
+        #card-resultado-template .scorer-item .card-icon {
+            display: inline-block; width: 10px; height: 14px; border-radius: 2px;
+            margin-right: 4px; vertical-align: baseline;
+        }
+        #card-resultado-template .scorer-item .amarelo { background-color: #facc15; }
+        #card-resultado-template .scorer-item .vermelho { background-color: #ef4444; }
+        #card-resultado-template .scorer-item .gol { margin-right: 4px; margin-left: 0; font-size: 15px; }
+        #card-resultado-template .card-watermark {
+            position: absolute; bottom: 28px; right: 40px;
+            font-size: 17px; font-weight: 700; color: rgba(255,255,255,0.2); letter-spacing: 2px; z-index: 3;
+        }
+    </style>
 
     <script src="frontend/js/main.js"></script>
 
@@ -979,6 +1065,12 @@
                             <span class="text-body-secondary mx-1">|</span>
                             <span class="text-nowrap"><i class="bi bi-clock me-1"></i><span class="text-muted small">${j.horario || 'Horário a definir'}</span></span>
                         </div>
+                        ${j.status === 'Finalizado' ? `
+                        <div class="mt-3 text-center">
+                            <button class="btn btn-sm fw-bold px-3 py-1" onclick="event.stopPropagation(); gerarCardPortal(${j.id})" title="Gerar card de resultado" style="background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); border: none; color: white; border-radius: 20px; font-size: 0.78rem;">
+                                <i class="bi bi-instagram me-1"></i>Card de Resultado
+                            </button>
+                        </div>` : ''}
                     </div>
                 </div>`;
                 });
@@ -1452,6 +1544,147 @@
 
                 aplicarFiltroSemifinalistas();
             } catch (e) { console.error(e); }
+        }
+
+        // ── GERADOR DE CARD DE RESULTADO (PORTAL PÚBLICO) ────────
+        async function gerarCardPortal(jogoId) {
+            try {
+                // Feedback visual: spinner no botão clicado
+                const btns = document.querySelectorAll(`button[onclick*="gerarCardPortal(${jogoId})"]`);
+                btns.forEach(b => { b.disabled = true; b.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Gerando...'; });
+
+                // Busca detalhes do jogo
+                const res = await fetch(`${API}/jogos/${jogoId}/detalhes`);
+                if (!res.ok) throw new Error('Erro ao buscar jogo');
+                const dados = await res.json();
+                const j = dados.jogo;
+                const elencoMandante = dados.elencoMandante || [];
+                const elencoVisitante = dados.elencoVisitante || [];
+
+                // Busca configuração da prefeitura
+                let prefNome = '';
+                let prefLogoHtml = '';
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const slug = urlParams.get('slug') || urlParams.get('p') || 'principal';
+                    const resConf = await fetch(`${API}/configuracao?slug=${slug}`);
+                    if (resConf.ok) {
+                        const config = await resConf.json();
+                        prefNome = config.nome || '';
+                        if (config.logoUrl) {
+                            prefLogoHtml = `<img src="${config.logoUrl}" crossorigin="anonymous" style="width:90px;height:90px;object-fit:contain;border-radius:50%;background:rgba(255,255,255,0.08);border:3px solid rgba(255,215,0,0.4);padding:6px;box-sizing:border-box;margin-bottom:10px;">`;
+                        }
+                    }
+                } catch(e) { console.error('Erro config:', e); }
+
+                const nomeMandante = j.mandanteNome || 'MANDANTE';
+                const nomeVisitante = j.visitanteNome || 'VISITANTE';
+                const logoMandante = j.mandante?.logoUrl || null;
+                const logoVisitante = j.visitante?.logoUrl || null;
+                const golsM = j.golsMandante ?? 0;
+                const golsV = j.golsVisitante ?? 0;
+                const nomeCamp = j.campeonatoNome || '';
+
+                function getInitials(nome) {
+                    return nome.split(' ').map(p => p[0]).join('').substring(0, 3).toUpperCase();
+                }
+
+                function buildLogoHtml(url, nome) {
+                    if (url) {
+                        return `<img src="${url}" alt="${nome}" crossorigin="anonymous" onerror="this.parentElement.innerHTML='<span class=team-initials>${getInitials(nome)}</span>'">`;
+                    }
+                    return `<span class="team-initials">${getInitials(nome)}</span>`;
+                }
+
+                let penaltisHtml = '';
+                if (j.penaltisMandante !== null && j.penaltisMandante !== undefined) {
+                    penaltisHtml = `<div style="font-size:22px;font-weight:700;color:rgba(255,255,255,0.55);margin-top:6px;letter-spacing:1px;">Pên: ${j.penaltisMandante} × ${j.penaltisVisitante}</div>`;
+                }
+
+                function getEstatisticasHtml(elenco) {
+                    const eventos = [];
+                    elenco.forEach(a => {
+                        const gols = a.gols || 0;
+                        const gc = a.gc || 0;
+                        const am = a.am || 0;
+                        const vm = a.vm || 0;
+                        let markers = '';
+                        if (gols > 0) markers += `<span class="gol" style="margin-left:0;margin-right:4px;">⚽${gols > 1 ? `(${gols})` : ''}</span>`;
+                        if (gc > 0) markers += `<span class="gol" style="margin-left:0;margin-right:4px;">⚽(GC)${gc > 1 ? `(${gc})` : ''}</span>`;
+                        if (am > 0) markers += `<span class="card-icon amarelo" style="margin-left:0;margin-right:4px;"></span>${am > 1 ? `<span style="margin-right:4px;font-size:0.9em;">(${am})</span>` : ''}`;
+                        if (vm > 0) markers += `<span class="card-icon vermelho" style="margin-left:0;margin-right:4px;"></span>`;
+                        if (markers) eventos.push({ nome: a.nome, html: `<div class="scorer-item">${markers}<span>${a.nome}</span></div>` });
+                    });
+                    eventos.sort((a, b) => a.nome.localeCompare(b.nome));
+                    return eventos.map(e => e.html).join('');
+                }
+
+                const detalhesMandante = getEstatisticasHtml(elencoMandante);
+                const detalhesVisitante = getEstatisticasHtml(elencoVisitante);
+
+                const tpl = document.getElementById('card-resultado-template');
+                tpl.innerHTML = `
+                    <div class="card-bg-glow"></div>
+                    <div class="card-stripe-top"></div>
+                    <div class="card-stripe-bot"></div>
+                    <div class="card-content">
+                        <div style="text-align:center;width:100%;margin-bottom:40px;display:flex;flex-direction:column;align-items:center;gap:8px;">
+                            ${prefLogoHtml}
+                            <div style="font-size:40px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:2px;line-height:1.05;text-shadow:0 2px 12px rgba(0,0,0,0.8);">${nomeCamp}</div>
+                            <div style="color:#FFB800;font-size:14px;letter-spacing:3px;text-transform:uppercase;font-weight:400;font-family:Arial,sans-serif;">${prefNome}</div>
+                        </div>
+                        <div class="card-teams">
+                            <div class="card-team">
+                                <div class="team-logo-wrap">${buildLogoHtml(logoMandante, nomeMandante)}</div>
+                                <div class="team-name">${nomeMandante}</div>
+                                <div class="team-scorers">${detalhesMandante}</div>
+                            </div>
+                            <div class="card-vs-block">
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <div class="card-score">${golsM}</div>
+                                    <div class="card-score-sep">×</div>
+                                    <div class="card-score">${golsV}</div>
+                                </div>
+                                ${penaltisHtml}
+                                <div class="card-vs-label">placar</div>
+                            </div>
+                            <div class="card-team">
+                                <div class="team-logo-wrap">${buildLogoHtml(logoVisitante, nomeVisitante)}</div>
+                                <div class="team-name">${nomeVisitante}</div>
+                                <div class="team-scorers">${detalhesVisitante}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-watermark">SÚMULA DIGITAL</div>
+                `;
+
+                // Aguarda imagens
+                const imgs = tpl.querySelectorAll('img');
+                if (imgs.length > 0) {
+                    await Promise.all(Array.from(imgs).map(img => {
+                        if (img.complete) return Promise.resolve();
+                        return new Promise(r => { img.onload = r; img.onerror = r; });
+                    }));
+                }
+                await new Promise(r => setTimeout(r, 150));
+
+                const canvas = await html2canvas(tpl, {
+                    width: 1080, height: 1080, scale: 1,
+                    useCORS: true, allowTaint: false, backgroundColor: null, logging: false
+                });
+
+                const link = document.createElement('a');
+                link.download = `card_${nomeMandante.replace(/\s+/g,'_')}_vs_${nomeVisitante.replace(/\s+/g,'_')}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+            } catch (err) {
+                console.error('[Gerar Card Portal]', err);
+                alert('Erro ao gerar o card. Tente novamente.');
+            } finally {
+                const btns = document.querySelectorAll(`button[onclick*="gerarCardPortal(${jogoId})"]`);
+                btns.forEach(b => { b.disabled = false; b.innerHTML = '<i class="bi bi-instagram me-1"></i>Card de Resultado'; });
+            }
         }
     </script>
 </body>
