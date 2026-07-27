@@ -280,6 +280,9 @@
     <!-- Template oculto do card de resultado para Instagram -->
     <div id="card-resultado-template"></div>
 
+    <!-- Container de Toasts (notificações em tela) -->
+    <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
+
     <div class="main-content-overlay" onclick="toggleSidebar()"></div>
     <div id="menu-container"></div>
 
@@ -857,7 +860,7 @@
                 });
 
                 if (res.ok) {
-                    showToast('Salvo com sucesso!', 'success');
+                    showToast('✅ Súmula salva com sucesso!', 'success');
                     setTimeout(() => {
                         const campId = document.getElementById('select-campeonato').value;
                         const rodadaId = document.getElementById('select-rodada').value;
@@ -868,15 +871,26 @@
                         }
                     }, 1500);
                 } else {
-                    const errInfo = await res.text();
-                    console.error("Erro da API:", errInfo);
-                    showToast('Erro ao salvar.', 'error');
+                    let errInfo = '';
+                    try {
+                        const errBody = await res.json();
+                        errInfo = errBody.message || errBody.error || JSON.stringify(errBody);
+                    } catch {
+                        errInfo = await res.text().catch(() => '');
+                    }
+                    const msgErro = `Erro ${res.status} ao salvar a súmula${errInfo ? ': ' + errInfo : '.'}`.substring(0, 120);
+                    console.error("[Súmula] Erro da API:", res.status, errInfo);
+                    showToast(msgErro, 'error');
                     btnFinalizar.disabled = false;
                     btnFinalizar.innerHTML = textoOriginal;
                 }
             } catch (error) {
-                console.error("Erro de conexão:", error);
-                showToast('Erro ao salvar.', 'error');
+                console.error("[Súmula] Erro de conexão:", error);
+                const isOffline = !navigator.onLine;
+                const msgConexao = isOffline
+                    ? '⚠️ Sem conexão com a internet. Verifique o Wi-Fi ou dados móveis.'
+                    : '⚠️ Não foi possível conectar ao servidor. Tente novamente.';
+                showToast(msgConexao, 'error');
                 btnFinalizar.disabled = false;
                 btnFinalizar.innerHTML = textoOriginal;
             }
