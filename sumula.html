@@ -810,6 +810,10 @@
                             headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
                             body: formData
                         });
+                        if (resUpload.status === 401 || resUpload.status === 403) {
+                            handleAuthError(resUpload.status);
+                            return;
+                        }
                         if (resUpload.ok) {
                             const dataUpload = await resUpload.json();
                             sumulaUrl = dataUpload.url;
@@ -858,6 +862,11 @@
                     headers: getAuthHeaders(),
                     body: JSON.stringify(envioData)
                 });
+
+                if (res.status === 401 || res.status === 403) {
+                    handleAuthError(res.status);
+                    return;
+                }
 
                 if (res.ok) {
                     showToast('✅ Súmula salva com sucesso!', 'success');

@@ -23,6 +23,28 @@ function logout() {
     window.location.href = 'login.html';
 }
 
+/**
+ * Trata erros de autenticação (401 Unauthorized / 403 Forbidden).
+ * Limpa a sessão, exibe aviso ao usuário e redireciona para o login.
+ * @param {number} [status] - Código HTTP recebido (401 ou 403).
+ */
+function handleAuthError(status) {
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('authToken');
+    const msg = status === 403
+        ? '⛔ Acesso negado. Você não tem permissão para realizar esta ação.'
+        : '🔒 Sua sessão expirou. Faça login novamente.';
+    // Tenta exibir toast se o container já estiver no DOM
+    const container = document.getElementById('toast-container');
+    if (container) {
+        showToast(msg, 'warning');
+        setTimeout(() => { window.location.replace('login.html'); }, 2500);
+    } else {
+        alert(msg);
+        window.location.replace('login.html');
+    }
+}
+
 // 4. Personalização de sessão (sem redirect — use requireAuth() de auth-guard.js para rotas protegidas)
 function checkSession() {
     const session = localStorage.getItem('usuario');
@@ -226,6 +248,15 @@ async function fetchAPI(url, options = {}, timeoutMs = 10000) {
         const res = await fetch(url, { ...options, signal: controller.signal });
         clearTimeout(tid);
         if (!res.ok) {
+            // Sessão expirada ou acesso negado — redireciona para login
+            if (res.status === 401 || res.status === 403) {
+                handleAuthError(res.status);
+                // Lança para interromper o fluxo no chamador
+                const ae = new Error(`HTTP ${res.status}`);
+                ae.status = res.status;
+                ae.isAuthError = true;
+                throw ae;
+            }
             const err = new Error(`HTTP ${res.status}`);
             err.status = res.status;
             throw err;
