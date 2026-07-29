@@ -1583,7 +1583,8 @@
                 const logoVisitante = j.visitante?.logoUrl || null;
                 const golsM = j.golsMandante ?? 0;
                 const golsV = j.golsVisitante ?? 0;
-                const nomeCamp = j.campeonatoNome || '';
+                const campObj = campsCache.find(c => String(c.id) === String(campeonatoAtual));
+                const nomeCamp = j.campeonatoNome || campObj?.nome || '';
 
                 function getInitials(nome) {
                     return nome.split(' ').map(p => p[0]).join('').substring(0, 3).toUpperCase();
@@ -1629,9 +1630,9 @@
                     <div class="card-stripe-bot"></div>
                     <div class="card-content">
                         <div style="text-align:center;width:100%;margin-bottom:40px;display:flex;flex-direction:column;align-items:center;gap:8px;">
-                            <div style="color:#FFB800;font-size:14px;letter-spacing:3px;text-transform:uppercase;font-weight:400;font-family:Arial,sans-serif;">${prefNome}</div>
-                            <div style="font-size:40px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:2px;line-height:1.05;text-shadow:0 2px 12px rgba(0,0,0,0.8);">${nomeCamp}</div>
                             ${prefLogoHtml}
+                            <div style="font-size:40px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:2px;line-height:1.05;text-shadow:0 2px 12px rgba(0,0,0,0.8);">${nomeCamp}</div>
+                            <div style="color:#FFB800;font-size:14px;letter-spacing:3px;text-transform:uppercase;font-weight:400;font-family:Arial,sans-serif;">${prefNome}</div>
                         </div>
                         <div class="card-teams">
                             <div class="card-team">
