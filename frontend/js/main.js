@@ -141,11 +141,13 @@ if ('serviceWorker' in navigator) {
 function formatarNomeCampeonato(c, limit = 40) {
     if (!c) return '';
     const nome = c.nome || '';
+    const modalidade = c.modalidade || '';
     const categoria = c.categoria || '';
     const ano = c.ano || '';
 
-    // Primeira tentativa de formatação (nome + categoria + ano)
+    // Primeira tentativa de formatação (nome + modalidade + categoria + ano)
     let formatado = `${nome}`;
+    if (modalidade) formatado += ` ${modalidade}`;
     if (categoria) formatado += ` ${categoria}`;
     if (ano) formatado += ` ${ano}`;
 
@@ -155,31 +157,33 @@ function formatarNomeCampeonato(c, limit = 40) {
     }
 
     // Se passar do limite, vamos abreviar a categoria
-    if (categoria) {
-        const abrev = {
-            'Masculino': 'Masc.',
-            'Feminino': 'Fem.',
-            'Adulto': 'Ad.',
-            'Veterano': 'Vet.',
-            'Principal': 'Princ.',
-            'Master': 'Mast.',
-            'Infantil': 'Inf.',
-            'Juvenil': 'Juv.',
-            'Aspirante': 'Asp.',
-            'Amador': 'Amad.',
-            'Sub': 'Sub'
-        };
-        
-        let categoriaAbreviada = categoria;
+    const abrev = {
+        'Masculino': 'Masc.',
+        'Feminino': 'Fem.',
+        'Adulto': 'Ad.',
+        'Veterano': 'Vet.',
+        'Principal': 'Princ.',
+        'Master': 'Mast.',
+        'Infantil': 'Inf.',
+        'Juvenil': 'Juv.',
+        'Aspirante': 'Asp.',
+        'Amador': 'Amad.',
+        'Sub': 'Sub'
+    };
+
+    const abreviarTexto = (texto) => {
+        let result = texto;
         for (const [key, value] of Object.entries(abrev)) {
-            // Regex ignorando case, pegando palavra inteira
             const regex = new RegExp(`\\b${key}\\b`, 'gi');
-            categoriaAbreviada = categoriaAbreviada.replace(regex, value);
+            result = result.replace(regex, value);
         }
-        
-        formatado = `${nome} ${categoriaAbreviada}`;
-        if (ano) formatado += ` ${ano}`;
-    }
+        return result;
+    };
+
+    formatado = `${nome}`;
+    if (modalidade) formatado += ` ${abreviarTexto(modalidade)}`;
+    if (categoria) formatado += ` ${abreviarTexto(categoria)}`;
+    if (ano) formatado += ` ${ano}`;
 
     return formatado.trim();
 }
