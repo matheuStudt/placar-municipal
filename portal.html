@@ -1129,12 +1129,15 @@
                 if (!chaves.length) chaves = [''];
 
                 let htmlGruposFinal = '';
+                let rankingPorChave = {};
                 for (const chave of chaves) {
                     const label = chave ? (chave.includes('Chave') ? chave : 'Chave ' + chave) : 'Classificação Geral';
                     let url = `${API}/campeonatos/${id}/classificacao`;
                     if (chave) url += `?chave=${encodeURIComponent(chave)}`;
                     const res = await fetch(url);
                     const data = await res.json();
+                    
+                    rankingPorChave[chave || 'GERAL'] = data;
 
                     let html = `
                 <div class="mb-5">
@@ -1201,12 +1204,14 @@
 
                     const getActualTeams = (match) => {
                         if (!match) return null;
+                        if (!match.mandanteId || !match.visitanteId) return null; // Só avança se o jogo tiver times reais já consolidados
+                        
                         const mNome = match.mandanteNome || '';
                         const vNome = match.visitanteNome || '';
                         
                         const isPlaceholder = (name) => {
                             const n = name.toLowerCase();
-                            return n.includes('vencedor') || n.includes('perdedor') || n.includes('a definir');
+                            return n.includes('vencedor') || n.includes('perdedor') || n.includes('a definir') || /\\d+º/.test(n);
                         };
                         
                         if (isPlaceholder(mNome) || isPlaceholder(vNome)) return null;
@@ -1215,10 +1220,36 @@
                         return `${mNome} / ${vNome}`;
                     };
 
+                    const processPosPlaceholder = (placeholder) => {
+                        if (!placeholder) return null;
+                        const matchPos = placeholder.match(/(\d+)º/);
+                        if (!matchPos) return null;
+                        const posicao = parseInt(matchPos[1]) - 1;
+                        
+                        const chavesOrdenadas = Object.keys(rankingPorChave).sort((a, b) => b.length - a.length);
+                        const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');
+                        
+                        for (const ch of chavesOrdenadas) {
+                            if (ch === 'GERAL') continue;
+                            const regex = new RegExp('(^|\\s|º|[^a-zA-Z0-9])' + escapeRegex(ch) + '($|\\s|[^a-zA-Z0-9])', 'i');
+                            if (regex.test(placeholder) || placeholder.toUpperCase().includes(`CHAVE ${ch.toUpperCase()}`) || placeholder.toUpperCase().includes(`GRUPO ${ch.toUpperCase()}`)) {
+                                if (rankingPorChave[ch] && rankingPorChave[ch][posicao]) {
+                                    return rankingPorChave[ch][posicao];
+                                }
+                            }
+                        }
+                        
+                        if (rankingPorChave['GERAL'] && rankingPorChave['GERAL'][posicao]) {
+                            return rankingPorChave['GERAL'][posicao];
+                        }
+                        return null;
+                    };
+
                     jogosMataMata.forEach(j => {
-                        const isMandantePlaceholder = !j.mandanteId && (j.mandantePlaceholder || (j.mandanteNome && j.mandanteNome.toLowerCase().includes('vencedor')));
+                        const isMandantePlaceholder = !j.mandanteId && (j.mandantePlaceholder || (j.mandanteNome && (j.mandanteNome.toLowerCase().includes('vencedor') || /\\d+º/.test(j.mandanteNome))));
                         if (isMandantePlaceholder) {
-                            const depNum = getDepGeral(j.mandantePlaceholder) || getDepGeral(j.mandanteNome);
+                            const pStr = j.mandantePlaceholder || j.mandanteNome;
+                            const depNum = getDepGeral(pStr);
                             if (depNum) {
                                 const depMatch = jogosMataMata.find(x => x.numero === depNum);
                                 const combined = getActualTeams(depMatch);
@@ -1226,18 +1257,33 @@
                                     j.mandanteNome = combined;
                                     if (j.mandante) j.mandante.logoUrl = null;
                                 }
+                            } else {
+                                const classificado = processPosPlaceholder(pStr);
+                                if (classificado) {
+                                    j.mandanteNome = classificado.nome;
+                                    if (!j.mandante) j.mandante = {};
+                                    j.mandante.logoUrl = null;
+                                }
                             }
                         }
                         
-                        const isVisitantePlaceholder = !j.visitanteId && (j.visitantePlaceholder || (j.visitanteNome && j.visitanteNome.toLowerCase().includes('vencedor')));
+                        const isVisitantePlaceholder = !j.visitanteId && (j.visitantePlaceholder || (j.visitanteNome && (j.visitanteNome.toLowerCase().includes('vencedor') || /\\d+º/.test(j.visitanteNome))));
                         if (isVisitantePlaceholder) {
-                            const depNum = getDepGeral(j.visitantePlaceholder) || getDepGeral(j.visitanteNome);
+                            const pStr = j.visitantePlaceholder || j.visitanteNome;
+                            const depNum = getDepGeral(pStr);
                             if (depNum) {
                                 const depMatch = jogosMataMata.find(x => x.numero === depNum);
                                 const combined = getActualTeams(depMatch);
                                 if (combined) {
                                     j.visitanteNome = combined;
                                     if (j.visitante) j.visitante.logoUrl = null;
+                                }
+                            } else {
+                                const classificado = processPosPlaceholder(pStr);
+                                if (classificado) {
+                                    j.visitanteNome = classificado.nome;
+                                    if (!j.visitante) j.visitante = {};
+                                    j.visitante.logoUrl = null;
                                 }
                             }
                         }
