@@ -1269,7 +1269,8 @@
                                 if (classificado) {
                                     j.mandanteNome = classificado.nome;
                                     if (!j.mandante) j.mandante = {};
-                                    j.mandante.logoUrl = null;
+                                    const eq = equipes.find(e => e.id === classificado.id);
+                                    j.mandante.logoUrl = eq ? eq.logoUrl : (classificado.logoUrl || null);
                                 }
                             }
                         }
@@ -1291,7 +1292,8 @@
                                 if (classificado) {
                                     j.visitanteNome = classificado.nome;
                                     if (!j.visitante) j.visitante = {};
-                                    j.visitante.logoUrl = null;
+                                    const eq = equipes.find(e => e.id === classificado.id);
+                                    j.visitante.logoUrl = eq ? eq.logoUrl : (classificado.logoUrl || null);
                                 }
                             }
                         }
@@ -1349,7 +1351,7 @@
                     }
 
                     let mmHtml = `
-                    <div class="d-flex justify-content-end mb-3 mt-3 px-3">
+                    <div class="d-flex justify-content-start mb-3 mt-3 px-3">
                         <div class="form-check form-switch bg-body-secondary p-2 px-3 rounded-pill shadow-sm border d-flex align-items-center gap-2" style="width: max-content;">
                             <input class="form-check-input m-0 fs-5 mt-0" type="checkbox" id="check-preview-matamata"
                                 style="cursor:pointer;" ${window.previewMataMataAtivo ? 'checked' : ''} onchange="togglePreviewMataMata()">
