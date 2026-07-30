@@ -1215,9 +1215,15 @@
                         };
                         
                         if (isPlaceholder(mNome) || isPlaceholder(vNome)) return null;
+                        if (mNome.includes('<span') || vNome.includes('<span')) return null;
                         if (mNome.includes('/') || vNome.includes('/')) return null;
                         
-                        return `${mNome} / ${vNome}`;
+                        const logoM = match.mandante?.logoUrl ? `<img src="${sanitizeImgSrc(match.mandante.logoUrl)}" alt="" style="width:16px;height:16px;object-fit:contain;flex-shrink:0;">` : `<i class="bi bi-shield-shaded text-secondary" style="font-size:0.75rem;"></i>`;
+                        const logoV = match.visitante?.logoUrl ? `<img src="${sanitizeImgSrc(match.visitante.logoUrl)}" alt="" style="width:16px;height:16px;object-fit:contain;flex-shrink:0;">` : `<i class="bi bi-shield-shaded text-secondary" style="font-size:0.75rem;"></i>`;
+                        
+                        const html = `<span class="d-inline-flex align-items-center gap-1 fw-bold" style="font-size:0.85em;">${logoM}<span class="text-truncate" style="max-width:80px;" title="${mNome}">${mNome}</span><span class="text-muted mx-1 fw-normal" style="font-size:0.75rem;">x</span>${logoV}<span class="text-truncate" style="max-width:80px;" title="${vNome}">${vNome}</span></span>`;
+                        
+                        return { html: html, text: `${mNome} / ${vNome}` };
                     };
 
                     const processPosPlaceholder = (placeholder) => {
@@ -1254,7 +1260,8 @@
                                 const depMatch = jogosMataMata.find(x => x.numero === depNum);
                                 const combined = getActualTeams(depMatch);
                                 if (combined) {
-                                    j.mandanteNome = combined;
+                                    j.mandanteNome = combined.html;
+                                    j.isMandantePreview = true;
                                     if (j.mandante) j.mandante.logoUrl = null;
                                 }
                             } else {
@@ -1275,7 +1282,8 @@
                                 const depMatch = jogosMataMata.find(x => x.numero === depNum);
                                 const combined = getActualTeams(depMatch);
                                 if (combined) {
-                                    j.visitanteNome = combined;
+                                    j.visitanteNome = combined.html;
+                                    j.isVisitantePreview = true;
                                     if (j.visitante) j.visitante.logoUrl = null;
                                 }
                             } else {
@@ -1394,7 +1402,7 @@
                                 <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
                                     <div class="d-flex align-items-center gap-2" style="max-width: 75%;">
                                         ${j.mandante?.logoUrl ? `<img src="${sanitizeImgSrc(j.mandante.logoUrl)}" alt="" style="width:22px;height:22px;object-fit:contain;flex-shrink:0;">` : ''}
-                                        <span class="fw-bold text-truncate">${j.mandanteNome}</span>
+                                        ${j.isMandantePreview ? j.mandanteNome : `<span class="fw-bold text-truncate">${j.mandanteNome}</span>`}
                                     </div>
                                     <div class="d-flex align-items-center gap-1">
                                         ${j.penaltisMandante !== null && j.penaltisMandante !== undefined ? `<span class="text-muted small fw-bold">(${j.penaltisMandante})</span>` : ''}
@@ -1404,7 +1412,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center gap-2" style="max-width: 75%;">
                                         ${j.visitante?.logoUrl ? `<img src="${sanitizeImgSrc(j.visitante.logoUrl)}" alt="" style="width:22px;height:22px;object-fit:contain;flex-shrink:0;">` : ''}
-                                        <span class="fw-bold text-truncate">${j.visitanteNome}</span>
+                                        ${j.isVisitantePreview ? j.visitanteNome : `<span class="fw-bold text-truncate">${j.visitanteNome}</span>`}
                                     </div>
                                     <div class="d-flex align-items-center gap-1">
                                         ${j.penaltisVisitante !== null && j.penaltisVisitante !== undefined ? `<span class="text-muted small fw-bold">(${j.penaltisVisitante})</span>` : ''}
