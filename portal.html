@@ -779,6 +779,14 @@
         let currentPrefeituraId = 1;
         let campsCache = [];
         let campeonatoAtual = null;
+        window.previewMataMataAtivo = false;
+
+        function togglePreviewMataMata() {
+            window.previewMataMataAtivo = !window.previewMataMataAtivo;
+            if (campeonatoAtual) {
+                loadClassificacao(campeonatoAtual);
+            }
+        }
 
         // ── INICIALIZAÇÃO ───────────────────────────────────────
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1180,7 +1188,61 @@
                 // Mata-Mata
                 const resJogos = await fetch(`${API}/jogos?campeonatoId=${id}`);
                 const tJogos = await resJogos.json();
-                const jogosMataMata = tJogos.filter(j => j.rodada?.tipo === 'MATA_MATA');
+                let jogosMataMata = tJogos.filter(j => j.rodada?.tipo === 'MATA_MATA');
+
+                if (window.previewMataMataAtivo) {
+                    jogosMataMata = JSON.parse(JSON.stringify(jogosMataMata));
+                    
+                    const getDepGeral = (str) => {
+                        if (!str) return null;
+                        const m = str.match(/Jogo\s*(\d+)/i);
+                        return m ? parseInt(m[1]) : null;
+                    };
+
+                    const getActualTeams = (match) => {
+                        if (!match) return null;
+                        const mNome = match.mandanteNome || '';
+                        const vNome = match.visitanteNome || '';
+                        
+                        const isPlaceholder = (name) => {
+                            const n = name.toLowerCase();
+                            return n.includes('vencedor') || n.includes('perdedor') || n.includes('a definir');
+                        };
+                        
+                        if (isPlaceholder(mNome) || isPlaceholder(vNome)) return null;
+                        if (mNome.includes('/') || vNome.includes('/')) return null;
+                        
+                        return `${mNome} / ${vNome}`;
+                    };
+
+                    jogosMataMata.forEach(j => {
+                        const isMandantePlaceholder = !j.mandanteId && (j.mandantePlaceholder || (j.mandanteNome && j.mandanteNome.toLowerCase().includes('vencedor')));
+                        if (isMandantePlaceholder) {
+                            const depNum = getDepGeral(j.mandantePlaceholder) || getDepGeral(j.mandanteNome);
+                            if (depNum) {
+                                const depMatch = jogosMataMata.find(x => x.numero === depNum);
+                                const combined = getActualTeams(depMatch);
+                                if (combined) {
+                                    j.mandanteNome = combined;
+                                    if (j.mandante) j.mandante.logoUrl = null;
+                                }
+                            }
+                        }
+                        
+                        const isVisitantePlaceholder = !j.visitanteId && (j.visitantePlaceholder || (j.visitanteNome && j.visitanteNome.toLowerCase().includes('vencedor')));
+                        if (isVisitantePlaceholder) {
+                            const depNum = getDepGeral(j.visitantePlaceholder) || getDepGeral(j.visitanteNome);
+                            if (depNum) {
+                                const depMatch = jogosMataMata.find(x => x.numero === depNum);
+                                const combined = getActualTeams(depMatch);
+                                if (combined) {
+                                    j.visitanteNome = combined;
+                                    if (j.visitante) j.visitante.logoUrl = null;
+                                }
+                            }
+                        }
+                    });
+                }
 
                 if (jogosMataMata.length) {
                     const groups = {};
@@ -1233,6 +1295,14 @@
                     }
 
                     let mmHtml = `
+                    <div class="d-flex justify-content-end mb-3 mt-3 px-3">
+                        <div class="form-check form-switch bg-body-secondary p-2 px-3 rounded-pill shadow-sm border d-flex align-items-center gap-2" style="width: max-content;">
+                            <input class="form-check-input m-0 fs-5 mt-0" type="checkbox" id="check-preview-matamata"
+                                style="cursor:pointer;" ${window.previewMataMataAtivo ? 'checked' : ''} onchange="togglePreviewMataMata()">
+                            <label class="form-check-label text-primary fw-bold small" for="check-preview-matamata"
+                                style="cursor:pointer; padding-top:2px;">Pré-visualizar confrontos</label>
+                        </div>
+                    </div>
                     <style>
                         .bracket-col:not(:last-child) .bracket-match::after {
                             content: ''; position: absolute; right: -20px; top: 50%; width: 20px; border-top: 2px dashed #94a3b8;
