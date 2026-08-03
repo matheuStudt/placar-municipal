@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classificação - Súmula Digital</title>
+    <meta name="description" content="Tabela de classificação dos campeonatos municipais.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="frontend/css/main.css">
+
+    <link rel="icon" type="image/png" href="frontend/img/icons/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="frontend/img/icons/favicon.svg" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="frontend/img/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#000000">
+
+    <style>
+        /* ── Seletor de campeonato ────────────────────────────── */
+        .camp-select-wrapper {
+            background: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            border: 1px solid rgba(0,0,0,0.06);
+            margin-bottom: 28px;
+        }
+        .camp-select-wrapper select {
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 10px 16px;
+            border: 1.5px solid #e2e8f0;
+            transition: border-color .2s;
+        }
+        .camp-select-wrapper select:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .15);
+        }
+
+        /* ── Legenda de classificação ────────────────────────── */
+        .legenda-class {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .legenda-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: #bbf7d0;
+            border: 2px solid #16a34a;
+            flex-shrink: 0;
+        }
+
+        /* ── Tabela de classificação ──────────────────────────── */
+        .table-classificacao thead th {
+            font-size: 0.78rem;
+            letter-spacing: .5px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .table-classificacao tbody tr:hover {
+            background-color: rgba(var(--bs-primary-rgb), .04);
+        }
+        .chave-title {
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--bs-primary);
+            border-left: 4px solid var(--bs-primary);
+            padding-left: 12px;
+            margin-bottom: 14px;
+        }
+
+        /* ── Mata-Mata (bracket) ─────────────────────────────── */
+        .bracket-col:not(:last-child) .bracket-match::after {
+            content: ''; position: absolute; right: -20px; top: 50%;
+            width: 20px; border-top: 2px dashed #94a3b8;
+        }
+        .bracket-col:not(:first-child) .bracket-match::before {
+            content: ''; position: absolute; left: -20px; top: 50%;
+            width: 20px; border-top: 2px dashed #94a3b8;
+        }
+        .bracket-match {
+            background: white;
+            border-radius: 14px;
+            padding: 16px;
+            border-left: 6px solid #e2e8f0;
+            position: relative;
+            margin: 15px 0;
+            transition: all .2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        }
+        .bracket-match:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+            border-color: var(--bs-primary) !important;
+        }
+
+        /* ── Empty / loading states ──────────────────────────── */
+        .empty-state-class {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+        .empty-state-class i { font-size: 3rem; margin-bottom: 16px; display: block; }
+        .empty-state-class p { font-weight: 600; font-size: 1rem; margin: 0; }
+    </style>
+</head>
+
+<body data-bs-theme="light">
+    <div class="main-content-overlay" onclick="toggleSidebar()"></div>
+    <div id="menu-container"></div>
+
+    <main class="main-content">
+        <header class="top-navbar shadow-sm rounded-4 mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <h5 class="mb-0 fw-bold">Classificação</h5>
+            </div>
+        </header>
+
+        <!-- Título da página -->
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="rounded-3 d-flex align-items-center justify-content-center"
+                style="width:48px;height:48px;background:linear-gradient(135deg,#3b82f6,#6366f1);">
+                <i class="bi bi-bar-chart-line-fill text-white fs-5"></i>
+            </div>
+            <div>
+                <h2 class="fw-bold mb-0">Classificação</h2>
+                <p class="text-muted small mb-0">Selecione um campeonato para visualizar a tabela de classificação</p>
+            </div>
+        </div>
+
+        <!-- Seletor de campeonato -->
+        <div class="camp-select-wrapper">
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-md-8 col-lg-6">
+                    <label class="form-label fw-bold mb-1" for="select-campeonato-class">
+                        <i class="bi bi-trophy me-1 text-warning"></i>Campeonato
+                    </label>
+                    <select id="select-campeonato-class" class="form-select" onchange="aoSelecionarCampeonato()">
+                        <option value="">— Selecione um campeonato —</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3 d-flex gap-2">
+                    <button id="btn-atualizar" class="btn btn-primary fw-bold px-4"
+                        onclick="carregarClassificacao()" disabled>
+                        <i class="bi bi-arrow-clockwise me-1"></i>Atualizar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área de resultado -->
+        <div id="area-classificacao">
+            <!-- Estado inicial -->
+            <div class="empty-state-class" id="state-inicial">
+                <i class="bi bi-bar-chart-line text-primary opacity-50"></i>
+                <p>Selecione um campeonato acima para exibir a tabela de classificação.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Toast container -->
+    <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1100;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="components/sidebar.js"></script>
+    <script src="frontend/js/auth-guard.js"></script>
+    <script src="frontend/js/main.js"></script>
+
+    <script>
+        let prefeituraId = null;
+        let campsCache   = [];
+
+        // ── INICIALIZAÇÃO ──────────────────────────────────────────
+        async function init() {
+            const user = requireAuth();
+            if (!user) return;
+            prefeituraId = user.prefeituraId;
+            await carregarCampeonatos();
+        }
+
+        // ── LISTA DE CAMPEONATOS ───────────────────────────────────
+        async function carregarCampeonatos() {
+            const sel = document.getElementById('select-campeonato-class');
+            sel.innerHTML = '<option value="">Carregando...</option>';
+            try {
+                const res  = await fetchAPI(`${API}/campeonatos?prefeituraId=${prefeituraId}`, { headers: getAuthHeaders() });
+                const data = await res.json();
+                campsCache = data.campeonatos || [];
+
+                sel.innerHTML = '<option value="">— Selecione um campeonato —</option>';
+                campsCache.forEach(c => {
+                    const nomeCompleto = formatarNomeCampeonato(c, 999);
+                    sel.innerHTML += `<option value="${c.id}">${nomeCompleto}</option>`;
+                });
+            } catch(e) {
+                console.error('Erro ao carregar campeonatos:', e);
+                sel.innerHTML = '<option value="">Erro ao carregar campeonatos</option>';
+                showToast('Erro ao carregar lista de campeonatos.', 'danger');
+            }
+        }
+
+        function aoSelecionarCampeonato() {
+            const id = document.getElementById('select-campeonato-class').value;
+            document.getElementById('btn-atualizar').disabled = !id;
+            if (id) carregarClassificacao();
+            else {
+                document.getElementById('area-classificacao').innerHTML = `
+                    <div class="empty-state-class" id="state-inicial">
+                        <i class="bi bi-bar-chart-line text-primary opacity-50"></i>
+                        <p>Selecione um campeonato acima para exibir a tabela de classificação.</p>
+                    </div>`;
+            }
+        }
+
+        // ── CARREGAR CLASSIFICAÇÃO ─────────────────────────────────
+        async function carregarClassificacao() {
+            const campId = document.getElementById('select-campeonato-class').value;
+            if (!campId) return;
+
+            const campObj = campsCache.find(c => String(c.id) === String(campId));
+            const classificados = campObj?.classificadosPorChave || 4;
+
+            // Skeleton de loading
+            document.getElementById('area-classificacao').innerHTML = `
+                <div class="mb-4">
+                    ${Array(3).fill(`
+                        <div class="mb-5">
+                            <div class="skeleton mb-3" style="width:180px;height:22px;border-radius:6px;"></div>
+                            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                                <div class="table-responsive">
+                                    <table class="table mb-0">
+                                        <thead><tr><th colspan="10"><div class="skeleton" style="height:20px;border-radius:4px;"></div></th></tr></thead>
+                                        <tbody>${Array(5).fill('<tr><td colspan="10"><div class="skeleton" style="height:28px;border-radius:4px;opacity:.5;"></div></td></tr>').join('')}</tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>`).join('')}
+                </div>`;
+
+            try {
+                // Busca equipes para obter chaves
+                const resEq   = await fetch(`${API}/campeonatos/${campId}/equipes`);
+                const equipes = await resEq.json();
+
+                let chaves = [...new Set(equipes.map(e => e.chave).filter(Boolean))]
+                    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+                if (!chaves.length) chaves = [''];
+
+                // Monta tabelas por chave
+                let htmlGrupos = '';
+                for (const chave of chaves) {
+                    const label = chave
+                        ? (chave.includes('Chave') ? chave : 'Chave ' + chave)
+                        : 'Classificação Geral';
+
+                    let url = `${API}/campeonatos/${campId}/classificacao`;
+                    if (chave) url += `?chave=${encodeURIComponent(chave)}`;
+
+                    const res  = await fetch(url);
+                    const data = await res.json();
+
+                    if (!data.length) continue;
+
+                    htmlGrupos += `
+                        <div class="mb-5">
+                            <div class="chave-title">${label}</div>
+                            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0 table-classificacao">
+                                        <thead class="bg-primary text-white text-uppercase small">
+                                            <tr>
+                                                <th class="ps-4">Pos</th>
+                                                <th>Equipe</th>
+                                                <th class="text-center" title="Pontos">P</th>
+                                                <th class="text-center" title="Jogos">J</th>
+                                                <th class="text-center" title="Vitórias">V</th>
+                                                <th class="text-center" title="Empates">E</th>
+                                                <th class="text-center" title="Derrotas">D</th>
+                                                <th class="text-center" title="Gols Pró">GP</th>
+                                                <th class="text-center" title="Gols Contra">GC</th>
+                                                <th class="text-center" title="Saldo de Gols">SG</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${data.map((item, index) => {
+                                                const qualificado = index < classificados;
+                                                const rowClass    = qualificado ? 'table-success' : '';
+                                                return `
+                                                <tr class="${rowClass}">
+                                                    <td class="ps-4 fw-bold">${index + 1}º</td>
+                                                    <td class="fw-bold">${item.nome}</td>
+                                                    <td class="text-center fw-bold text-primary">${item.p}</td>
+                                                    <td class="text-center">${item.j}</td>
+                                                    <td class="text-center">${item.v}</td>
+                                                    <td class="text-center">${item.e || 0}</td>
+                                                    <td class="text-center">${item.d || 0}</td>
+                                                    <td class="text-center">${item.gp || 0}</td>
+                                                    <td class="text-center">${item.gc || 0}</td>
+                                                    <td class="text-center fw-bold ${item.sg >= 0 ? 'text-success' : 'text-danger'}">${item.sg >= 0 ? '+' : ''}${item.sg}</td>
+                                                </tr>`;
+                                            }).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 mt-2 ps-1">
+                                <span class="legenda-dot"></span>
+                                <span class="legenda-class">Classificados para a próxima fase (top ${classificados})</span>
+                            </div>
+                        </div>`;
+                }
+
+                // Mata-Mata
+                const resJogos    = await fetch(`${API}/jogos?campeonatoId=${campId}`);
+                const todosJogos  = await resJogos.json();
+                const jogosMataMata = todosJogos.filter(j => j.rodada?.tipo === 'MATA_MATA');
+
+                let htmlMataMata = '';
+                if (jogosMataMata.length) {
+                    // Agrupa por rodada
+                    const groups = {};
+                    jogosMataMata.forEach(j => {
+                        const rId = j.rodadaId;
+                        if (!groups[rId]) {
+                            groups[rId] = {
+                                rodadaNumero: j.rodada?.numero || 99,
+                                rodadaNome:   j.rodada?.nome  || 'Fase Mata-Mata',
+                                jogos: []
+                            };
+                        }
+                        groups[rId].jogos.push(j);
+                    });
+
+                    const rounds = Object.values(groups).sort((a, b) => a.rodadaNumero - b.rodadaNumero);
+
+                    htmlMataMata = `
+                        <div class="bracket-wrapper" style="overflow-x:auto;padding-bottom:20px;">
+                            <div class="bracket-container d-flex" style="gap:40px;min-width:min-content;">
+                                ${rounds.map(round => `
+                                    <div class="bracket-col d-flex flex-column" style="min-width:300px;position:relative;">
+                                        <h5 class="text-center fw-bold text-primary mb-3 bg-white py-2 rounded-pill shadow-sm border">
+                                            ${round.rodadaNome}
+                                        </h5>
+                                        <div class="d-flex flex-column justify-content-around flex-fill">
+                                            ${round.jogos.map(j => {
+                                                const sc = j.status === 'Finalizado'
+                                                    ? 'bg-success-subtle text-success'
+                                                    : 'bg-warning-subtle text-warning';
+                                                const logoM = j.mandante?.logoUrl
+                                                    ? `<img src="${sanitizeImgSrc(j.mandante.logoUrl)}" alt="" style="width:20px;height:20px;object-fit:contain;flex-shrink:0;">`
+                                                    : `<i class="bi bi-shield-shaded text-secondary" style="font-size:.85rem;"></i>`;
+                                                const logoV = j.visitante?.logoUrl
+                                                    ? `<img src="${sanitizeImgSrc(j.visitante.logoUrl)}" alt="" style="width:20px;height:20px;object-fit:contain;flex-shrink:0;">`
+                                                    : `<i class="bi bi-shield-shaded text-secondary" style="font-size:.85rem;"></i>`;
+                                                const gmClass = j.status === 'Finalizado'
+                                                    ? (j.golsMandante > j.golsVisitante ? 'text-success' : (j.golsMandante < j.golsVisitante ? 'text-danger' : 'text-primary'))
+                                                    : 'text-muted';
+                                                const gvClass = j.status === 'Finalizado'
+                                                    ? (j.golsVisitante > j.golsMandante ? 'text-success' : (j.golsVisitante < j.golsMandante ? 'text-danger' : 'text-primary'))
+                                                    : 'text-muted';
+                                                return `
+                                                <div class="bracket-match">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <span class="badge ${sc} rounded-pill" style="font-size:.7rem;">${j.status}</span>
+                                                        <span class="text-muted fw-bold" style="font-size:.75rem;">Jogo ${j.numero}</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                                                        <div class="d-flex align-items-center gap-2" style="max-width:72%;">
+                                                            ${logoM}
+                                                            <span class="fw-bold text-truncate" style="font-size:.88rem;">${j.mandanteNome || '—'}</span>
+                                                        </div>
+                                                        <span class="fw-bold fs-5 px-2 ${gmClass}">${j.golsMandante ?? '—'}</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div class="d-flex align-items-center gap-2" style="max-width:72%;">
+                                                            ${logoV}
+                                                            <span class="fw-bold text-truncate" style="font-size:.88rem;">${j.visitanteNome || '—'}</span>
+                                                        </div>
+                                                        <span class="fw-bold fs-5 px-2 ${gvClass}">${j.golsVisitante ?? '—'}</span>
+                                                    </div>
+                                                    ${(j.penaltisMandante !== null && j.penaltisMandante !== undefined)
+                                                        ? `<div class="text-center mt-2"><small class="text-muted">Pên: ${j.penaltisMandante} × ${j.penaltisVisitante}</small></div>`
+                                                        : ''}
+                                                </div>`;
+                                            }).join('')}
+                                        </div>
+                                    </div>`).join('')}
+                            </div>
+                        </div>`;
+                }
+
+                // Monta layout final com sub-abas
+                const nomeCamp = campObj ? formatarNomeCampeonato(campObj, 999) : '';
+                document.getElementById('area-classificacao').innerHTML = `
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <i class="bi bi-trophy-fill text-warning fs-5"></i>
+                        <h4 class="fw-bold mb-0">${nomeCamp}</h4>
+                    </div>
+
+                    <!-- Sub-abas -->
+                    <ul class="nav nav-pills mb-4 bg-body-secondary p-2 rounded-pill shadow-sm d-inline-flex border"
+                        id="pills-class-admin" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active rounded-pill px-4 fw-bold" id="tab-grupos-admin"
+                                data-bs-toggle="pill" data-bs-target="#pane-grupos-admin" type="button">
+                                <i class="bi bi-table me-1"></i>Fase de Grupos
+                            </button>
+                        </li>
+                        ${jogosMataMata.length ? `
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-pill px-4 fw-bold" id="tab-matamata-admin"
+                                data-bs-toggle="pill" data-bs-target="#pane-matamata-admin" type="button">
+                                <i class="bi bi-diagram-3 me-1"></i>Mata-Mata
+                            </button>
+                        </li>` : ''}
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="pane-grupos-admin" role="tabpanel">
+                            ${htmlGrupos || `
+                                <div class="empty-state-class">
+                                    <i class="bi bi-clipboard-x text-muted opacity-50"></i>
+                                    <p>Nenhuma equipe cadastrada na fase de grupos.</p>
+                                </div>`}
+                        </div>
+                        ${jogosMataMata.length ? `
+                        <div class="tab-pane fade" id="pane-matamata-admin" role="tabpanel">
+                            ${htmlMataMata}
+                        </div>` : ''}
+                    </div>`;
+
+            } catch(e) {
+                console.error('Erro ao carregar classificação:', e);
+                document.getElementById('area-classificacao').innerHTML = `
+                    <div class="empty-state-class text-danger">
+                        <i class="bi bi-exclamation-triangle opacity-75"></i>
+                        <p>Erro ao carregar a classificação. Verifique a conexão e tente novamente.</p>
+                        <button class="btn btn-outline-danger btn-sm mt-2" onclick="carregarClassificacao()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Tentar novamente
+                        </button>
+                    </div>`;
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

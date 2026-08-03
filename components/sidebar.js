@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { label: 'Equipes', href: 'equipes.html', icon: 'bi-shield-shaded', module: 'equipes' },
         { label: 'Atletas', href: 'atletas.html', icon: 'bi-people', module: 'atletas' },
         { label: 'Tabela de Jogos', href: 'jogos.html', icon: 'bi-calendar3', module: 'jogos' },
+        { label: 'Classificação', href: 'classificacao.html', icon: 'bi-bar-chart-line', module: 'jogos' },
         { label: 'Súmula', href: 'sumula.html', icon: 'bi-file-earmark-text', module: 'sumulas' },
         { label: 'Relatórios', href: 'relatorios.html', icon: 'bi-file-pdf', module: 'relatorios' },
         { label: 'Usuários', href: 'usuarios.html', icon: 'bi-person-gear', module: 'gestao_usuarios' },
