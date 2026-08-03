@@ -1710,7 +1710,7 @@
                 const golsM = j.golsMandante ?? 0;
                 const golsV = j.golsVisitante ?? 0;
                 const campObj = campsCache.find(c => String(c.id) === String(campeonatoAtual));
-                const nomeCamp = j.campeonatoNome || campObj?.nome || '';
+                const nomeCamp = campObj ? formatarNomeCampeonato(campObj, 999) : (j.campeonatoNome || '');
 
                 function getInitials(nome) {
                     return nome.split(' ').map(p => p[0]).join('').substring(0, 3).toUpperCase();
