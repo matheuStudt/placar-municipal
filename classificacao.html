@@ -111,6 +111,27 @@
         }
         .empty-state-class i { font-size: 3rem; margin-bottom: 16px; display: block; }
         .empty-state-class p { font-weight: 600; font-size: 1rem; margin: 0; }
+
+        /* ── Sub-abas (Fase de Grupos / Mata-Mata) ───────────── */
+        #pills-class-admin .nav-link {
+            color: #374151;
+            background: white;
+            border: 1.5px solid #e2e8f0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all .2s;
+        }
+        #pills-class-admin .nav-link:hover:not(.active) {
+            background: #f0f4ff;
+            border-color: var(--bs-primary);
+            color: var(--bs-primary);
+        }
+        #pills-class-admin .nav-link.active {
+            background: var(--bs-primary);
+            border-color: var(--bs-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), .3);
+        }
     </style>
 </head>
 
