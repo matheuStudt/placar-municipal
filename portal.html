@@ -407,9 +407,9 @@
             width: 48px;
             text-align: center;
         }
-        /* Coluna EQUIPE — flexível, ocupa o espaço restante */
+        /* Coluna EQUIPE — mínimo garantido; table-responsive cuida do scroll horizontal */
         .classif-table .col-equipe {
-            /* width não definido aqui: deixa a tabela preencher o restante */
+            min-width: 110px;
         }
         .classif-table .col-equipe .equipe-nome {
             display: block;
@@ -426,6 +426,15 @@
         /* Remove o efeito de hover do link de equipe na tabela de classificação */
         .classif-table .col-equipe .team-logo-link:hover {
             transform: none;
+        }
+
+        /* Mobile: colunas menores para dar mais espaço ao nome do time */
+        @media (max-width: 575.98px) {
+            .classif-table .col-pos  { width: 36px; font-size: 0.78rem; }
+            .classif-table .col-stat { width: 30px; font-size: 0.78rem; padding-left: 2px; padding-right: 2px; }
+            .classif-table .col-equipe { min-width: 90px; font-size: 0.82rem; }
+            .classif-table thead th,
+            .classif-table tbody td { padding-top: 0.45rem; padding-bottom: 0.45rem; }
         }
 
         /* Footer */
