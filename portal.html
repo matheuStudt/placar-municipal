@@ -701,75 +701,181 @@
 
     <style>
         #card-resultado-template .card-bg-glow {
-            position: absolute; inset: 0;
+            position: absolute;
+            inset: 0;
             background:
-                radial-gradient(ellipse 60% 50% at 20% 80%, rgba(59,130,246,0.25) 0%, transparent 60%),
-                radial-gradient(ellipse 50% 40% at 80% 20%, rgba(99,102,241,0.2) 0%, transparent 55%);
+                radial-gradient(ellipse 60% 50% at 20% 80%, rgba(59, 130, 246, 0.25) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 80% 20%, rgba(99, 102, 241, 0.2) 0%, transparent 55%);
             pointer-events: none;
         }
+
         #card-resultado-template .card-stripe-top,
         #card-resultado-template .card-stripe-bot {
-            position: absolute; left: 0; right: 0; height: 8px;
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 8px;
             background: linear-gradient(90deg, #3b82f6, #6366f1, #3b82f6);
         }
-        #card-resultado-template .card-stripe-top { top: 0; }
-        #card-resultado-template .card-stripe-bot { bottom: 0; }
+
+        #card-resultado-template .card-stripe-top {
+            top: 0;
+        }
+
+        #card-resultado-template .card-stripe-bot {
+            bottom: 0;
+        }
+
         #card-resultado-template .card-content {
-            position: relative; z-index: 2; width: 100%;
-            display: flex; flex-direction: column; align-items: center; gap: 0; padding: 0 60px;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            padding: 0 60px;
         }
+
         #card-resultado-template .card-teams {
-            display: flex; align-items: flex-start; justify-content: center; width: 100%; gap: 0; margin-bottom: 40px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            width: 100%;
+            gap: 0;
+            margin-bottom: 40px;
         }
+
         #card-resultado-template .card-team {
-            display: flex; flex-direction: column; align-items: center; flex: 1; gap: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            gap: 18px;
         }
+
         #card-resultado-template .team-logo-wrap {
-            width: 200px; height: 200px; border-radius: 50%;
-            background: rgba(255,255,255,0.08); border: 3px solid rgba(255,255,255,0.15);
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 3px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
-        #card-resultado-template .team-logo-wrap img { width: 160px; height: 160px; object-fit: contain; }
+
+        #card-resultado-template .team-logo-wrap img {
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+        }
+
         #card-resultado-template .team-logo-wrap .team-initials {
-            font-size: 64px; font-weight: 900; color: rgba(255,255,255,0.6); line-height: 1;
+            font-size: 64px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1;
         }
+
         #card-resultado-template .team-name {
-            font-size: 28px; font-weight: 800; color: #fff; text-transform: uppercase;
-            text-align: center; letter-spacing: 1px; line-height: 1.2; max-width: 280px;
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            max-width: 280px;
         }
+
         #card-resultado-template .card-vs-block {
-            display: flex; flex-direction: column; align-items: center; gap: 10px;
-            padding: 0 30px; flex-shrink: 0; margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 0 30px;
+            flex-shrink: 0;
+            margin-top: 25px;
         }
+
         #card-resultado-template .card-score {
-            font-size: 128px; font-weight: 900; color: #fff; line-height: 1;
-            letter-spacing: -4px; text-shadow: 0 4px 32px rgba(99,182,255,0.5);
+            font-size: 128px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+            letter-spacing: -4px;
+            text-shadow: 0 4px 32px rgba(99, 182, 255, 0.5);
         }
+
         #card-resultado-template .card-score-sep {
-            font-size: 80px; font-weight: 300; color: rgba(255,255,255,0.35); line-height: 1;
+            font-size: 80px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.35);
+            line-height: 1;
         }
+
         #card-resultado-template .card-vs-label {
-            font-size: 20px; font-weight: 700; letter-spacing: 6px;
-            color: rgba(255,255,255,0.3); text-transform: uppercase;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
         }
+
         #card-resultado-template .team-scorers {
-            display: flex; flex-direction: column; align-items: center; gap: 6px;
-            margin-top: 5px; font-size: 17px; font-weight: 500;
-            color: rgba(255,255,255,0.85); text-align: center; width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            margin-top: 5px;
+            font-size: 17px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.85);
+            text-align: center;
+            width: 100%;
         }
+
         #card-resultado-template .scorer-item {
-            display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
         }
+
         #card-resultado-template .scorer-item .card-icon {
-            display: inline-block; width: 10px; height: 14px; border-radius: 2px;
-            margin-right: 4px; vertical-align: baseline;
+            display: inline-block;
+            width: 10px;
+            height: 14px;
+            border-radius: 2px;
+            margin-right: 4px;
+            vertical-align: baseline;
         }
-        #card-resultado-template .scorer-item .amarelo { background-color: #facc15; }
-        #card-resultado-template .scorer-item .vermelho { background-color: #ef4444; }
-        #card-resultado-template .scorer-item .gol { margin-right: 4px; margin-left: 0; font-size: 15px; }
+
+        #card-resultado-template .scorer-item .amarelo {
+            background-color: #facc15;
+        }
+
+        #card-resultado-template .scorer-item .vermelho {
+            background-color: #ef4444;
+        }
+
+        #card-resultado-template .scorer-item .gol {
+            margin-right: 4px;
+            margin-left: 0;
+            font-size: 15px;
+        }
+
         #card-resultado-template .card-watermark {
-            position: absolute; bottom: 28px; right: 40px;
-            font-size: 17px; font-weight: 700; color: rgba(255,255,255,0.2); letter-spacing: 2px; z-index: 3;
+            position: absolute;
+            bottom: 28px;
+            right: 40px;
+            font-size: 17px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.2);
+            letter-spacing: 2px;
+            z-index: 3;
         }
     </style>
 
@@ -1136,7 +1242,7 @@
                     if (chave) url += `?chave=${encodeURIComponent(chave)}`;
                     const res = await fetch(url);
                     const data = await res.json();
-                    
+
                     rankingPorChave[chave || 'GERAL'] = data;
 
                     let html = `
@@ -1195,7 +1301,7 @@
 
                 if (window.previewMataMataAtivo) {
                     jogosMataMata = JSON.parse(JSON.stringify(jogosMataMata));
-                    
+
                     const getDepGeral = (str) => {
                         if (!str) return null;
                         const m = str.match(/Jogo\s*(\d+)/i);
@@ -1205,24 +1311,24 @@
                     const getActualTeams = (match) => {
                         if (!match) return null;
                         if (!match.mandanteId || !match.visitanteId) return null; // Só avança se o jogo tiver times reais já consolidados
-                        
+
                         const mNome = match.mandanteNome || '';
                         const vNome = match.visitanteNome || '';
-                        
+
                         const isPlaceholder = (name) => {
                             const n = name.toLowerCase();
                             return n.includes('vencedor') || n.includes('perdedor') || n.includes('a definir') || /\\d+º/.test(n);
                         };
-                        
+
                         if (isPlaceholder(mNome) || isPlaceholder(vNome)) return null;
                         if (mNome.includes('<span') || vNome.includes('<span')) return null;
                         if (mNome.includes('/') || vNome.includes('/')) return null;
-                        
+
                         const logoM = match.mandante?.logoUrl ? `<img src="${sanitizeImgSrc(match.mandante.logoUrl)}" alt="" style="width:16px;height:16px;object-fit:contain;flex-shrink:0;">` : `<i class="bi bi-shield-shaded text-secondary" style="font-size:0.75rem;"></i>`;
                         const logoV = match.visitante?.logoUrl ? `<img src="${sanitizeImgSrc(match.visitante.logoUrl)}" alt="" style="width:16px;height:16px;object-fit:contain;flex-shrink:0;">` : `<i class="bi bi-shield-shaded text-secondary" style="font-size:0.75rem;"></i>`;
-                        
+
                         const html = `<span class="d-inline-flex align-items-center gap-1 fw-bold" style="font-size:0.85em;">${logoM}<span class="text-truncate" style="max-width:80px;" title="${mNome}">${mNome}</span><span class="text-muted mx-1 fw-normal" style="font-size:0.75rem;">x</span>${logoV}<span class="text-truncate" style="max-width:80px;" title="${vNome}">${vNome}</span></span>`;
-                        
+
                         return { html: html, text: `${mNome} / ${vNome}` };
                     };
 
@@ -1231,10 +1337,10 @@
                         const matchPos = placeholder.match(/(\d+)º/);
                         if (!matchPos) return null;
                         const posicao = parseInt(matchPos[1]) - 1;
-                        
+
                         const chavesOrdenadas = Object.keys(rankingPorChave).sort((a, b) => b.length - a.length);
                         const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');
-                        
+
                         for (const ch of chavesOrdenadas) {
                             if (ch === 'GERAL') continue;
                             const regex = new RegExp('(^|\\s|º|[^a-zA-Z0-9])' + escapeRegex(ch) + '($|\\s|[^a-zA-Z0-9])', 'i');
@@ -1244,7 +1350,7 @@
                                 }
                             }
                         }
-                        
+
                         if (rankingPorChave['GERAL'] && rankingPorChave['GERAL'][posicao]) {
                             return rankingPorChave['GERAL'][posicao];
                         }
@@ -1274,7 +1380,7 @@
                                 }
                             }
                         }
-                        
+
                         const isVisitantePlaceholder = !j.visitanteId && (j.visitantePlaceholder || (j.visitanteNome && (j.visitanteNome.toLowerCase().includes('vencedor') || /\\d+º/.test(j.visitanteNome))));
                         if (isVisitantePlaceholder) {
                             const pStr = j.visitantePlaceholder || j.visitanteNome;
@@ -1701,7 +1807,7 @@
                             prefLogoHtml = `<img src="${config.logoUrl}" crossorigin="anonymous" style="width:90px;height:90px;object-fit:contain;border-radius:50%;background:rgba(255,255,255,0.08);border:3px solid rgba(255,215,0,0.4);padding:6px;box-sizing:border-box;margin-bottom:10px;">`;
                         }
                     }
-                } catch(e) { console.error('Erro config:', e); }
+                } catch (e) { console.error('Erro config:', e); }
 
                 const nomeMandante = j.mandanteNome || 'MANDANTE';
                 const nomeVisitante = j.visitanteNome || 'VISITANTE';
@@ -1725,7 +1831,7 @@
 
                 let penaltisHtml = '';
                 if (j.penaltisMandante !== null && j.penaltisMandante !== undefined) {
-                    penaltisHtml = `<div style="font-size:22px;font-weight:700;color:rgba(255,255,255,0.55);margin-top:6px;letter-spacing:1px;">Pên: ${j.penaltisMandante} × ${j.penaltisVisitante}</div>`;
+                    penaltisHtml = `<div style="font-size:22px;font-weight:700;color:rgba(255,255,255,0.55);margin-top:6px;letter-spacing:1px;">Pênaltis: ${j.penaltisMandante} × ${j.penaltisVisitante}</div>`;
                 }
 
                 function getEstatisticasHtml(elenco) {
@@ -1802,7 +1908,7 @@
                 });
 
                 const link = document.createElement('a');
-                link.download = `card_${nomeMandante.replace(/\s+/g,'_')}_vs_${nomeVisitante.replace(/\s+/g,'_')}.png`;
+                link.download = `card_${nomeMandante.replace(/\s+/g, '_')}_vs_${nomeVisitante.replace(/\s+/g, '_')}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
 
