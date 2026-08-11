@@ -100,12 +100,17 @@ export const getCampeonatos = async (req, res) => {
             const todosJogos = c.rodadas.flatMap(r => r.jogos);
             if (todosJogos.length > 0) {
                 statusDin = 'Em Andamento';
-                const rodadaFinal = c.rodadas.find(r => r.nome?.toLowerCase().includes('final') && r.tipo === 'MATA_MATA' && !r.nome?.toLowerCase().includes('semi') && !r.nome?.toLowerCase().includes('quarta'));
+                const rodadaFinal = c.rodadas.find(r => r.nome?.toLowerCase().trim() === 'final' && r.tipo === 'MATA_MATA');
                 if (rodadaFinal && rodadaFinal.jogos.length > 0 && rodadaFinal.jogos.every(j => j.status === 'Finalizado')) {
                     statusDin = 'Finalizado';
+                    console.log(`[STATUS] Camp "${c.nome}" → Finalizado via rodada MATA_MATA "Final"`);
                 }
                 else if (c.formato === 'Pontos Corridos' && todosJogos.every(j => j.status === 'Finalizado')) {
                     statusDin = 'Finalizado';
+                    console.log(`[STATUS] Camp "${c.nome}" → Finalizado via Pontos Corridos (todos os jogos finalizados)`);
+                }
+                else {
+                    console.log(`[STATUS] Camp "${c.nome}" → Em Andamento | formato="${c.formato}" | rodadaFinal="${rodadaFinal?.nome ?? 'nenhuma'}" | jogos=${todosJogos.length}`);
                 }
             }
             return {
