@@ -97,7 +97,7 @@ export const getCampeonatos = async (req: Request, res: Response) => {
             if (todosJogos.length > 0) {
                 statusDin = 'Em Andamento';
 
-                const rodadaFinal = c.rodadas.find(r => r.nome?.toLowerCase().includes('final') && r.tipo === 'MATA_MATA' && !r.nome?.toLowerCase().includes('semi') && !r.nome?.toLowerCase().includes('quarta'));
+                const rodadaFinal = c.rodadas.find(r => r.nome?.toLowerCase().trim() === 'final' && r.tipo === 'MATA_MATA');
                 
                 if (rodadaFinal && rodadaFinal.jogos.length > 0 && rodadaFinal.jogos.every(j => j.status === 'Finalizado')) {
                     statusDin = 'Finalizado';
