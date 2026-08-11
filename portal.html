@@ -392,6 +392,37 @@
             margin-bottom: 16px;
         }
 
+        /* ── TABELA DE CLASSIFICAÇÃO ── */
+        .classif-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        .classif-table th,
+        .classif-table td {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        /* Coluna POS */
+        .classif-table .col-pos {
+            width: 48px;
+            text-align: center;
+        }
+        /* Coluna EQUIPE — flexível, ocupa o espaço restante */
+        .classif-table .col-equipe {
+            /* width não definido aqui: deixa a tabela preencher o restante */
+        }
+        .classif-table .col-equipe .equipe-nome {
+            display: block;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        /* Colunas estatísticas: largura fixa e igual */
+        .classif-table .col-stat {
+            width: 40px;
+            text-align: center;
+        }
+
         /* Footer */
         footer {
             background: var(--primary);
@@ -1250,19 +1281,19 @@
                     <h4 class="fw-bold text-primary mb-3 text-uppercase border-start border-4 border-primary ps-3">${label}</h4>
                     <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
+                            <table class="table table-hover align-middle mb-0 classif-table">
                                 <thead class="bg-primary text-white text-uppercase small">
                                     <tr>
-                                        <th class="ps-4">Pos</th>
-                                        <th>Equipe</th>
-                                        <th class="text-center">P</th>
-                                        <th class="text-center">J</th>
-                                        <th class="text-center">V</th>
-                                        <th class="text-center">E</th>
-                                        <th class="text-center">D</th>
-                                        <th class="text-center">GF</th>
-                                        <th class="text-center">GS</th>
-                                        <th class="text-center">SG</th>
+                                        <th class="ps-2 col-pos">Pos</th>
+                                        <th class="col-equipe">Equipe</th>
+                                        <th class="col-stat">P</th>
+                                        <th class="col-stat">J</th>
+                                        <th class="col-stat">V</th>
+                                        <th class="col-stat">E</th>
+                                        <th class="col-stat">D</th>
+                                        <th class="col-stat">GF</th>
+                                        <th class="col-stat">GS</th>
+                                        <th class="col-stat">SG</th>
                                     </tr>
                                 </thead>
                                 <tbody>`;
@@ -1272,20 +1303,20 @@
                         const rowClass = qualificado ? 'table-success' : '';
                         html += `
                         <tr class="${rowClass}">
-                            <td class="ps-4 fw-bold">${index + 1}º</td>
-                            <td class="fw-bold">
-                                <a href="equipe.html?id=${item.id}&slug=${slug}" class="text-decoration-none text-body team-logo-link">
+                            <td class="ps-2 fw-bold col-pos">${index + 1}º</td>
+                            <td class="fw-bold col-equipe">
+                                <a href="equipe.html?id=${item.id}&slug=${slug}" class="text-decoration-none text-body team-logo-link equipe-nome" title="${item.nome}">
                                     ${item.nome}
                                 </a>
                             </td>
-                            <td class="text-center fw-bold text-primary">${item.p}</td>
-                            <td class="text-center">${item.j}</td>
-                            <td class="text-center">${item.v}</td>
-                            <td class="text-center">${item.e || 0}</td>
-                            <td class="text-center">${item.d || 0}</td>
-                            <td class="text-center">${item.gp || 0}</td>
-                            <td class="text-center">${item.gc || 0}</td>
-                            <td class="text-center fw-bold ${item.sg >= 0 ? 'text-success' : 'text-danger'}">${item.sg}</td>
+                            <td class="col-stat fw-bold text-primary">${item.p}</td>
+                            <td class="col-stat">${item.j}</td>
+                            <td class="col-stat">${item.v}</td>
+                            <td class="col-stat">${item.e || 0}</td>
+                            <td class="col-stat">${item.d || 0}</td>
+                            <td class="col-stat">${item.gp || 0}</td>
+                            <td class="col-stat">${item.gc || 0}</td>
+                            <td class="col-stat fw-bold ${item.sg >= 0 ? 'text-success' : 'text-danger'}">${item.sg}</td>
                         </tr>`;
                     });
                     html += `</tbody></table></div></div></div>`;
