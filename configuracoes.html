@@ -70,6 +70,16 @@
                                 </div>
                             </div>
 
+                            <div class="mb-3">
+                                <label class="form-label">Marca d'água para Relatórios</label>
+                                <input type="file" id="marcaDaguaFile" class="form-control" accept="image/*" onchange="previewMarcaDagua(this)">
+                                <input type="hidden" id="marcaDaguaUrl">
+                                <div class="mt-2 text-center" id="marcadagua-preview-container" style="display:none;">
+                                    <img id="marcadagua-preview" src="" alt="Preview Marca D'água" style="max-height: 80px;"
+                                        class="img-fluid rounded border p-2 bg-white">
+                                </div>
+                            </div>
+
                             <hr class="my-4">
                             <h5 class="mb-3 fw-bold">Cores do Sistema</h5>
 
@@ -126,11 +136,13 @@
 
                     document.getElementById('nomePrefeitura').value = config.nome || '';
                     document.getElementById('logoUrl').value = config.logoUrl || '';
+                    document.getElementById('marcaDaguaUrl').value = config.marcaDaguaUrl || '';
                     document.getElementById('corPrimaria').value = config.corPrimaria || '#0d6efd';
                     document.getElementById('corSecundaria').value = config.corSecundaria || '#6c757d';
 
                     updateHex();
                     if (config.logoUrl) previewLogo();
+                    if (config.marcaDaguaUrl) previewMarcaDagua();
                 } catch (e) { console.error(e); }
             }
 
@@ -156,6 +168,25 @@
                     reader.readAsDataURL(input.files[0]);
                 } else if (document.getElementById('logoUrl').value) {
                     img.src = document.getElementById('logoUrl').value;
+                    container.style.display = 'block';
+                } else {
+                    container.style.display = 'none';
+                }
+            }
+
+            function previewMarcaDagua(input) {
+                const container = document.getElementById('marcadagua-preview-container');
+                const img = document.getElementById('marcadagua-preview');
+                
+                if (input && input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        img.src = e.target.result;
+                        container.style.display = 'block';
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                } else if (document.getElementById('marcaDaguaUrl').value) {
+                    img.src = document.getElementById('marcaDaguaUrl').value;
                     container.style.display = 'block';
                 } else {
                     container.style.display = 'none';
@@ -191,10 +222,31 @@
                         }
                     }
 
+                    let marcaDaguaFinalUrl = document.getElementById('marcaDaguaUrl').value || null;
+                    const marcaDaguaFile = document.getElementById('marcaDaguaFile').files[0];
+
+                    if (marcaDaguaFile) {
+                        const formData = new FormData();
+                        formData.append('file', marcaDaguaFile);
+                        
+                        const resUpload = await fetch(`${API}/upload`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (resUpload.ok) {
+                            const uploadData = await resUpload.json();
+                            marcaDaguaFinalUrl = uploadData.url;
+                        } else {
+                            showToast('Erro ao fazer upload da marca d\'água.', 'warning');
+                        }
+                    }
+
                     const data = {
                         id: prefeituraId,
                         nome: document.getElementById('nomePrefeitura').value,
                         logoUrl: logoFinalUrl,
+                        marcaDaguaUrl: marcaDaguaFinalUrl,
                         corPrimaria: document.getElementById('corPrimaria').value,
                         corSecundaria: document.getElementById('corSecundaria').value
                     };

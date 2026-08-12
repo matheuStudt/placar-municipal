@@ -13,6 +13,7 @@ model Prefeitura {
   nome           String
   slug           String       @unique
   logoUrl        String?
+  marcaDaguaUrl  String?
   corPrimaria    String       @default("#0d6efd")
   corSecundaria  String       @default("#6c757d")
   limiteCampeonatos Int       @default(3)

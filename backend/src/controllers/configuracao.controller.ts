@@ -25,11 +25,11 @@ export const getConfiguracao = async (req: Request, res: Response) => {
 
 
 export const updateConfiguracao = async (req: Request, res: Response) => {
-    const { id, nome, logoUrl, corPrimaria, corSecundaria } = req.body;
+    const { id, nome, logoUrl, marcaDaguaUrl, corPrimaria, corSecundaria } = req.body;
     try {
         const pref = await prisma.prefeitura.update({
             where: { id: parseInt(String(id)) || 1 },
-            data: { nome, logoUrl: sanitizeLogoUrl(logoUrl), corPrimaria, corSecundaria }
+            data: { nome, logoUrl: sanitizeLogoUrl(logoUrl), marcaDaguaUrl: sanitizeLogoUrl(marcaDaguaUrl), corPrimaria, corSecundaria }
         });
         res.json(pref);
     } catch (e) {

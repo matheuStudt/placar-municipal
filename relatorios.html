@@ -287,28 +287,31 @@
                 </div>
 
                 <!-- Tabela (Mostrada no PDF também) -->
-                <div class="card shadow-sm border-0" id="print-area">
-                    <div class="card-header bg-primary text-white d-none d-print-block text-center"
-                        style="padding: 1rem;">
-                        <!-- NOVO CABEÇALHO PREFEITURA -->
-                        <img id="pdf-logo-prefeitura" src="" alt="Logo da Prefeitura"
-                            style="max-height: 90px; display: none;" class="img-fluid mb-2">
-                        <h4 class="fw-bold mb-3 text-uppercase" id="pdf-nome-prefeitura">PREFEITURA MUNICIPAL</h4>
-                        <hr class="border-dark opacity-50 mb-3" style="width: 50%; margin: 0 auto;">
+                <div class="card shadow-sm border-0" id="print-area" style="position: relative; z-index: 1;">
+                    <img id="pdf-marca-dagua" src="" alt="" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60%; opacity: 0.08; z-index: 0; pointer-events: none; filter: grayscale(100%);">
+                    <div style="position: relative; z-index: 1;">
+                        <div class="card-header bg-primary text-white d-none d-print-block text-center"
+                            style="padding: 1rem;">
+                            <!-- NOVO CABEÇALHO PREFEITURA -->
+                            <img id="pdf-logo-prefeitura" src="" alt="Logo da Prefeitura"
+                                style="max-height: 90px; display: none;" class="img-fluid mb-2">
+                            <h4 class="fw-bold mb-3 text-uppercase" id="pdf-nome-prefeitura">PREFEITURA MUNICIPAL</h4>
+                            <hr class="border-dark opacity-50 mb-3" style="width: 50%; margin: 0 auto;">
 
-                        <h3 class="mb-0 fw-bold" id="pdf-titulo-campeonato">Tabela Oficial</h3>
-                        <p class="mb-0" id="pdf-subtitulo-rodada">Todos os Jogos</p>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <tbody id="tabela-jogos-relatorio">
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted p-4">Selecione o campeonato e a rodada
-                                        para
-                                        exibir.</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                            <h3 class="mb-0 fw-bold" id="pdf-titulo-campeonato">Tabela Oficial</h3>
+                            <p class="mb-0" id="pdf-subtitulo-rodada">Todos os Jogos</p>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <tbody id="tabela-jogos-relatorio">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted p-4">Selecione o campeonato e a rodada
+                                            para
+                                            exibir.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -384,20 +387,23 @@
                 </div>
 
                 <!-- Tabela oculta p/ exportação -->
-                <div id="agenda-print-area" style="display:none;" class="card shadow-sm border-0">
-                    <div class="card-header bg-primary text-white text-center" style="padding: 1rem;">
-                        <!-- CABEÇALHO PREFEITURA -->
-                        <img id="pdf-logo-prefeitura-agenda" src="" alt="Logo da Prefeitura"
-                            style="max-height: 90px; display: none;" class="img-fluid mb-2">
-                        <h4 class="fw-bold mb-3 text-uppercase" id="pdf-nome-prefeitura-agenda">PREFEITURA MUNICIPAL
-                        </h4>
-                        <hr class="border-dark opacity-50 mb-3" style="width: 50%; margin: 0 auto;">
-                        <h3 class="mb-0 fw-bold">AGENDA INTEGRADA DE JOGOS</h3>
-                        <h5 class="mb-0" id="pdf-subtitulo-agenda"></h5>
+                <div id="agenda-print-area" style="display:none; position: relative; z-index: 1;" class="card shadow-sm border-0">
+                    <img id="pdf-marca-dagua-agenda" src="" alt="" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60%; opacity: 0.08; z-index: 0; pointer-events: none; filter: grayscale(100%);">
+                    <div style="position: relative; z-index: 1;">
+                        <div class="card-header bg-primary text-white text-center" style="padding: 1rem;">
+                            <!-- CABEÇALHO PREFEITURA -->
+                            <img id="pdf-logo-prefeitura-agenda" src="" alt="Logo da Prefeitura"
+                                style="max-height: 90px; display: none;" class="img-fluid mb-2">
+                            <h4 class="fw-bold mb-3 text-uppercase" id="pdf-nome-prefeitura-agenda">PREFEITURA MUNICIPAL
+                            </h4>
+                            <hr class="border-dark opacity-50 mb-3" style="width: 50%; margin: 0 auto;">
+                            <h3 class="mb-0 fw-bold">AGENDA INTEGRADA DE JOGOS</h3>
+                            <h5 class="mb-0" id="pdf-subtitulo-agenda"></h5>
+                        </div>
+                        <table class="table table-hover align-middle mb-0">
+                            <tbody id="tabela-agenda-exportacao"></tbody>
+                        </table>
                     </div>
-                    <table class="table table-hover align-middle mb-0">
-                        <tbody id="tabela-agenda-exportacao"></tbody>
-                    </table>
                 </div>
 
             </div>
@@ -673,6 +679,18 @@
                         if (imgAgenda) {
                             imgAgenda.src = config.logoUrl;
                             imgAgenda.style.display = 'inline-block';
+                        }
+                    }
+                    if (config.marcaDaguaUrl) {
+                        const img = document.getElementById('pdf-marca-dagua');
+                        if (img) {
+                            img.src = config.marcaDaguaUrl;
+                            img.style.display = 'block';
+                        }
+                        const imgAgenda = document.getElementById('pdf-marca-dagua-agenda');
+                        if (imgAgenda) {
+                            imgAgenda.src = config.marcaDaguaUrl;
+                            imgAgenda.style.display = 'block';
                         }
                     }
                 }
